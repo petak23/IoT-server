@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="robots" content="noindex, nofollow">
+    <title>{ifset title}{include title|stripHtml} | {/ifset}{$appName}</title>
+
+    <link rel="stylesheet" type="text/css" href="{webpack front.css}">
+    <link href="{$basePath}/datagrid/datagrid.css" rel="stylesheet" />
+    
+    <link rel="shortcut icon" href="{$basePath}/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+      <button class="btn btn-link btn-sm ml-2 mr-2" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+      <a class="navbar-brand" href="#">{$appName}</a>
+      <ul class="navbar-nav ml-auto mr-0 mr-md-3">
+        <li class="nav-item dropdown">
+          <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {$userInfo->prefix} <i class="fas fa-user fa-fw"></i>
+          </a>
+          {* dropdown-menu-right - lebo css je bootstrap 4, ale js je bootstrap 5 *}
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="userDropdown">
+            <li><span class="dropdown-item-text">Uživatel: <b>{$userInfo->username}</b></span></li>
+            <li><span class="dropdown-item-text"><small>Rola: {$userInfo->user_role->name}</small></span></li>
+            <li><span class="dropdown-item-text"><small>Prefix: {$userInfo->prefix}</small></span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" n:href="Sign:out">Odhlásit</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <div id="layoutSidenav">
+      <div id="layoutSidenav_nav">
+        <div class="bg-warning">
+          {control menu templateType=>'RA_Fixed', nadpis=>'Menu'}
+        </div>
+      </div>
+      <div id="layoutSidenav_content">
+        <main>
+          <div class="container-fluid px-0 mx-0 px-md-2 px-lg-4" {ifset $isChart} style="max-width: {$maxW}px;" {/ifset} >
+            <div class="row">
+              <div class="col-12" n:inner-foreach="$flashes as $flash">
+                <div class="alert flash alert-{$flash->type}">{$flash->message}</div>
+              </div>
+              {include content}
+            </div>
+          </div>
+        </main>
+        <footer class="py-4 bg-dark mt-auto">
+          <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between small">
+              <div class="text-muted">RatatoskrIoT</div>
+              <div n:inner-foreach="$links as $link">
+                <a href="{$link['link']}" n:tag-if="strlen($link['link'])>0">{$link['name']}</a>
+                {sep}&middot;{/sep}
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+		{block scripts}
+      <script src="{webpack front.js}"></script>
+      {*
+      <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+      try {
+      var pageTracker = _gat._getTracker("UA-289403-4");
+      pageTracker._trackPageview();
+      } catch(err) {}</script>*}
+		{/block}
+
+  </body>
+</html>

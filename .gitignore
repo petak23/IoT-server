@@ -1,0 +1,17 @@
+app/config/local.neon
+app/config/config.neon
+app/config/database.neon
+log/*.txt
+temp/
+vendor/
+
+_doc/
+node_modules/
+www/files/
+.vscode/
+www/dist/
+deployment.ini
+deployment.log
+
+composer.lock
+package-lock.json

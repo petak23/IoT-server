@@ -1,0 +1,28 @@
+services:
+
+	# Presenters
+	- App\Presenters\UserPresenter(%parameters%)
+	- App\Presenters\UserAclPresenter(%parameters%)
+
+
+  # Models
+	- App\Model\PV_Devices
+	- App\Model\PV_Lang
+	- App\Model\PV_Main_menu
+	- App\Model\PV_Units
+	- App\Model\PV_User
+	- App\Model\PV_User_permission
+	- App\Model\PV_User_resource
+	- App\Model\PV_User_roles
+	- App\Model\PV_User_state
+
+  # Forms
+	- App\Forms\User\EditUserFormFactory
+	- App\Forms\User\ForgottenPasswordFormFactory
+	- App\Forms\User\RegisterFormFactory
+#	- App\Forms\User\ResetPasswordFormFactory
+
+	authorizator: App\Model\AuthorizatorFactory::create(@Nette\Database\Context)
+
+	# services for language support
+	- Language_support\LanguageMain

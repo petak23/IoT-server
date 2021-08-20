@@ -1,0 +1,35 @@
+{layout '../@layoutEmpty.latte'}
+
+{block content}
+<div class="form-signin">
+  <h1 n:block=title class="mb-3 text-center">Potvrzení registrace</h1>
+
+  <div class="col-12 alert alert-info">E-mail adresa: <b>{$email}</b></div>
+
+  <form n:name=step2Form >
+
+    <div class="form-group row">
+      <div class="col-sm-4 col-form-label align-top text-right">
+        {label code class: required /}
+      </div>
+      <div class="col-sm-8">
+        <input n:name=code>
+      </div>
+      <div class="col-12">
+        <div class="font-italic text-right">{$form["code"]->options["description"]}</div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-12">
+        <input n:name=send>
+      </div>
+    </div>
+  </form>
+
+  <div class="row">
+    <div class="col-6">
+      <a class="btn btn-secondary btn-sm" n:href="Sign:in"><i class="fas fa-home"></i></a>
+    </div>
+  </div>
+</div>

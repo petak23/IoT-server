@@ -1,0 +1,36 @@
+{
+	"name": "petak23/ratatoskriot",
+	"description": "IoT aplikace na ESP32/ESP8266 a serverová aplikace k tomu",
+	"keywords": ["nette", "ratatoskriot"],
+	"type": "project",
+	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"require": {
+		"php": ">= 7.2",
+		"nette/application": "^3.0.6",
+		"nette/bootstrap": "^3.0",
+		"nette/caching": "^3.0",
+		"nette/database": "^3.0",
+		"nette/di": "^3.0",
+		"nette/finder": "^2.5",
+		"nette/forms": "^3.0",
+		"nette/http": "^3.0",
+		"nette/mail": "^3.0",
+		"nette/robot-loader": "^3.0",
+		"nette/security": "^3.0",
+		"nette/utils": "^3.0",
+		"latte/latte": "^2.5",
+		"tracy/tracy": "^2.6",
+		"mdanter/ecc": "^1.0",
+		"dg/adminer-custom": "^1.28",
+		"ublaboo/datagrid": "^6.9",
+		"ublaboo/datagrid-nette-database-data-source": "^2.1",
+		"contributte/webpack": "^2.1"
+	},
+	"require-dev": {
+		"nette/tester": "^2.3"
+	},
+	"autoload": {
+		"classmap": ["app/Bootstrap.php"]
+	},
+	"minimum-stability": "stable"
+}

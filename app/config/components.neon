@@ -1,0 +1,13 @@
+parameters:
+  components:
+#...
+    userAclEdit:
+      name: 'Editovanie ACL'
+      unique: TRUE
+      fa_icon: 'user-shield'
+#...
+
+services:
+# Component UserAcl
+  - PeterVojtech\UserAcl\IAdminUserAcl
+  - PeterVojtech\UserAcl\EditRoleFormFactory

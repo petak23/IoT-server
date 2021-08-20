@@ -1,0 +1,15 @@
+{layout '../@layoutAdmin.latte'}
+
+{block content}
+<div class="row">
+  <div class="col-12 py-2 px-2">
+    <h1>Uživatel {$name}</h1>
+  </div>
+  <div class="col-12 py-2 px-2">
+    {control userForm}
+  </div>
+  <div class="col-12 pb-2 px-2">
+    <a n:href="User:show $id" class="btn btn-outline-primary btn-sm" role="button">Zpět beze změny</a>
+    <a n:if="$id > 1" n:href="User:delete $id" class="btn btn-outline-danger btn-sm" role="button">Smazat uživatele</a>
+  </div>
+</div>

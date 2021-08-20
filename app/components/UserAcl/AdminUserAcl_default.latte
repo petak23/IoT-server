@@ -1,0 +1,140 @@
+<div class="row">
+  {*<div class="col-12">
+    <div class="row" n:snippet="flashes">
+      <div class="col-md-6 col-md-offset-3" n:inner-foreach="$flashes as $flash">
+        {var $nees = explode(',', $flash->type)}
+        <div class="alert alert-{$nees[0]} fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {if isset($nees[1]) && $nees[1] == 'n'}{$flash->message|noescape}{else}{$flash->message}{/if}
+        </div>
+      </div>
+    </div>
+  </div>*}
+
+  <div class="col-12 col-md-6">
+    <table class="table table-bordered table-striped table-hover table-sm">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>user_resource<br /><small>Zdroj pre ACL</small></th>
+          <th>user_role<br /><small>Minimálna rola pre ACL</small></th>
+          <th>actions<br /><small>Povolené akcie(render)</small></th>
+          {*<th>akcie:
+            <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#myModalEditRole" title="Pridaj rolu">
+              <i class="far fa-plus-square"></i>
+            </button>
+          </th> *}
+        </tr>
+      </thead>
+      <tbody n:inner-foreach="$user_permission as $ur">
+        <tr>
+          <td>{$ur->id}</td>
+          <td>{$ur->user_resource->name}</td>
+          <td style="background-color: {$ur->user_role->color}">{$ur->user_role->name}</td>
+          <td>{if $ur->actions != null}{$ur->actions}{else}Všetky{/if}</td>
+          {*<td>
+            <a class="btn btn-outline-info btn-sm" href="#"><i class="far fa-edit"></i></a>
+            <a class="btn btn-outline-danger btn-sm" href="#"><i class="fas fa-trash-alt"></i></a>
+          </td>*}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <table class="table table-bordered table-striped table-hover table-sm">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>role<br /><small>Rola pre ACL</small></th>
+          <th>inherited<br /><small>Dedí od role</small></th>
+          <th>name<br /><small>Zobrazený názov úrovne registrácie</small></th>
+          {*<th>akcie:
+            <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#myModalEditRole" title="Pridaj rolu">
+              <i class="far fa-plus-square"></i>
+            </button>
+          </th>*} 
+        </tr>
+      </thead>
+      <tbody n:inner-foreach="$user_roles as $ur">
+        <tr>
+          <td>{$ur->id}</td>
+          <td>{$ur->role}</td>
+          <td>{$ur->inherited}</td>
+          <td style="background-color: {$ur->color}">{$ur->name}</td>
+          {*<td>
+            <a class="btn btn-outline-info btn-sm" href="#"><i class="far fa-edit"></i></a>
+            <a class="btn btn-outline-danger btn-sm" href="#"><i class="fas fa-trash-alt"></i></a>
+          </td>*}
+        </tr>
+      </tbody>
+    </table>
+  {*</div>
+
+  <div class="col-12 col-md-6">}
+    <nav class="navbar navbar-light bg-light">
+      <div class="container-fluid">
+        <span class="navbar-brand">Zdroje pre ACL</span>
+        <button type="button" class="d-flex btn btn-outline-success btn-sm" data-toggle="modal" data-target="#myModalEditResource" title="Pridaj zdroj">
+          <i class="far fa-plus-square"></i>
+        </button>
+      </div>
+    </nav>
+    {control userResourcesGrid*}
+    <table class="table table-bordered table-striped table-hover table-sm">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>name<br /><small>Zdroj pre ACL</small></th>
+          {*<th>akcie:
+            <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#myModalEditResource" title="Pridaj zdroj">
+              <i class="far fa-plus-square"></i>
+            </button>
+          </th>*} 
+        </tr>
+      </thead>
+      <tbody n:inner-foreach="$user_resource as $ur">
+        <tr>
+          <td>{$ur->id}</td>
+          <td>{$ur->name}</td>
+          {*<td>
+            <a class="btn btn-outline-info btn-sm" href="#"><i class="far fa-edit"></i></a>
+            <a class="btn btn-outline-danger btn-sm" href="#"><i class="fas fa-trash-alt"></i></a>
+          </td>*}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{* -- Modal dialog pre pridanie roly -- *}
+{*<div class="modal fade" id="myModalEditRole" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white bg-success">
+        <h5 class="modal-title" id="myModalLabel">Pridanie roly</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        {control editRoleForm}
+      </div>
+    </div>
+  </div>
+</div>*}
+
+{* -- Modal dialog pre pridanie zdroja -- *}
+{*<div class="modal fade" id="myModalEditResource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white bg-success">
+        <h5 class="modal-title" id="myModalLabel">Pridanie zdroja</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        {control editRoleForm}
+      </div>
+    </div>
+  </div>
+</div>*}

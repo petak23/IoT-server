@@ -1,0 +1,41 @@
+{layout '../@layoutAdmin.latte'}
+
+{block content}
+
+<div class="col-12">
+  <nav class="navbar navbar-light bg-light mx-0 mb-1">
+    <h1>Uživatelé</h1>
+    <a n:href="User:create" class="btn btn-outline-success" type="button">Nový uživatel</a>
+  </nav>
+</div>
+
+<div class="col-12">
+  <div class="row px-2 bg-primary text-white">
+      <div class="col-4 col-lg-2 col-xl-1 ">Login</div>
+      <div class="col-8 col-lg-4 col-xl-2 ">Role</div>
+      <div class="col-4 col-lg-2 col-xl-1 ">Stav</div>
+      <div class="col-8 col-lg-4 col-xl-2 ">Problémy přihlášení</div>
+      <div class="col-4 col-lg-4 col-xl-2 ">Poslední přihlášení</div>
+      <div class="col-8 col-lg-4 col-xl-2 ">E-mail</div>
+      <div class="col-6 col-lg-4 col-xl-1 ">Retence</div>
+  </div>
+
+  <div n:foreach="$users as $u" n:class="row, my-2, px-2, $iterator->odd ? bg-light">
+    <div class="col-4 col-lg-2 col-xl-1 "><a n:href="User:show $u->id">{$u->username}</a></div>
+    <div class="col-8 col-lg-4 col-xl-2 ">{$u->user_roles->name}</div>
+    <div class="col-4 col-lg-2 col-xl-1 ">{$u->rauser_state->desc}</div>
+    <div class="col-8 col-lg-4 col-xl-2 ">
+      <small>
+        {if $u->locked_out_until && ($u->locked_out_until->getTimestamp() > time() )}
+            Zamčeno do: <b>{$u->locked_out_until}</b>.
+        {/if}
+        {if $u->bad_pwds_count > 0 }
+            Chybná hesla: <b>{$u->bad_pwds_count}</b>.
+        {/if}
+      </small>
+    </div>
+    <div class="col-4 col-lg-4 col-xl-2 ">{$u->cur_login_time}</div>
+    <div class="col-8 col-lg-4 col-xl-2">{$u->email}</div>
+    <div class="col-6 col-lg-4 col-xl-1 ">{$u->measures_retention} / {$u->sumdata_retention} / {$u->blob_retention}</div>
+  </div>
+</div>

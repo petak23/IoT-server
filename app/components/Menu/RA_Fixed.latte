@@ -1,0 +1,16 @@
+<nav n:if="isset($startNode) && count($startNode->nodes)" class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+  <div class="sb-sidenav-menu">
+    <div class="nav">
+      <div n:if="$nastav['nadpis']" class="sb-sidenav-menu-heading">{$nastav['nadpis']}</div>
+      <ul n:class="$nastav['divClass']?$nastav['divClass']" n:inner-foreach="$startNode->nodes as $node">
+        <li>
+          <a href="{$node->link}" title="{$node->name}" class="nav-link pt-0 pb-1 {$node->getItemClass()}">
+            <span n:if="isset($node->node_class)" class="{$node->node_class}"> </span>
+            {$node->name}
+            <small n:if="isset($node->tooltip)">{$node->tooltip}</small>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

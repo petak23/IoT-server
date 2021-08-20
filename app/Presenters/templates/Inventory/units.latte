@@ -1,0 +1,25 @@
+{layout '../@layoutAdmin.latte'}
+
+{block content}
+
+<div class="col-12">
+  <div class="pb-3 pt-3 px-2">
+    <h1>Kódy jednotek</h1>
+    <p>Seznam zaregistrovaných kódů jednotek, které je možné používat v senzorech.</p>
+  </div>
+
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Jednotka</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr n:foreach="$units as $unit">
+        <td>{$unit->id}</td>
+        <td>{$unit->unit}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
