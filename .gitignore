@@ -9,6 +9,7 @@ _doc/
 node_modules/
 www/files/
 .vscode/
+.history/
 www/dist/
 deployment.ini
 deployment.log

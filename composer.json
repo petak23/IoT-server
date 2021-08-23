@@ -1,7 +1,7 @@
 {
-	"name": "petak23/ratatoskriot",
+	"name": "petak23/iot-server",
 	"description": "IoT aplikace na ESP32/ESP8266 a serverová aplikace k tomu",
-	"keywords": ["nette", "ratatoskriot"],
+	"keywords": ["nette", "IoT-server"],
 	"type": "project",
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"require": {

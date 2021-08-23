@@ -15,11 +15,10 @@ const VUE_LOADER_VERSION = require("vue-loader/package.json").version;
 // Webpack plugins
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const {VueLoaderPlugin} = require("vue-loader");
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const WebpackAssetsManifest = require('webpack-assets-manifest');
+//const WebpackAssetsManifest = require('webpack-assets-manifest');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
 // Webpack abilities
 const WEBPACK_DEV_SERVER_HOST = process.env.WEBPACK_DEV_SERVER_HOST || 'localhost';
@@ -31,7 +30,7 @@ const WEBPACK_DEV_SERVER_PROXY_PORT = parseInt(process.env.WEBPACK_DEV_SERVER_PR
 const ROOT_PATH = __dirname;
 const CACHE_PATH = ROOT_PATH + "/temp/webpack";
 
-var AssetsPlugin = require('assets-webpack-plugin');
+//var AssetsPlugin = require('assets-webpack-plugin');
 
 module.exports = {
   mode: devMode ? "development" : "production",
@@ -45,10 +44,11 @@ module.exports = {
     path: path.join(ROOT_PATH, 'www/dist'),
     publicPath: "",
     filename: devMode ? '[name].bundle.js' : '[name].[chunkhash:8].bundle.js',
-    chunkFilename: devMode ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js'
+    clean: true,
+    //chunkFilename: devMode ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js'
   },  
   module: {
-    //noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
+    noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
 		rules: [
 			{
         test: /\.js$/,
@@ -59,18 +59,25 @@ module.exports = {
         }
       },
       {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          cacheDirectory: path.join(CACHE_PATH, 'vue-loader'),
-          cacheIdentifier: [
-            process.env.NODE_ENV || 'development',
-            webpack.version,
-            VUE_VERSION,
-            VUE_LOADER_VERSION,
-          ].join('|')
-        }
-      },
+				test: /\.vue$/,
+				use: [
+					{
+						loader: 'vue-loader',
+						options: {
+							compilerOptions: {
+								preserveWhitespace: false
+							},
+							cacheDirectory: path.join(CACHE_PATH, "vue-loader"),
+							cacheIdentifier: [
+								process.env.NODE_ENV || 'development',
+								webpack.version,
+								VUE_VERSION,
+								VUE_LOADER_VERSION,
+							].join('|'),
+						}
+					}
+				]
+			},
       {
         test: /\.css$/,
         use: [
@@ -140,21 +147,18 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: devMode ? '[name].bundle.css' : '[name].[chunkhash:8].bundle.css'
     }),
-    new AssetsPlugin({ // Pre aplikaciu filename: '[name].[contenthash:8].[ext]' a prepojenie s nette
+    /*new AssetsPlugin({ // Pre aplikaciu filename: '[name].[contenthash:8].[ext]' a prepojenie s nette
       includeManifest: 'manifest',
       path: path.join(ROOT_PATH, 'www/dist')
-    }),
-    
-    // human webpack errors
-		new FriendlyErrorsWebpackPlugin()
+    }),*/
+    new WebpackManifestPlugin({
+      fileName: 'manifest.json'
+    })
   ],
   devtool: 'cheap-module-source-map',
   performance: {
     hints: false
   }
-//  devServer: {
-//    publicPath: '/dist/'
-//  }
 };
 
 
@@ -173,7 +177,7 @@ if (process.env.NODE_ENV === 'development') {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': '*'
       },
-      stats: 'errors-only',
+      stats: 'minimal',
       hot: true,
       inline: true,
       proxy: {
@@ -193,37 +197,13 @@ if (process.env.NODE_ENV === 'development') {
 if (process.env.NODE_ENV === 'production') {
   const production = {
     devtool: 'source-map',
-//    optimization: {
-//      minimize: true,
-//      minimizer: [new TerserPlugin()],
-//    },
     optimization: {
       minimizer: [
         new TerserPlugin({
-          terserOptions: {
-            cache: `${CACHE_PATH}/webpack/terser`,
-            parallel: true,
-            ecma: 8,
-            warnings: false,
-            parse: {},
-            compress: {},
-            mangle: true, // Note `mangle.properties` is `false` by default.
-            module: false,
-            output: null,
-            toplevel: false,
-            nameCache: null,
-            ie8: false,
-            keep_classnames: undefined,
-            keep_fnames: false,
-            safari10: false
-          }
-        })
+					test: /\.m?js(\?.*)?$/i,
+				})
       ]
     },
-    plugins: [
-      // optimize CSS files
-      new OptimizeCSSAssetsPlugin()
-    ]
   };
 
   module.exports = merge(module.exports, production);
