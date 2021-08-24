@@ -9,13 +9,13 @@ use Nette\Security\User;
 
 /**
  * Registracny formular
- * Posledna zmena 28.07.2021
+ * Posledna zmena 24.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
 class RegisterFormFactory {
   /** @var Security\User */
@@ -42,38 +42,31 @@ class RegisterFormFactory {
   public function create($link_forgot, string $language)  {
     $this->link_forgot = $link_forgot;
     $this->texts->setLanguage($language);
+
     $form = new Form();
+    $form->setRenderer(new UserFormRenderer);
 		$form->addProtection();
     $form->setTranslator($this->texts);
-    $form->addText('meno', 'RegistraciaForm_meno')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 50)
-				 ->addRule(Form::MIN_LENGTH, 'RegistraciaForm_meno_ar', 2)
-         ->setHtmlAttribute('autofocus', 'autofocus')
-				 ->setRequired('RegistraciaForm_meno_sr');
-    $form->addText('priezvisko', 'RegistraciaForm_priezvisko')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 50)
-				 ->addRule(Form::MIN_LENGTH, 'RegistraciaForm_priezvisko_ar', 3)
-				 ->setRequired('RegistraciaForm_priezvisko_sr');
-    $form->addEmail('email', 'Form_email')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
-				 ->addRule(Form::EMAIL, 'Form_email_ar')
-				 ->setRequired('Form_email_sr');
-    $form->addPassword('heslo', 'RegistraciaForm_heslo')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
-				 ->addRule(Form::MIN_LENGTH, 'RegistraciaForm_heslo_ar', 5)
-				 ->setRequired('RegistraciaForm_heslo_sr');
-    $form->addPassword('heslo2', 'RegistraciaForm_heslo2')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
-         ->addRule(Form::EQUAL, 'RegistraciaForm_heslo2_ar', $form['heslo'])
-				 ->setRequired('RegistraciaForm_heslo2_sr')
-         ->setOmitted();
-		/*$form->addReCaptcha('recaptcha', $label = 'Captcha')
-				 ->setRequired('Táto položka je požadovaná!')
-				 ->setMessage('Are you a bot?');*/
-				 
+    $form->addEmail('email', 'RegisterForm_email')
+          ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
+          ->addRule(Form::EMAIL, 'RegisterForm_email_ar')
+          ->setRequired('RegisterForm_email_sr');
+
+    $form->addPassword('password', 'RegisterForm_psswd')
+          ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
+          ->addRule(Form::MIN_LENGTH, 'RegisterForm_psswd_ar', 5)
+          ->setRequired('RegisterForm_psswd_sr');
+
+    $form->addPassword('password2', 'RegisterForm_psswd2')
+          ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
+          ->addRule(Form::EQUAL, 'RegisterForm_psswd2_ar', $form['password'])
+          ->setRequired('RegisterForm_psswd2_sr')
+          ->setOmitted(); // https://doc.nette.org/cs/3.1/form-presenter#toc-validacni-pravidla
+
+    $form->addSubmit('send', 'RegisterForm_send')
+        ->setHtmlAttribute('class', 'btn btn-success');
+
     $form->onValidate[] = [$this, 'validateRegisterForm'];
-		$form->addSubmit('uloz', 'RegistraciaForm_uloz')
-         ->setHtmlAttribute('class', 'btn btn-success');
 		return $form;
 	}
   
@@ -84,7 +77,7 @@ class RegisterFormFactory {
     if ($button->isSubmitted()->name == 'uloz') {
       // Over, ci dany email uz existuje.
       if ($this->pv_user->testEmail($values->email)) {
-        $button->addError(sprintf($this->texts->translate('registracia_email_duble2'), $values->email, $this->link_forgot));
+        $button->addError(sprintf($this->texts->translate('RegisterForm_email_duble2'), $values->email, $this->link_forgot));
       }
     } 
   }

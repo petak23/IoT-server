@@ -12,12 +12,13 @@ use Nette\Mail\Message;
 use Nette\Http\Url;
 
 use App\Exceptions;
+use App\Forms;
 use App\Model;
 use App\Services\Logger;
 use App\Services;
 
 /**
- * @last_edited petak23<petak23@gmail.com> 28.07.2021
+ * @last_edited petak23<petak23@gmail.com> 24.08.2021
  */
 class EnrollPresenter extends MainBasePresenter
 {
@@ -35,6 +36,9 @@ class EnrollPresenter extends MainBasePresenter
 
   public $links;
 
+  /** @var Forms\User\RegisterFormFactory @inject*/
+	public $registerForm;
+
   public function __construct(Services\MailService $mailsv,
                               Passwords $passwords,
                               Services\Config $config   )
@@ -50,29 +54,9 @@ class EnrollPresenter extends MainBasePresenter
     $this->template->links = $this->links;
   }
 
-  protected function createComponentEnrollForm(): Form
-	{
-		$form = new Form;
-		$form->addEmail('email', 'E-mail adresa:')
-        ->setRequired("E-mailová adresa musí byť zadaná!");
-
-		$form->addPassword('password', 'Heslo:')
-        ->setRequired("Heslo musí byť zadané!");
-
-    $form->addPassword('password2', 'Opakujte heslo:')
-        ->addRule($form::EQUAL, 'Heslo musí být zadáno dvakrát stejně!', $form['password'])
-        ->setOmitted() // https://doc.nette.org/cs/3.1/form-presenter#toc-validacni-pravidla
-        ->setRequired("Opakované heslo musí byť zadané!");
-
-    $form->addSubmit('send', 'Založit účet');
-
-    $form->onSuccess[] = [$this, 'enrollFormSucceeded'];
-    
-    $form =  $this->makeBootstrap4( $form );
-    $renderer = $form->getRenderer();
-    $renderer->wrappers['control']['container'] = 'div class=col-sm-8';
-    $renderer->wrappers['label']['container'] = 'div class="col-sm-4 col-form-label align-top text-right"';
-    $renderer->wrappers['control']['description'] = 'div class="alert alert-info font-italic"';
+  protected function createComponentEnrollForm(): Form {
+		$form = $this->registerForm->create($this->link("Sign:ForgottenPassword"), $this->language);
+		$form->onSuccess[] =  [$this, 'enrollFormSucceeded'];
 		return $form;
   }
 

@@ -2,43 +2,40 @@
 
 {block content}
 <div class="form-signin">
-  <h1 n:block=title class="mb-3 text-center">Registrace</h1>
+  <h1 n:block=title class="mb-3 text-center">{_'RegisterForm_h2'}</h1>
 
   <form n:name=enrollForm >
 
     <div class="form-group row">
       <div class="col-sm-4 col-form-label align-top text-right">
-        <label n:name=email class="required">E-mail adresa:</label>
+        <label n:name=email class="required">{_'RegisterForm_email'}</label>
       </div>
       <div class="col-sm-8">
         <input n:name=email class="form-control text"> 
       </div>
       <div class="col-12">
-        <div class="font-italic text-right">E-mail adresa bude použita jako přihlašovací jméno.<br /> Do e-mailu vám bude zaslán potvrzovací kód.</div>
+        <div class="font-italic text-right">{_'RegisterForm_email_info'|noescape}</div>
       </div>
     </div>
 
     <div class="form-group row">
       <div class="col-sm-4 col-form-label align-top text-right">
-        <label n:name=password class="required">Heslo:</label>
+        <label n:name=password class="required">{_'RegisterForm_psswd'}</label>
       </div>
       <div class="col-sm-8">
         <input n:name=password class="form-control text">
       </div>
-      <div class="col-12">
-        <div class="font-italic text-right">Prosím vyplňte své heslo.</div>
-      </div>
     </div>
 
     <div class="form-group row">
       <div class="col-sm-4 col-form-label align-top text-right">
-        <label n:name=password2 class="required">Opakujte heslo:</label>
+        <label n:name=password2 class="required">{_'RegisterForm_psswd2'}</label>
       </div>
       <div class="col-sm-8">
         <input n:name=password2 class="form-control text">
       </div>
       <div class="col-12">
-        <div class="font-italic text-right">Zadejte heslo ještě jednou.</div>
+        <div class="font-italic text-right">{_'RegisterForm_psswd2_info'}</div>
       </div>
     </div>
 
@@ -51,7 +48,7 @@
 
   <div class="row">
     <div class="col-6">
-      <a class="btn btn-secondary btn-sm" n:href="Sign:in"><i class="fas fa-home"></i></a>
+      <a class="btn btn-secondary btn-sm" n:href="Sign:in" title="{_'base_homepage'}"><i class="fas fa-home"></i></a>
     </div>
   </div>
 </div>

@@ -17,6 +17,7 @@ services:
 	- App\Model\PV_User_state
 
   # Forms
+	- App\Forms\User\UserFormRenderer	
 	- App\Forms\User\EditUserFormFactory
 	- App\Forms\User\ForgottenPasswordFormFactory
 	- App\Forms\User\RegisterFormFactory

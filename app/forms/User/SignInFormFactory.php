@@ -47,6 +47,8 @@ class SignInFormFactory {
    * @return Form */
   public function create(string $language, string $email = null): Form {
 		$form = new Form;
+    $form->setRenderer(new UserFormRenderer); // https://github.com/tomaj/nette-bootstrap-form
+
     $form->addProtection();
     $this->texts->setLanguage($language);
     $form->setTranslator($this->texts);
@@ -67,38 +69,6 @@ class SignInFormFactory {
 
     $form->onSuccess[] = [$this, 'signInFormSucceeded'];
         
-    $renderer = $form->getRenderer();
-    $renderer->wrappers['controls']['container'] = null;
-    $renderer->wrappers['control']['container'] = 'div class=col-sm-8';
-    $renderer->wrappers['label']['container'] = 'div class="col-sm-4 col-form-label align-top text-right"';
-    $renderer->wrappers['pair']['container'] = 'div class="form-group row"';
-    $renderer->wrappers['pair']['.error'] = 'has-danger';
-    
-    $renderer->wrappers['control']['description'] = 'span class="form-text font-italic"';
-    $renderer->wrappers['control']['errorcontainer'] = 'span class=form-control-feedback';
-    $renderer->wrappers['control']['.error'] = 'is-invalid';
-
-    $renderer->wrappers['error']['container'] = 'ul class="error alert alert-danger text-center p-2"';
-    $renderer->wrappers['error']['item'] = 'li'; //has-danger
-
-
-    foreach ($form->getControls() as $control) {
-      $type = $control->getOption('type');
-      if ($type === 'button' && !(isset($control->getControlPrototype()->attrs['class']) && strlen($control->getControlPrototype()->attrs['class']))) {
-        $control->getControlPrototype()->addClass(empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-secondary');
-        $usedPrimary = true;
-      } elseif ($type == 'text') {
-        $control->getControlPrototype()->addClass('form-control');
-      } elseif (in_array($type, ['checkbox', 'radio'], true)) {
-        if ($control instanceof \Nette\Forms\Controls\Checkbox) {
-          $control->getLabelPrototype()->addClass('form-check-label');
-        } else {
-          $control->getItemLabelPrototype()->addClass('form-check-label');
-        }
-        $control->getControlPrototype()->addClass('form-check-input');
-        $control->getSeparatorPrototype()->setName('div')->addClass('form-check');
-      }
-    }
     return $form;
   }
   

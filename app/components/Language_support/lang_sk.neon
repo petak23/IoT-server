@@ -4,8 +4,9 @@
 # If you don't protect this directory from direct web access, anybody will be able to see your passwords.
 # http:#nette.org/security-warning
 #
-# Last change 21.04.2020
+# Last change 24.08.2021
 #
+base_homepage: 'Domovská stránka'
 base_lang_not_def: 'Jazyk, ktorý požadujete, nie je pre tento web definovaný!<br />Language you require is not defined for this site!'
 base_nie_je_opravnenie: 'Na požadovanú akciu %s nemáte dostatočné oprávnenie!'
 base_nie_je_opravnenie1: 'Nemáte dostatočné oprávnenie na danú operáciu!'
@@ -16,13 +17,6 @@ base_nette_title: 'Nette Framework - populárny nástroj pre vytváranie webový
 base_nette_powered: 'vytvorené v nette'
 base_link_to_admin_log_in: 'Prihlásenie pre administráciu webu'
 base_delete_text: 'Naozaj chceš zmazať %s: %s ?'
-#base_SignInForm_email: 'Email:'
-#base_SignInForm_email_req: 'Uveďte, prosím, užívateľský email.'
-#base_SignInForm_password: 'Heslo:'
-#base_SignInForm_password_req: 'Uveďte, prosím, heslo.'
-#base_SignInForm_remember: 'Pamätať si ma'
-#base_SignInForm_login: 'Prihlásiť sa...'
-#base_Log_In_Error_2: 'Chybný užívateľský email alebo heslo!'
 base_AdminLink_name: 'Administrácia'
 base_login_ok: 'Úspešne ste sa prihlásili!'
 base_login_error: 'Pri prihlásení došlo k chybe: %s'
@@ -88,31 +82,36 @@ base_to_article: 'Odkaz na článok:'
 base_component_news_h4: 'Novinky:'
 base_nice_day: 'Príjemný deň praje '
 
+#RegisterForm
+RegisterForm_h2: 'Registrácia'
+RegisterForm_email: 'E-mailová adresa:'
+RegisterForm_email_ar: 'Musíte zadať e-mailovú adresu v správnom tvare!(napr.: niekto@niekde.sk)'
+RegisterForm_email_sr: 'E-mail musí byť zadaný!'
+RegisterForm_email_ph: 'zadajte e-mail'
+RegisterForm_email_info: 'E-mail adresa bude použitá ako prihlasovacie meno.<br /> Do e-mailu Vám bude poslaný potvrdzovací kód.'
+RegisterForm_psswd: 'Prihlasovacie heslo:'
+RegisterForm_psswd_ar: 'Prihlasovacie heslo musí mať aspoň %d znakov!'
+RegisterForm_psswd_sr: 'Heslo musí byť zadané!'
+RegisterForm_psswd2: 'Over heslo:'
+RegisterForm_psswd2_ar: 'Zadané heslá (prihlasovacie a overené) sa musia zhodovať.'
+RegisterForm_psswd2_sr: 'Overované heslo musí byť zadané!'
+RegisterForm_psswd2_info: 'Zadajte heslo ešte raz.'
+RegisterForm_send: 'Založiť účet'
+
+RegisterForm_email_duble: 'K email-u %s už existuje účet. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku <a href="%s" title="Zabudnuté heslo">Zabudnuté heslo</a> .'
+RegisterForm_email_duble2: 'K email-u %s už existuje účet. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku: "Zabudnuté heslo" v časti prihlásenia.'
+
 default_user_logedIn: '<div class="stav st_info">Už ste prihlásený!</div>'
 forgot_pass_txt: 'Zadajte emailovú adresu, ktorá je pripojená k Vášmu účtu a na ktorú bude odoslaný email pre reset hesla.'
 registracia_not_enabled: 'Na tomto webe registrácia nie je dovolená!'
-registracia_email_duble: 'K email-u %s už existuje účet. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku <a href="%s" title="Zabudnuté heslo">Zabudnuté heslo</a> .'
-registracia_email_duble2: 'K email-u %s už existuje účet. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku: "Zabudnuté heslo" v časti prihlásenia.'
+
 RegistraciaForm_meno: 'Meno:'
 RegistraciaForm_meno_ar: 'Meno musí mať spoň %d znakov!'
 RegistraciaForm_meno_sr: 'Meno musí byť zadané!'
 RegistraciaForm_priezvisko: 'Priezvisko:'
 RegistraciaForm_priezvisko_ar: 'Priezvisko musí mať spoň %d znakov!'
 RegistraciaForm_priezvisko_sr: 'Priezvisko musí byť zadané!'
-Form_email: 'E-mailová adresa:'
-Form_email_ar: 'Musíte zadať e-mailovú adresu v správnom tvare!(napr.: niekto@niekde.sk)'
-Form_email_sr: 'E-mail musí byť zadaný!'
-Form_email_ph: 'zadajte e-mail'
-
-RegistraciaForm_h2: 'Registrácia'
-RegistraciaForm_heslo: 'Prihlasovacie heslo:'
-RegistraciaForm_heslo_ar: 'Prihlasovacie heslo musí mať aspoň %d znakov!'
-RegistraciaForm_heslo_sr: 'Heslo musí byť zadané!'
-RegistraciaForm_heslo2: 'Over heslo:'
-RegistraciaForm_heslo2_ar: 'Zadané heslá (prihlasovacie a overené) sa musia zhodovať.'
-RegistraciaForm_heslo2_sr: 'Overované heslo musí byť zadané!'
 RegistraciaForm_pohl: 'Pohlavie:'
-RegistraciaForm_uloz: 'Zaregistruj'
 RegistraciaForm_m: 'Muž'
 RegistraciaForm_z: 'Žena'
 
