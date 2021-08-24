@@ -23,7 +23,7 @@ services:
 	- App\Services\InventoryDataSource
 	security.passwords: Nette\Security\Passwords(::PASSWORD_BCRYPT, [cost: 11])		# zde se nastavuji pozadovane parametry hesla https://doc.nette.org/cs/3.0/passwords
 	router: App\Router\RouterFactory::createRouter
-	authenticator: App\Services\RaAuthenticator
+	authenticator: App\Services\PVAuthenticator
 
 forms:
 	messages:
@@ -70,8 +70,6 @@ webpack:
   build:
     directory: %wwwDir%/dist
     publicPath: dist/
-  # devServer - tato cast je presunuta do config.local.neon
+  # devServer - tato cast je presunuta do local.neon
   manifest:  # Cez tento subor je prepojenie na filename: '[name].[contenthash:8].[ext]' vo webpack-u
     name: manifest.json
-    #name: webpack-assets.json  # ./www/dist/webpack-assets.json
-    #mapper: Contributte\Webpack\Manifest\Mapper\AssetsWebpackPluginMapper

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
-use Nette;
-use Tracy\Debugger;
+//use Nette;
+//use Tracy\Debugger;
 
 final class HomepagePresenter extends MainBasePresenter
 {
-    public function renderDefault()
+    public function actionDefault()
     {
         $this->redirect("Inventory:user" );
     }

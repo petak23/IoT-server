@@ -7,15 +7,23 @@ namespace App\Services;
 use App\Model;
 use Nette;
 use Nette\Security;
-//use Nette\Utils\Strings;
 use Nette\Utils\DateTime;
 use App\Services\Logger;
 use App\Exceptions\UserNotEnrolledException;
 
 /**
- * @last_edited petak23<petak23@gmail.com> 20.08.2021
+ * Autenticator
+ * Last change 24.08.2021
+ * 
+ * @github     Forked from petrbrouzda/RatatoskrIoT
+ * 
+ * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
+ * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @license
+ * @link       http://petak23.echo-msz.eu
+ * @version    1.0.0
  */
-class RaAuthenticator implements Security\Authenticator {
+class PVAuthenticator implements Security\Authenticator {
   private $passwords;
   private $request;
 
@@ -56,31 +64,41 @@ class RaAuthenticator implements Security\Authenticator {
       ]);
   }
 
-	public function authenticate(string $username, string $password): Security\SimpleIdentity {
+  /**
+	 * Performs an authentication.
+   * @param string $email
+   * @param string $password
+	 * @return Nette\Security\SimpleIdentity
+	 * @throws Nette\Security\AuthenticationException 
+   *  IDENTITY_NOT_FOUND = 1
+   *  INVALID_CREDENTIAL = 2
+   *  FAILURE = 3
+   *  NOT_APPROVED = 4 
+   *  Pridané:
+   *  locked by the system administrator = 5
+   *  temporarily locked = 6*/
+	public function authenticate(string $email, string $password): Security\SimpleIdentity {
     $ip = $this->request->getRemoteAddress();
     $ua = $this->request->getHeader('User-Agent') . ' / ' . $this->request->getHeader('Accept-Language');
 
-		//[$username, $password] = $credentials;
-
-		$userData = $this->pv_user->getUserBy(['username' => $username]);
+		$userData = $this->pv_user->getUserBy(['email' => $email]);
 
 		if (!$userData) {
-      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: nenalezen uzivatel {$username}, '{$ua}'" ); 
-			throw new Security\AuthenticationException('Uživatel neexistuje.');
+      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: nenajdeny uzivatel s emailem: {$email}, '{$ua}'" ); 
+			throw new Security\AuthenticationException('', 1);
     }
-        
     if( $userData->id_rauser_state == 1 ) {
-      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$username} state=1 " ); 
-      throw new UserNotEnrolledException('Tento účet ještě není aktivní, zadejte kód z e-mailu.');
-    }  else if( $userData->id_rauser_state == 90 ) {
-      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$username} state=90, '{$ua}'" ); 
-      throw new Security\AuthenticationException('Tento účet byl správcem systému uzamčen.');
+      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$email} state=1 " ); 
+      throw new UserNotEnrolledException('');
+    } else if( $userData->id_rauser_state == 90 ) {
+      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$email} state=90, '{$ua}'" ); 
+      throw new Security\AuthenticationException('', 5);
     } else if( $userData->id_rauser_state == 91 ) {
       $lockoutTime = (DateTime::from( $userData->locked_out_until ))->getTimestamp();
       if( $lockoutTime > time() ) {
         $rest = $lockoutTime - time();
-        Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$username} state=91 for {$rest} sec; '{$ua}'" ); 
-        throw new Security\AuthenticationException("Tento účet je dočasně uzamčen, zkuste to znovu za {$rest} sekund." );
+        Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$email} state=91 for {$rest} sec; '{$ua}'" ); 
+        throw new Security\AuthenticationException((string)$rest, 6);
       }
     } else if( $userData->id_rauser_state == 10 ) {
       // OK, korektni stav
@@ -88,13 +106,13 @@ class RaAuthenticator implements Security\Authenticator {
 
 		if (!$this->passwords->verify($password, $userData->phash)) {
       $badPwdCount = $userData->bad_pwds_count + 1;
-      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: spatne heslo pro {$username}, badPwdCount={$badPwdCount}, '{$ua}'" ); 
+      Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: chybne heslo pre {$email}, badPwdCount={$badPwdCount}, '{$ua}'" ); 
 
       $delay = pow( 2, $badPwdCount );
       $lockoutTime = (new DateTime())->setTimestamp( time() + $delay );
       $this->badPasswordAction($userData->id, $badPwdCount, $lockoutTime, $ip, $ua);
 
-			throw new Security\AuthenticationException('Špatné heslo.');
+			throw new Security\AuthenticationException('', 2);
     }
 
     // pokud heslo potrebuje rehash, rehashnout
@@ -104,10 +122,9 @@ class RaAuthenticator implements Security\Authenticator {
 
     $this->loginOkAction( $userData, $this->request->getRemoteAddress(), $ua);
     
-    Logger::log( self::NAME, Logger::INFO , "[{$ip}] Login: prihlasen {$username} v roli '{$userData->user_roles->name}', '{$ua}'" ); 
+    Logger::log( self::NAME, Logger::INFO , "[{$ip}] Login: prihlaseny {$email} v roli '{$userData->user_roles->name}', '{$ua}'" ); 
 
-    //$roles = Strings::split($userData->role, '~,\s*~');
     $role = $userData->user_roles->role;
-		return new Security\SimpleIdentity($userData->id, $role, ['username' => $userData->username, 'prefix' => $userData->prefix, 'id_user_roles' => $userData->id_user_roles ]);
+		return new Security\SimpleIdentity($userData->id, $role, ['email' => $userData->email, 'prefix' => $userData->prefix, 'id_user_roles' => $userData->id_user_roles ]);
 	}
 }

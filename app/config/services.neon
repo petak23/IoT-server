@@ -20,6 +20,7 @@ services:
 	- App\Forms\User\EditUserFormFactory
 	- App\Forms\User\ForgottenPasswordFormFactory
 	- App\Forms\User\RegisterFormFactory
+	- App\Forms\User\SignInFormFactory
 #	- App\Forms\User\ResetPasswordFormFactory
 
 	authorizator: App\Model\AuthorizatorFactory::create(@Nette\Database\Context)
