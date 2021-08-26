@@ -6,6 +6,28 @@
 #
 # Last change 24.08.2021
 #
+EQUAL: 'Zadajte %s.'
+NOT_EQUAL: 'Táto hodnota by nemala byť %s.'
+FILLED: 'Toto pole je povinné.'
+BLANK: 'Toto pole by malo byť prázdne.'
+MIN_LENGTH: 'Zadajte, prosím, aspoň %d znakou.'
+MAX_LENGTH: 'Zadajte, prosím, maximálne %d znakou.'
+LENGTH: 'Zadajte, prosím, hodnotu %d až %d znakou dlhú.'
+Please-enter-a-valid-email-address: 'Zadajte, prosím, platnú e-mailovú adresu (napr. mojko@mail.sk).'#ok
+URL: 'Zadajte, prosím, platnú URL.'
+INTEGER: 'Zadajte, prosím, platné celé číslo.'
+FLOAT: 'Zadajte, prosím, platné číslo.'
+MIN: 'Zadajte, prosím, hodnotu väčšiu alebo rovnú %d.'
+MAX: 'Zadajte, prosím, hodnotu menšiu alebo rovnú %d.'
+RANGE: 'Zadajte, prosím, hodnotu medzi %d a %d.'
+MAX_FILE_SIZE: 'Veľkosť nahraného súboru môže byť najviac %d bytov.'
+MAX_POST_SIZE: 'Nahrané dáta prekračujú limit %d bytov.'
+MIME_TYPE: 'Nahraný súbor nie je v očakávanom formáte.'
+IMAGE: 'Nahraný súbor musí býť obrázok vo formáte JPEG, GIF, PNG alebo WebP.'
+Nette\Forms\Controls\SelectBox::VALID: 'Vyberte, prosím, platnú možnosť.'
+Nette\Forms\Controls\UploadControl::VALID: 'Pri nahrávaní súboru došlo k chybe.'
+Nette\Forms\Controls\CsrfProtection::PROTECTION: 'Vaša relácia vypršala. Vráťte sa na domovskú stránku a skúste to znovu.'
+
 base_homepage: 'Domovská stránka'
 base_lang_not_def: 'Jazyk, ktorý požadujete, nie je pre tento web definovaný!<br />Language you require is not defined for this site!'
 base_nie_je_opravnenie: 'Na požadovanú akciu %s nemáte dostatočné oprávnenie!'
@@ -82,7 +104,7 @@ base_to_article: 'Odkaz na článok:'
 base_component_news_h4: 'Novinky:'
 base_nice_day: 'Príjemný deň praje '
 
-#RegisterForm
+# --- RegisterForm ---
 RegisterForm_h2: 'Registrácia'
 RegisterForm_email: 'E-mailová adresa:'
 RegisterForm_email_ar: 'Musíte zadať e-mailovú adresu v správnom tvare!(napr.: niekto@niekde.sk)'
@@ -98,22 +120,74 @@ RegisterForm_psswd2_sr: 'Overované heslo musí byť zadané!'
 RegisterForm_psswd2_info: 'Zadajte heslo ešte raz.'
 RegisterForm_send: 'Založiť účet'
 
+RegisterForm_name: 'Meno:'
+RegisterForm_name_ar: 'Meno musí mať spoň %d znakov!'
+RegisterForm_name_sr: 'Meno musí byť zadané!'
+RegisterForm_surname: 'Priezvisko:'
+RegisterForm_surname_ar: 'Priezvisko musí mať spoň %d znakov!'
+RegisterForm_surname_sr: 'Priezvisko musí byť zadané!'
+RegisterForm_gender: 'Pohlavie:'
+RegisterForm_m: 'Muž'
+RegisterForm_f: 'Žena'
+
+#validateRegisterForm
 RegisterForm_email_duble: 'K email-u %s už existuje účet. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku <a href="%s" title="Zabudnuté heslo">Zabudnuté heslo</a> .'
-RegisterForm_email_duble2: 'K email-u %s už existuje účet. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku: "Zabudnuté heslo" v časti prihlásenia.'
+RegisterForm_email_duble2: 'K email-u %s už existuje účet. Prosím, použite iný e-mail. Ak si nepamätáte prístupové heslo požiadajte o neho cez položku: "Zabudnuté heslo" v časti prihlásenia.'
 
+# --- Enroll2Form ---
+Enroll2Form_h2: 'Potvrdenie registrácie'
+Enroll2Form_code: 'Kód z e-mailu:'
+Enroll2Form_code_de: 'Zadejte kód z e-mailu.'
+Enroll2Form_code_sr: 'Kód musí byť zadaný!'
+Enroll2Form_send: 'Potvrdiť účet'
+
+Enroll2Form_mail_send: 'Mail bol poslaný na: %s'
+Enroll2Form_mail_subject: 'Registrácia'
+Enroll2Form_mail_inner: '<p>Dobrý deň,</p><p>Váš aktivačný kód je: <b>%s</b><p><p><a href="%s">Kliknutím vykonáte aktiváciu.</a></p>'
+
+Enroll2Form_validate_not_found: 'Užívateľ %s neexistuje!'
+Enroll2Form_validate_ok_code: 'Aktivačný kód pre užívateľa %s bol zadaný, môžete sa prihlásiť.'
+Enroll2Form_validate_er_delete: 'Opakovane chybný kód. Tento účet bol zmazaný!'
+Enroll2Form_validate_er_code: 'Chybný e-mail alebo kód.'
+Enroll2Form_validate_ok: 'Aktivácia ukončená, môžete se prihlásiť.'
+
+# --- SignInForm ---
+SignInForm_h2: 'Prihlásenie'
+SignInForm_email: 'Email:'
+SignInForm_email_ph: '@'
+SignInForm_email_ar: 'Zadajte, prosím, platnú e-mailovú adresu (napr. moj@mail.sk).'
+SignInForm_email_sr: 'Uveďte, prosím, užívateľský email.'
+SignInForm_password: 'Heslo:'
+SignInForm_password_min_lenght: 'Heslo musí mať aspoň %d znaky'
+SignInForm_password_req: 'Uveďte, prosím, heslo.'
+SignInForm_remember: ' Pamätať si ma'
+SignInForm_login: 'Prihlásiť sa...'
+SignInForm_forgottenPassword: 'Zabudnuté heslo?'
+SignInForm_register: 'Nemáte účet? Zaregistrujte se.'
+SignInForm_main_error: 'Prihlásenie sa nepodarilo! Dôvod: %s'
+#validateSignInForm
+AuthenticationException_1: 'Užívateľ neexistuje.'
+AuthenticationException_2: 'Chybný prihlasovací email alebo heslo.'
+AuthenticationException_3: 'Iná chyba prihlásenia.'
+AuthenticationException_4: 'Účet nie je schválený.'
+AuthenticationException_5: 'Tento účet bol správcom systému uzamknutý.'
+AuthenticationException_6: 'Tento účet je dočasne uzamknutý, zkúste to znovu za %s sekúnd.'
+UserNotEnrolledException: 'Tento účet ešte nie je aktívny, zadajte kód z e-mailu.'
+
+# --- ForgottenPassword ---
+ForgottenPasswordForm_h2: 'Zabudnuté heslo'
+ForgottenPasswordForm_txt: 'Zadajte emailovú adresu, ktorá je pripojená k Vášmu účtu a na ktorú bude odoslaný email pre reset hesla.'
+ForgottenPasswordForm_send: 'Odošli požiadavku'
+ForgottenPasswordForm_user_not_found: 'Došlo k chybe. K danej emailovej adrese %s neexzistuje užívateľ!'
+ForgottenPasswordForm_email_ok: 'Na Vami zadanú emailovú adresu bola odoslaná správa pre resetovanie Vášho hesla. Ďalej prosím postupujte podľa tejto správy!'
+
+ForgottenPasswordForm_reset_pass_hesla_err: 'Nové heslá sa nezhodujú!'
+ForgottenPasswordForm_reset_pass_ok: 'Vaše heslo bolo v úspešne zmenené. Môžete ho použiť pri prihlásení sa...'
+ForgottenPasswordForm_reset_pass_err: 'Došlo k chybe a heslo nebolo zmenené. Skúste neskôr znovu...<br /> Možná príčina: %s'
+
+# ---
 default_user_logedIn: '<div class="stav st_info">Už ste prihlásený!</div>'
-forgot_pass_txt: 'Zadajte emailovú adresu, ktorá je pripojená k Vášmu účtu a na ktorú bude odoslaný email pre reset hesla.'
 registracia_not_enabled: 'Na tomto webe registrácia nie je dovolená!'
-
-RegistraciaForm_meno: 'Meno:'
-RegistraciaForm_meno_ar: 'Meno musí mať spoň %d znakov!'
-RegistraciaForm_meno_sr: 'Meno musí byť zadané!'
-RegistraciaForm_priezvisko: 'Priezvisko:'
-RegistraciaForm_priezvisko_ar: 'Priezvisko musí mať spoň %d znakov!'
-RegistraciaForm_priezvisko_sr: 'Priezvisko musí byť zadané!'
-RegistraciaForm_pohl: 'Pohlavie:'
-RegistraciaForm_m: 'Muž'
-RegistraciaForm_z: 'Žena'
 
 ResetPasswordForm_h2: 'Reset hesla'
 reset_pass_txt1: 'Chystáte sa nastaviť nové heslo k Vášmu účtu. '
@@ -134,34 +208,6 @@ register_save_err: 'Došlo k chybe a údaje o užívateľovi sa neuložili. Skú
 activate_ok: 'Váš účet je teraz aktívny! Môžete sa prihlásiť...'
 activate_err1: 'Došlo k chybe pri aktivácii Vášho účtu. Skúste neskôr znovu...<br />'
 activate_err2: 'Pri pokuse o aktiváciu účtu došlo k chybe. Aktiváciu účtu nebolo možné uskutočniť! Skúste neskôr znovu... Ak sa to bude opakovať kontaktujte prosím administrátora(e-mail na spodku stránky)!'
-
-ForgottenPasswordForm_uloz: 'Pošli'
-forgot_pass: 'Zabudnuté heslo'
-forgot_pass_email_ok: 'Na Vami zadanú emailovú adresu bola odoslaná správa pre resetovanie Vášho hesla. Ďalej prosím postupujte podľa tejto správy!'
-forgot_pass_user_err: 'Došlo k chybe. K danej emailovej adrese %s neexzistuje užívateľ!'
-reset_pass_hesla_err: 'Nové heslá sa nezhodujú!'
-reset_pass_ok: 'Vaše heslo bolo v úspešne zmenené. Môžete ho použiť pri prihlásení sa...'
-reset_pass_err: 'Došlo k chybe a heslo nebolo zmenené. Skúste neskôr znovu...<br />'
-
-# SignInForm
-SignInForm_h2: 'Prihlásenie'
-SignInForm_email: 'Email:'
-SignInForm_email_req: 'Uveďte, prosím, užívateľský email.'
-SignInForm_password: 'Heslo:'
-SignInForm_password_min_lenght: 'Heslo musí mať aspoň %d znaky'
-SignInForm_password_req: 'Uveďte, prosím, heslo.'
-SignInForm_remember: ' Pamätať si ma'
-SignInForm_login: 'Prihlásiť sa...'
-SignInForm_forgottenPassword: 'Zabudnuté heslo?'
-SignInForm_register: 'Nemáte účet? Zaregistrujte se.'
-SignInForm_main_error: 'Prihlásenie sa nepodarilo! Dôvod: %s'
-AuthenticationException_1: 'Užívateľ neexistuje.'
-AuthenticationException_2: 'Chybný prihlasovací email alebo heslo.'
-AuthenticationException_3: 'Iná chyba prihlásenia.'
-AuthenticationException_4: 'Účet nie je schválený.'
-AuthenticationException_5: 'Tento účet bol správcom systému uzamknutý.'
-AuthenticationException_6: 'Tento účet je dočasne uzamknutý, zkúste to znovu za %s sekúnd.'
-UserNotEnrolledException: 'Tento účet ešte nie je aktívny, zadajte kód z e-mailu.'
 
 #Clanky
 clanky_nic_nie_je: 'V tejto časti ešte nie je zadaný žiaden platný článok.'
@@ -260,8 +306,8 @@ pass_change_ok: 'Vaše heslo bolo úspešne zmenené!'
 pass_change_err: 'Došlo k chybe a heslo nebolo zmenené. Skúste neskôr znovu...<br />'
 
 #E-mail template
-#email_nefunkcny_odkaz: 'Odkaz nefunguje? Skopírujte nasledujúci odkaz do adresového riadnu Vášho prehliadača:'
-#email_pozdrav: 'Príjemný deň praje'
+email_nefunkcny_odkaz: 'Odkaz nefunguje? Skopírujte nasledujúci odkaz do adresového riadnu Vášho prehliadača:'
+email_pozdrav: 'Príjemný deň praje'
 email_change_mail_nadpis: 'Zmena e-mailovej adresy na %s!'
 email_change_mail_txt: 'Na stránke %s ste požiadali o zmenu e-mailovej adresy. Pre potvrdenie tejto zmeny kliknite na nasledujúci odkaz: '
 email_change_mail_txt1: 'Ak ste o zmenu nepožiadali, tak nerobte nič len tento e-mail zmažte. Požiadavka sa zo systému zmaže sama po istom čase.'

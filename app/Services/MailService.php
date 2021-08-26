@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Nette;
-/*use Nette\Utils\DateTime;
-use Tracy\Debugger;
-
-use \App\Model\Device;
-use \App\Model\Devices;
-use \App\Model\View;
-use \App\Model\ViewItem;*/
 
 /**
- * @last_edited petak23<petak23@gmail.com> 28.07.2021
+ * Odoslanie e-mailov
+ * Last change 26.08.2021
+ * 
+ * @github     Forked from petrbrouzda/RatatoskrIoT
+ * 
+ * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
+ * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @license
+ * @link       http://petak23.echo-msz.eu
+ * @version    1.0.1
  */
 class MailService {
     use Nette\SmartObject;
@@ -22,16 +24,11 @@ class MailService {
     public $mailFrom;
     public $mailAdmin;
 
-    /** @var Nette\Mail\Mailer */
-    private $mailer;
-    
-	public function __construct(Nette\Mail\Mailer $mailer, 
-                              $mailFrom,
+	public function __construct($mailFrom,
                               $mailAdmin
                               ) {
     $this->mailFrom = $mailFrom;
     $this->mailAdmin = $mailAdmin;
-    $this->mailer = $mailer;
   }
 
   public function sendMailAdmin( $subject, $text ): void {
@@ -45,8 +42,13 @@ class MailService {
     $mail = new Nette\Mail\Message;
     $mail->setFrom( $this->mailFrom )
         ->addTo($to)
-        ->setSubject( "RatatoskrIot: {$subject}")
+        ->setSubject( "IoT-server: {$subject}")
         ->setHtmlBody($text);
-    $this->mailer->send($mail);
+    try {
+      $sendmail = new Nette\Mail\SendmailMailer;
+      $sendmail->send($mail);
+    } catch (Exception $e) {
+      throw new SendException('Došlo k chybe pri odosielaní e-mailu. Skúste neskôr znovu...'.$e->getMessage());
+    }
   }
 }

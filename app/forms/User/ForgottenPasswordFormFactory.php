@@ -37,14 +37,15 @@ class ForgottenPasswordFormFactory {
     $this->texts->setLanguage($language);
     $form = new Form();
 		$form->addProtection();
+    $form->setRenderer(new UserFormRenderer);
     $form->setTranslator($this->texts);
-    $form->addEmail('email', 'Form_email')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 50)
-         ->setHtmlAttribute('placeholder', 'Form_email_ph')
-				 ->addRule(Form::EMAIL, 'Form_email_ar')
-				 ->setRequired('Form_email_sr');
-		$form->addSubmit('uloz', 'ForgottenPasswordForm_uloz')
-         ->setHtmlAttribute('class', 'btn btn-success btn-block');
+    $form->addEmail('email', 'SignInForm_email')
+          ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 50)
+          ->setHtmlAttribute('placeholder', 'SignInForm_email_ph')
+          ->addRule(Form::EMAIL, 'SignInForm_email_ar')
+          ->setRequired('SignInForm_email_sr');
+		$form->addSubmit('send', 'ForgottenPasswordForm_send')
+          ->setHtmlAttribute('class', 'btn btn-success btn-block');
     $form->onValidate[] = [$this, 'validateForm'];
 		return $form;
 	}
@@ -53,10 +54,10 @@ class ForgottenPasswordFormFactory {
    * @param Nette\Application\UI\Form $button */
   public function validateForm($button) {
     $values = $button->getForm()->getValues();
-    if ($button->isSubmitted()->name == 'uloz') {
+    if ($button->isSubmitted()->name == 'send') {
       // Over, ci dany email existuje.
       if ( !$this->pv_user->testEmail($values->email) ) {
-        $button->addError(sprintf($this->texts->translate('forgot_pass_user_err'), $values->email));
+        $button->addError(sprintf($this->texts->translate('ForgottenPasswordForm_user_not_found'), $values->email));
       }
     } 
   }

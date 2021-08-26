@@ -9,13 +9,13 @@ use Nette\Security\User;
 
 /**
  * Registracny formular
- * Posledna zmena 24.08.2021
+ * Posledna zmena 26.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 class RegisterFormFactory {
   /** @var Security\User */
@@ -70,15 +70,14 @@ class RegisterFormFactory {
 		return $form;
 	}
   
-  /** Vlastná validácia pre RegisterForm
-   * @param Nette\Application\UI\Form $button */
-  public function validateRegisterForm($button) {
-    $values = $button->getForm()->getValues();
-    if ($button->isSubmitted()->name == 'uloz') {
-      // Over, ci dany email uz existuje.
-      if ($this->pv_user->testEmail($values->email)) {
-        $button->addError(sprintf($this->texts->translate('RegisterForm_email_duble2'), $values->email, $this->link_forgot));
-      }
-    } 
+  /** 
+   * Vlastná validácia pre RegisterForm */
+  public function validateRegisterForm(Form $form): void {
+    $values = $form->getValues();
+    // Over, ci dany email uz existuje.
+    if ($this->pv_user->testEmail($values->email)) {
+      $form->addError(sprintf($this->texts->translate('RegisterForm_email_duble2'), $values->email, $this->link_forgot));
+    }
   }
+  
 }

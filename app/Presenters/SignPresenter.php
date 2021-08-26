@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App\Forms\User;
+use App\Model;
 use App\Services;
 use App\Services\Logger;
 use Latte;
@@ -14,13 +15,13 @@ use Nette\Application\UI\Form;
 
 /**
  * Sign in form
- * Last change 24.08.2021
+ * Last change 26.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
 class SignPresenter extends MainBasePresenter {
   
@@ -30,6 +31,9 @@ class SignPresenter extends MainBasePresenter {
 	public $backlink = '';
 
   public $links;
+
+  /** @var Model\PV_User @inject */
+	public $pv_user;
 
   /** @var Services\MailService @inject*/
   private $mailService;
@@ -78,8 +82,7 @@ class SignPresenter extends MainBasePresenter {
     return $form;
   }
 
-  public function actionOut(): void
-  {
+  public function actionOut(): void {
     $response = $this->getHttpResponse();
     $response->setHeader('Cache-Control', 'no-cache');
     $response->setExpiration('1 sec'); 
@@ -97,18 +100,12 @@ class SignPresenter extends MainBasePresenter {
     
   }
 
-    /**
+  /**
 	 * Forgot password user form component factory.
-	 * @return Nette\Application\UI\Form
-	 */
+	 * @return Nette\Application\UI\Form */
 	protected function createComponentForgottenPasswordForm() {
     $form = $this->forgottenPasswordForm->create($this->language);
-    $form['uloz']->onClick[] = [$this, 'forgotPasswordFormSubmitted'];
-
-    $form =  $this->makeBootstrap4( $form );
-    $renderer = $form->getRenderer();
-    $renderer->wrappers['control']['container'] = 'div class=col-sm-8';
-    $renderer->wrappers['label']['container'] = 'div class="col-sm-4 col-form-label align-top text-right"';
+    $form['send']->onClick[] = [$this, 'forgotPasswordFormSubmitted'];
 		return $form;
 	}
 
@@ -118,7 +115,7 @@ class SignPresenter extends MainBasePresenter {
   public function forgotPasswordFormSubmitted($button) {
 		//Inicializacia
     $values = $button->getForm()->getValues();                 //Nacitanie hodnot formulara
-    $clen = $this->user_main->findOneBy(['email'=>$values->email]);
+    $clen = $this->pv_user->getUserBy(['email'=>$values->email]);
     $tp = $this->texty_presentera;
     $new_password_requested = StrFTime("%Y-%m-%d %H:%M:%S", Time());
     $new_password_key = Nette\Utils\Random::generate(25);

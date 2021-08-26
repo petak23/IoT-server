@@ -182,7 +182,7 @@ CREATE TABLE `rausers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin;
 
 INSERT INTO `rausers` (`id`, `username`, `phash`, `role`, `id_user_roles`, `email`, `prefix`, `id_rauser_state`, `bad_pwds_count`, `locked_out_until`, `measures_retention`, `sumdata_retention`, `blob_retention`, `self_enroll`, `self_enroll_code`, `self_enroll_error_count`, `cur_login_time`, `cur_login_ip`, `cur_login_browser`, `prev_login_time`, `prev_login_ip`, `prev_login_browser`, `last_error_time`, `last_error_ip`, `last_error_browser`, `monitoring_token`) VALUES
-(1,	'admin',	'$2y$11$5bCGPCSvLeJ/NudG64ceKuHjQ4CjomrUUyXh2Qw3iCWJxTVRnWeTy',	'admin,user',	4,	'petak23@gmail.com',	'AA',	10,	0,	NULL,	90,	731,	14,	0,	NULL,	0,	'2021-08-18 12:29:17',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-18 12:29:09',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	NULL,	NULL,	NULL,	NULL);
+(1,	'admin',	'$2y$11$5bCGPCSvLeJ/NudG64ceKuHjQ4CjomrUUyXh2Qw3iCWJxTVRnWeTy',	'admin,user',	4,	'petak23@gmail.com',	'AA',	10,	0,	'2021-08-24 07:18:11',	90,	731,	14,	0,	NULL,	0,	'2021-08-26 08:56:21',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-24 07:37:33',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-24 07:17:39',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	NULL);
 
 DROP TABLE IF EXISTS `sensors`;
 CREATE TABLE `sensors` (
@@ -430,4 +430,4 @@ CREATE TABLE `views` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_czech_ci COMMENT='Chart views. Every VIEW (chart) has 0-N series defined in VIEW_DETAILS.';
 
 
--- 2021-08-19 10:00:22
+-- 2021-08-26 07:44:18

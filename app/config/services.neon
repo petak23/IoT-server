@@ -17,14 +17,15 @@ services:
 	- App\Model\PV_User_state
 
   # Forms
-	- App\Forms\User\UserFormRenderer	
 	- App\Forms\User\EditUserFormFactory
+	- App\Forms\User\Enroll2FormFactory
 	- App\Forms\User\ForgottenPasswordFormFactory
 	- App\Forms\User\RegisterFormFactory
-	- App\Forms\User\SignInFormFactory
 #	- App\Forms\User\ResetPasswordFormFactory
+	- App\Forms\User\SignInFormFactory
+	- App\Forms\User\UserFormRenderer	
 
 	authorizator: App\Model\AuthorizatorFactory::create(@Nette\Database\Context)
 
 	# services for language support
-	- Language_support\LanguageMain
+	- Language_support\LanguageMain(%language_support%)

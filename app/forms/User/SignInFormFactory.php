@@ -11,13 +11,13 @@ use Nette\Security;
 
 /**
  * Sign in form
- * Last change 24.08.2021
+ * Last change 25.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.1.2
+ * @version    1.1.3
  */
 class SignInFormFactory {
   /** @var User */
@@ -54,7 +54,8 @@ class SignInFormFactory {
     $form->setTranslator($this->texts);
 		$em = $form->addEmail('email', 'SignInForm_email')
                 ->setHtmlAttribute('autofocus', 'autofocus')
-                ->setRequired('SignInForm_email_req');
+                ->addRule(Form::EMAIL, 'SignInForm_email_ar')
+                ->setRequired('SignInForm_email_sr');
     if ($email !== null) $em->setDefaultValue($email);
 
 		$form->addPassword('password', 'SignInForm_password')

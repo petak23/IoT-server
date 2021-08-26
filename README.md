@@ -1,4 +1,8 @@
-# RatatoskrIoT: Serverová aplikace pro IoT
+# Server IoT
+
+Serverová aplikácia, ktorá vznikla ako fork zo serverovej aplikácie na [github-e RatatoskrIoT](https://github.com/petrbrouzda/RatatoskrIoT)
+
+## RatatoskrIoT: Serverová aplikace pro IoT
 
 Informace, motivace a použití jsou popsány zde: [https://pebrou.wordpress.com/2021/01/07/kostra-hotove-iot-aplikace-pro-esp32-esp8266-a-k-tomu-nejaky-server-1-n/]
 
@@ -42,6 +46,8 @@ Aplikace obsahuje následující kód třetích stran ve formě zdrojových kód
 - licence: ---
 - použito bez úprav
 
+---
+
 ## Inštalácia
 
 - ....
@@ -57,4 +63,4 @@ Aplikace obsahuje následující kód třetích stran ve formě zdrojových kód
 
 ## Deployment
 
- - `php ../ftp-deployment/deployment deployment.ini`
+- `php ../ftp-deployment/deployment deployment.ini`
