@@ -34,7 +34,6 @@ forms:
 		MIN_LENGTH: 'Zadajte, prosím, aspoň %d znakou.'
 		MAX_LENGTH: 'Zadajte, prosím, maximálne %d znakou.'
 		LENGTH: 'Zadajte, prosím, hodnotu %d až %d znakou dlhú.'
-		#EMAIL: 'Zadajte, prosím, platnú e-mailovú adresu (napr. moj@mail.sk).'
 		URL: 'Zadajte, prosím, platnú URL.'
 		INTEGER: 'Zadajte, prosím, platné celé číslo.'
 		FLOAT: 'Zadajte, prosím, platné číslo.'

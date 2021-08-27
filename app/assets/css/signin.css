@@ -38,6 +38,9 @@ body {
 .form-signin label.required {
   font-weight: 600;
 }
+.form-signin .check-input {
+  margin-top: .8rem;
+}
 
 footer {
   position: absolute;

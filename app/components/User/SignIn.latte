@@ -1,0 +1,52 @@
+<div class="form-signin">
+  <h1 class="mb-3 text-center"> {_'SignInForm_h2'}</h1>
+
+  {form signInForm}
+
+    <ul class="error alert alert-danger text-center p-2" n:if="$form->hasErrors()">
+      <li n:foreach="$form->errors as $error">{$error}</li>
+    </ul>
+
+    <div class="form-group row">
+      <div class="col-sm-4 col-form-label align-top text-right">
+        <label n:name=email class="required">{_'SignInForm_email'}</label>
+      </div>
+      <div class="col-sm-8">
+        <input n:name=email class="form-control text"> 
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-4 col-form-label align-top text-right">
+        <label n:name=password class="required">{_'SignInForm_password'}</label>
+      </div>
+      <div class="col-sm-8">
+        <input n:name=password class="form-control text">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-4 col-form-label align-top text-right">
+        <label n:name=remember class="required">{_'SignInForm_remember'}</label>
+      </div>
+      <div class="col-sm-8 form-check">
+        <input n:name=remember class="check-input">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-12">
+        <input n:name=send class="btn btn-success btn-block" onclick="if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;">
+      </div>
+    </div>
+  {/form}
+
+  <div class="row">
+    <div class="col-6">
+      <a class="btn btn-secondary btn-sm" href="{plink Enroll:Step1}">{_'SignInForm_register'}</a>
+    </div>
+    <div class="col-6 text-right">
+      <a class="btn btn-secondary btn-sm" href="{plink Sign:ForgottenPassword}">{_'SignInForm_forgottenPassword'}</a>
+    </div>
+  </div>
+</div>

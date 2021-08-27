@@ -1,6 +1,7 @@
 services:
 
 	# Presenters
+	- App\Presenters\SignPresenter(%parameters%)
 	- App\Presenters\UserPresenter(%parameters%)
 	- App\Presenters\UserAclPresenter(%parameters%)
 
@@ -22,7 +23,7 @@ services:
 	- App\Forms\User\ForgottenPasswordFormFactory
 	- App\Forms\User\RegisterFormFactory
 #	- App\Forms\User\ResetPasswordFormFactory
-	- App\Forms\User\SignInFormFactory
+#	- App\Forms\User\SignInFormFactory
 	- App\Forms\User\UserFormRenderer	
 
 	authorizator: App\Model\AuthorizatorFactory::create(@Nette\Database\Context)

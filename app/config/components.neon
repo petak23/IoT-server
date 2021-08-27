@@ -5,9 +5,17 @@ parameters:
       name: 'Editovanie ACL'
       unique: TRUE
       fa_icon: 'user-shield'
+    signIn:
+      name: 'Formulár pre prihlásenie'
+      unique: false
+      fa_icon: 'log-in'
 #...
 
 services:
 # Component UserAcl
   - PeterVojtech\UserAcl\IAdminUserAcl
   - PeterVojtech\UserAcl\EditRoleFormFactory
+
+# Component SignIn
+  - PeterVojtech\User\ISignInControl
+  - PeterVojtech\User\SignInFormFactory

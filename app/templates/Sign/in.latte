@@ -1,17 +1,5 @@
 {layout '../@layoutEmpty.latte'}
+{block title}{_'SignInForm_h2'}{/block}
 
 {block content}
-<div class="form-signin">
-  <h1 n:block=title class="mb-3 text-center"> {_'SignInForm_h2'}</h1>
-
-  {control signInForm}
-
-  <div class="row">
-    <div class="col-6">
-      <a class="btn btn-secondary btn-sm" n:href="Enroll:Step1">{_'SignInForm_register'}</a>
-    </div>
-    <div class="col-6 text-right">
-      <a class="btn btn-secondary btn-sm" n:href="Sign:ForgottenPassword">{_'SignInForm_forgottenPassword'}</a>
-    </div>
-  </div>
-</div>
+{control signIn}

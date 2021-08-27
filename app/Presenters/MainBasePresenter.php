@@ -29,6 +29,8 @@ class MainBasePresenter extends Nette\Application\UI\Presenter {
   /** @var Language_support\LanguageMain @inject */
   public $texty_presentera;
 
+  public $links;
+
   /** @var string Skratka aktualneho jazyka 
    * @persistent */
   public $language = 'sk';

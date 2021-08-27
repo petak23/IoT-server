@@ -12,8 +12,19 @@ use Nette\Utils\Strings;
 use Nette\Utils\FileSystem;
 use Nette\Application\Responses\FileResponse;
 
-final class GalleryPresenter extends BasePresenter
-{
+
+/**
+ * Last change 27.08.2021
+ * 
+ * @github     Forked from petrbrouzda/RatatoskrIoT
+ * 
+ * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
+ * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @license
+ * @link       http://petak23.echo-msz.eu
+ * @version    1.0.0
+ */
+final class GalleryPresenter extends BasePresenter {
     use Nette\SmartObject;
     
     /** @var \App\Services\InventoryDataSource */
@@ -25,7 +36,6 @@ final class GalleryPresenter extends BasePresenter
     private $dataRetentionDays;
     private $appName;
     private $minYear;
-    private $links;
 
     /** @persistent */
     public $filterBlack = 1;

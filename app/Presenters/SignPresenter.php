@@ -11,6 +11,7 @@ use App\Services\Logger;
 use Latte;
 use Nette;
 use Nette\Application\UI\Form;
+use PeterVojtech;
 
 
 /**
@@ -30,13 +31,13 @@ class SignPresenter extends MainBasePresenter {
   /** @persistent */
 	public $backlink = '';
 
-  public $links;
-
   /** @var Model\PV_User @inject */
 	public $pv_user;
 
   /** @var Services\MailService @inject*/
   private $mailService;
+
+  protected $my_params;
 
   // -- Forms
   /** @var User\RegisterFormFactory @inject*/
@@ -46,11 +47,13 @@ class SignPresenter extends MainBasePresenter {
   /** @var User\ForgottenPasswordFormFactory @inject*/
 	public $forgottenPasswordForm;
   /** @var User\SignInFormFactory @inject*/
-	public $signInForm;
+	//public $signInForm;
 
-  public function __construct(Services\Config $config )
-  {
-    $this->links = $config->links;
+  use PeterVojtech\User\signInTrait;
+
+  public function __construct($parameters, Services\Config $config ) {
+    $this->links = $config->links;  // Definet in MainBasePresenter
+    $this->my_params = $parameters;
   }
 
   /** 
@@ -69,18 +72,15 @@ class SignPresenter extends MainBasePresenter {
     $this->template->links = $this->links;
   }
     
-	protected function createComponentSignInForm(): Form {
+	/*protected function createComponentSignInForm(): Form {
     $form = $this->signInForm->create($this->language, $this->email);
 		$form->onSuccess[] = function ($form) { 
-			// https://pla.nette.org/cs/jak-po-odeslani-formulare-zobrazit-stejnou-stranku
-      $this->restoreRequest($this->backlink);
-
-      $this->redirect('Inventory:user');
-			$this->flashOut(!count($form->errors), $id ? ['Inventory:user'] : "Sign:in", 'Vitajte!', 'Došlo k chybe pri prihlásení. Skúste neskôr znovu...');
+      $this->restoreRequest($this->backlink); // https://pla.nette.org/cs/jak-po-odeslani-formulare-zobrazit-stejnou-stranku
+			$this->flashRedirect('Inventory:user', $this->texty_presentera->translate('SignInForm_login_ok'), 'success');
 		};
 
     return $form;
-  }
+  }*/
 
   public function actionOut(): void {
     $response = $this->getHttpResponse();

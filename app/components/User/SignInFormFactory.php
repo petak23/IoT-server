@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Forms\User;
+namespace PeterVojtech\User;
 
-use App\Exceptions;
+use App;
 use Language_support;
 use Nette\Application\UI\Form;
 use Nette\Security;
 
 /**
  * Sign in form
- * Last change 25.08.2021
+ * Last change 27.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.1.3
+ * @version    1.1.4
  */
 class SignInFormFactory {
   /** @var User */
@@ -47,7 +47,7 @@ class SignInFormFactory {
    * @return Form */
   public function create(string $language, string $email = null): Form {
 		$form = new Form;
-    $form->setRenderer(new UserFormRenderer); // https://github.com/tomaj/nette-bootstrap-form
+    $form->setRenderer(new App\Forms\User\UserFormRenderer); // https://github.com/tomaj/nette-bootstrap-form
 
     $form->addProtection();
     $this->texts->setLanguage($language);
@@ -79,8 +79,9 @@ class SignInFormFactory {
       $this->user->login($values->email, $values->password);
     } catch (Security\AuthenticationException $e) {
       $form->addError(sprintf($this->texts->translate("SignInForm_main_error"), sprintf($this->texts->translate("AuthenticationException_".$e->getCode()), $e->getMessage())));
-    } catch ( Exceptions\UserNotEnrolledException $e ) {
+    } catch ( App\Exceptions\UserNotEnrolledException $e ) {
       $this->addError($this->texts->translate("UserNotEnrolledException"));
     }
   }
+
 }
