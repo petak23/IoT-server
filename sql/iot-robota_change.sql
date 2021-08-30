@@ -139,11 +139,7 @@ UPDATE `user_roles` SET `color` = '7ce300' WHERE `id` = '3';
 UPDATE `user_roles` SET `color` = 'ff6a6a' WHERE `id` = '4';
 */
 
-/* ALTER TABLE `rausers`
-ADD `new_password_key` varchar(50) COLLATE 'utf8_bin' NULL COMMENT 'Kľúč nového hesla',
-ADD `new_password_requested` datetime NULL COMMENT 'Čas požiadavky na nové heslo' AFTER `new_password_key`; */
-
-DROP TABLE IF EXISTS `lang`;
+/*DROP TABLE IF EXISTS `lang`;
 CREATE TABLE `lang` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '[A]Index',
   `acronym` varchar(3) COLLATE utf8_bin NOT NULL DEFAULT 'sk' COMMENT 'Skratka jazyka',
@@ -155,4 +151,13 @@ CREATE TABLE `lang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Jazyky pre web';
 
 INSERT INTO `lang` (`id`, `acronym`, `name`, `name_en`, `accepted`) VALUES
-(1,	'sk',	'Slovenčina',	'Slovak',	1);
+(1,	'sk',	'Slovenčina',	'Slovak',	1);*/
+
+ALTER TABLE `rausers`
+ADD `new_password_key` varchar(100) COLLATE 'utf8_bin' NULL COMMENT 'Kľúč nového hesla',
+ADD `new_password_requested` datetime NULL COMMENT 'Čas požiadavky na nové heslo' AFTER `new_password_key`,
+COMMENT='Hlavné údaje užívateľa';
+
+
+ALTER TABLE `rausers`
+RENAME TO `user_main`;

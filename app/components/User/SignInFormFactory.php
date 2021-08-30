@@ -11,13 +11,13 @@ use Nette\Security;
 
 /**
  * Sign in form
- * Last change 27.08.2021
+ * Last change 30.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.1.4
+ * @version    1.1.5
  */
 class SignInFormFactory {
   /** @var User */
@@ -53,7 +53,7 @@ class SignInFormFactory {
     $this->texts->setLanguage($language);
     $form->setTranslator($this->texts);
 		$em = $form->addEmail('email', 'SignInForm_email')
-                ->setHtmlAttribute('autofocus', 'autofocus')
+                //->setHtmlAttribute('autofocus', 'autofocus')
                 ->addRule(Form::EMAIL, 'SignInForm_email_ar')
                 ->setRequired('SignInForm_email_sr');
     if ($email !== null) $em->setDefaultValue($email);
@@ -64,9 +64,9 @@ class SignInFormFactory {
     
     $form->addCheckbox('remember', 'SignInForm_remember');
     
-    $form->addSubmit('send', 'SignInForm_login')
-        ->setHtmlAttribute('class', 'btn btn-success btn-block')
-        ->setHtmlAttribute('onclick', 'if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;');
+    $form->addSubmit('send', 'SignInForm_login');
+        //->setHtmlAttribute('class', 'btn btn-success btn-block')
+        //->setHtmlAttribute('onclick', 'if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;');
 
     $form->onSuccess[] = [$this, 'signInFormSucceeded'];
         

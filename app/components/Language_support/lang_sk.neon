@@ -6,6 +6,8 @@
 #
 # Last change 24.08.2021
 #
+
+# Nette forms...
 EQUAL: 'Zadajte %s.'
 NOT_EQUAL: 'Táto hodnota by nemala byť %s.'
 FILLED: 'Toto pole je povinné.'
@@ -157,7 +159,7 @@ SignInForm_email_ph: '@'
 SignInForm_email_ar: 'Zadajte, prosím, platnú e-mailovú adresu (napr. moj@mail.sk).'
 SignInForm_email_sr: 'Uveďte, prosím, užívateľský email.'
 SignInForm_password: 'Heslo:'
-SignInForm_password_min_lenght: 'Heslo musí mať aspoň %d znaky'
+SignInForm_password_min_lenght: 'Heslo musí mať aspoň %d znaky...'
 SignInForm_password_req: 'Uveďte, prosím, heslo.'
 SignInForm_remember: ' Pamätať si ma'
 SignInForm_login: 'Prihlásiť sa...'
@@ -180,6 +182,8 @@ ForgottenPasswordForm_txt: 'Zadajte emailovú adresu, ktorá je pripojená k Vá
 ForgottenPasswordForm_send: 'Odošli požiadavku'
 ForgottenPasswordForm_user_not_found: 'Došlo k chybe. K danej emailovej adrese %s neexzistuje užívateľ!'
 ForgottenPasswordForm_email_ok: 'Na Vami zadanú emailovú adresu bola odoslaná správa pre resetovanie Vášho hesla. Ďalej prosím postupujte podľa tejto správy!'
+ForgottenPasswordForm_email_err: 'Ospravedlňujeme sa, ale došlo k chybe a e-mail nebol zaslaný. Skúste to neskôr znovu. Možná príčina je: %s'
+ForgottenPasswordForm_email_err1: 'Pre zadanú e-mailovú adresu: %s neexzistuje účet. Skúste, prosím, skontrolovať správnosť zadania e-mailu.'
 
 ForgottenPasswordForm_reset_pass_hesla_err: 'Nové heslá sa nezhodujú!'
 ForgottenPasswordForm_reset_pass_ok: 'Vaše heslo bolo v úspešne zmenené. Môžete ho použiť pri prihlásení sa...'

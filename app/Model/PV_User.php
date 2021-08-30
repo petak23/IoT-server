@@ -15,20 +15,20 @@ use Nette\Utils\Random;
 /**
  * Model, ktory sa stara o tabulku rausers
  * 
- * Posledna zmena 19.08.2021
+ * Posledna zmena 30.08.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.4
+ * @version    1.0.5
  */
 class PV_User {
 
   use Nette\SmartObject;
 
   const
-    TABLE = 'rausers';
+    TABLE = 'user_main';
 
   private Nette\Database\Explorer $database;
 
@@ -112,7 +112,6 @@ class PV_User {
     return $this->dbtable()->insert([
         'username'            => $values->email,
         'phash'               => $hash,
-        //'role'                => 'user',
         'id_user_roles'       => 2, // Registrácia cez web
         'email'               => $values->email,
         'prefix'              => $prefix,

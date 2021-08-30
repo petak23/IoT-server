@@ -25,28 +25,28 @@ services:
 	router: App\Router\RouterFactory::createRouter
 	authenticator: App\Services\PVAuthenticator
 
-forms:
-	messages:
-		EQUAL: 'Zadajte %s.'
-		NOT_EQUAL: 'Táto hodnota by nemala byť %s.'
-		FILLED: 'Toto pole je povinné.'
-		BLANK: 'Toto pole by malo byť prázdne.'
-		MIN_LENGTH: 'Zadajte, prosím, aspoň %d znakou.'
-		MAX_LENGTH: 'Zadajte, prosím, maximálne %d znakou.'
-		LENGTH: 'Zadajte, prosím, hodnotu %d až %d znakou dlhú.'
-		URL: 'Zadajte, prosím, platnú URL.'
-		INTEGER: 'Zadajte, prosím, platné celé číslo.'
-		FLOAT: 'Zadajte, prosím, platné číslo.'
-		MIN: 'Zadajte, prosím, hodnotu väčšiu alebo rovnú %d.'
-		MAX: 'Zadajte, prosím, hodnotu menšiu alebo rovnú %d.'
-		RANGE: 'Zadajte, prosím, hodnotu medzi %d a %d.'
-		MAX_FILE_SIZE: 'Veľkosť nahraného súboru môže byť najviac %d bytov.'
-		MAX_POST_SIZE: 'Nahrané dáta prekračujú limit %d bytov.'
-		MIME_TYPE: 'Nahraný súbor nie je v očakávanom formáte.'
-		IMAGE: 'Nahraný súbor musí býť obrázok vo formáte JPEG, GIF, PNG alebo WebP.'
-		Nette\Forms\Controls\SelectBox::VALID: 'Vyberte, prosím, platnú možnosť.'
-		Nette\Forms\Controls\UploadControl::VALID: 'Pri nahrávaní súboru došlo k chybe.'
-		Nette\Forms\Controls\CsrfProtection::PROTECTION: 'Vaša relácia vypršala. Vráťte sa na domovskú stránku a skúste to znovu.'
+#forms:
+	#messages:
+	#	EQUAL: 'Zadajte %s.'
+	#	NOT_EQUAL: 'Táto hodnota by nemala byť %s.'
+	#	FILLED: 'Toto pole je povinné.'
+	#	BLANK: 'Toto pole by malo byť prázdne.'
+	#	MIN_LENGTH: 'Zadajte, prosím, aspoň %d znakou.'
+	#	MAX_LENGTH: 'Zadajte, prosím, maximálne %d znakou.'
+	#	LENGTH: 'Zadajte, prosím, hodnotu %d až %d znakou dlhú.'
+	#	URL: 'Zadajte, prosím, platnú URL.'
+	#	INTEGER: 'Zadajte, prosím, platné celé číslo.'
+	#	FLOAT: 'Zadajte, prosím, platné číslo.'
+	#	MIN: 'Zadajte, prosím, hodnotu väčšiu alebo rovnú %d.'
+	#	MAX: 'Zadajte, prosím, hodnotu menšiu alebo rovnú %d.'
+	#	RANGE: 'Zadajte, prosím, hodnotu medzi %d a %d.'
+	#	MAX_FILE_SIZE: 'Veľkosť nahraného súboru môže byť najviac %d bytov.'
+	#	MAX_POST_SIZE: 'Nahrané dáta prekračujú limit %d bytov.'
+	#	MIME_TYPE: 'Nahraný súbor nie je v očakávanom formáte.'
+	#	IMAGE: 'Nahraný súbor musí býť obrázok vo formáte JPEG, GIF, PNG alebo WebP.'
+	#	Nette\Forms\Controls\SelectBox::VALID: 'Vyberte, prosím, platnú možnosť.'
+	#	Nette\Forms\Controls\UploadControl::VALID: 'Pri nahrávaní súboru došlo k chybe.'
+	#	Nette\Forms\Controls\CsrfProtection::PROTECTION: 'Vaša relácia vypršala. Vráťte sa na domovskú stránku a skúste to znovu.'
 
 http:
 	# ovlivňuje hlavičku X-Frame-Options

@@ -72,16 +72,6 @@ class SignPresenter extends MainBasePresenter {
     $this->template->links = $this->links;
   }
     
-	/*protected function createComponentSignInForm(): Form {
-    $form = $this->signInForm->create($this->language, $this->email);
-		$form->onSuccess[] = function ($form) { 
-      $this->restoreRequest($this->backlink); // https://pla.nette.org/cs/jak-po-odeslani-formulare-zobrazit-stejnou-stranku
-			$this->flashRedirect('Inventory:user', $this->texty_presentera->translate('SignInForm_login_ok'), 'success');
-		};
-
-    return $form;
-  }*/
-
   public function actionOut(): void {
     $response = $this->getHttpResponse();
     $response->setHeader('Cache-Control', 'no-cache');
@@ -105,53 +95,44 @@ class SignPresenter extends MainBasePresenter {
 	 * @return Nette\Application\UI\Form */
 	protected function createComponentForgottenPasswordForm() {
     $form = $this->forgottenPasswordForm->create($this->language);
-    $form['send']->onClick[] = [$this, 'forgotPasswordFormSubmitted'];
+    $form['send']->onClick[] = [$this, 'forgotPasswordFormSucceeded'];
 		return $form;
 	}
 
   /** 
-   * Spracovanie formulara zabudnuteho hesla
-   * @param Nette\Application\UI\Form $button Data formulara */
-  public function forgotPasswordFormSubmitted($button) {
-		//Inicializacia
-    $values = $button->getForm()->getValues();                 //Nacitanie hodnot formulara
-    $clen = $this->pv_user->getUserBy(['email'=>$values->email]);
-    $tp = $this->texty_presentera;
+   * Spracovanie formulara zabudnuteho hesla */
+  public function forgotPasswordFormSucceeded(Form $form, \stdClass $values): void {
+    $fpuser = $this->pv_user->getUserBy(['email'=>$values->email]);
+    $tp = $this->texty_presentera; // Pre skrátenie
     $new_password_requested = StrFTime("%Y-%m-%d %H:%M:%S", Time());
     $new_password_key = Nette\Utils\Random::generate(25);
-    if (isset($clen->email) && $clen->email == $values->email) { //Taky clen existuje
+    if (isset($fpuser->email) && $fpuser->email == $values->email) { //Uzivatel existuje
       $templ = new Latte\Engine;
       $params = [
-        "site_name"             => $this->nazov_stranky,
-        "nadpis"                => sprintf($tp->translate('email_reset_nadpis'),$this->nazov_stranky),
+        //"site_name"             => $this->nazov_stranky,
+        "nadpis"                => sprintf($tp->translate('email_reset_nadpis'), 'iot...'),//$this->nazov_stranky),
         "email_reset_txt"       => $tp->translate('email_reset_txt'),
         "email_nefunkcny_odkaz" => $tp->translate('email_nefunkcny_odkaz'),
         "email_pozdrav"         => $tp->translate('email_pozdrav'),
         "nazov"                 => $tp->translate('forgot_pass'),
-        "odkaz" 		            => 'http://'.$this->nazov_stranky.$this->link("User:resetPassword", $clen->id, $new_password_key),
+        "odkaz" 		            => $this->link("//User:resetPassword", $fpuser->id, $new_password_key),
       ];
-      /*$mail = new Message;
-      $mail->setFrom($this->nazov_stranky.' <'.$this->clen->email.'>')
-            ->addTo($values->email)->setSubject($tp->translate('forgot_pass'))
-            ->setHtmlBody($templ->renderToString(__DIR__ . '/../templates/User/forgot_password-html.latte', $params));
       try {
-        $sendmail = new SendmailMailer;
-        $sendmail->send($mail);
-        $this->user_main->find($clen->id)->update(['new_password_key'=>$new_password_key, 'new_password_requested'=>$new_password_requested]);
-        $this->flashMessage($tp->translate('forgot_pass_email_ok'), 'success');
+        $this->mailService->sendMail( 
+          $values->email,
+          $tp->translate('forgot_pass'),
+          $templ->renderToString(__DIR__ . '/templates/User/forgot_password-html.latte', $params)
+        );
+        $this->pv_user->save($fpuser->id, [
+          'new_password_key' => $new_password_key,
+          'new_password_requested' => $new_password_requested,
+        ]);
+        $this->flashRedirect('Sign:in', $tp->translate('ForgottenPasswordForm_email_ok'), 'success');
       } catch (Exception $e) {
-        $this->flashMessage($tp->translate('send_email_err').$e->getMessage(), 'danger,n');
-      }*/
-
-      $this->mailService->sendMail( 
-        $values->email,
-        $tp->translate('forgot_pass'),
-        $templ->renderToString(__DIR__ . '/templates/User/forgot_password-html.latte', $params)
-      );
-
-      $this->flashRedirect('Sign:in', $tp->translate('forgot_pass_email_ok'), 'success');
-    } else {													//Taky uzivatel neexzistuje
-      $this->flashMessage(sprintf($tp->translate('forgot_pass_user_err'),$values->email), 'danger');
+        $this->flashMessage(sprintf($tp->translate('ForgottenPasswordForm_email_err'), $e->getMessage()), 'danger');  
+      }
+    } else {													//Uzivatel neexzistuje
+      $this->flashMessage(sprintf($tp->translate('ForgottenPasswordForm_email_err1'),$values->email), 'danger');
     }
   }
 }
