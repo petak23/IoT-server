@@ -50,15 +50,13 @@ class ForgottenPasswordFormFactory {
 		return $form;
 	}
   
-  /** Vlastná validácia pre formular
-   * @param Nette\Application\UI\Form $button */
-  public function validateForm($button) {
-    $values = $button->getForm()->getValues();
-    if ($button->isSubmitted()->name == 'send') {
-      // Over, ci dany email existuje.
-      if ( !$this->pv_user->testEmail($values->email) ) {
-        $button->addError(sprintf($this->texts->translate('ForgottenPasswordForm_user_not_found'), $values->email));
-      }
-    } 
+  /** 
+   * Vlastná validácia pre formular */
+  public function validateForm(Form $form): void {
+    $values = $form->getValues();
+    // Over, ci dany email existuje.
+    if ( !$this->pv_user->testEmail($values->email) ) {
+      $form->addError(sprintf($this->texts->translate('ForgottenPasswordForm_user_not_found'), $values->email));
+    }
   }
 }
