@@ -9,13 +9,13 @@ use Nette\Security\User;
 
 /**
  * Registracny formular
- * Posledna zmena 26.08.2021
+ * Posledna zmena 06.09.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.2
+ * @version    1.0.3
  */
 class RegisterFormFactory {
   /** @var Security\User */
@@ -37,9 +37,8 @@ class RegisterFormFactory {
     $this->pv_user = $pv_user;
 	}
   
-  /** Prihlasovaci formular
-   * @return Nette\Application\UI\Form */
-  public function create($link_forgot, string $language)  {
+  /** Formular */
+  public function create(string $link_forgot, string $language): Form   {
     $this->link_forgot = $link_forgot;
     $this->texts->setLanguage($language);
 

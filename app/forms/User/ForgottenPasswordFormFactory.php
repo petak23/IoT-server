@@ -9,27 +9,27 @@ use Nette\Security;
 
 /**
  * Formular pre vlozenie emailu v pripade zabudnuteho hesla
- * Posledna zmena 28.07.2021
+ * Posledna zmena 03.09.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
 class ForgottenPasswordFormFactory {
   /** @var Language_support\LanguageMain */
   private $texts;
   /** @var Model\PV_User */
-  public $pv_user;
+  public $user_main;
   /** @var Nette\Security\User */
   public $user;
 
   /** @param Security\User $user   */
-  public function __construct(Security\User $user, Language_support\LanguageMain $language_main, Model\PV_User $pv_user) {
+  public function __construct(Security\User $user, Language_support\LanguageMain $language_main, Model\PV_User $user_main) {
     $this->user = $user;
     $this->texts = $language_main;
-    $this->pv_user = $pv_user;
+    $this->user_main = $user_main;
 	}
 
   /** @return Form */
@@ -50,15 +50,13 @@ class ForgottenPasswordFormFactory {
 		return $form;
 	}
   
-  /** Vlastná validácia pre formular
-   * @param Nette\Application\UI\Form $button */
-  public function validateForm($button) {
-    $values = $button->getForm()->getValues();
-    if ($button->isSubmitted()->name == 'send') {
-      // Over, ci dany email existuje.
-      if ( !$this->pv_user->testEmail($values->email) ) {
-        $button->addError(sprintf($this->texts->translate('ForgottenPasswordForm_user_not_found'), $values->email));
-      }
-    } 
+  /** 
+   * Vlastná validácia pre formular */
+  public function validateForm(Form $form): void {
+    $values = $form->getValues();
+    // Over, ci dany email existuje.
+    if ( !$this->user_main->testEmail($values->email) ) {
+      $form->addError(sprintf($this->texts->translate('ForgottenPasswordForm_user_not_found'), $values->email));
+    }
   }
 }

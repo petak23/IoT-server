@@ -20,7 +20,7 @@ use \App\Services\InventoryDataSource;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 19.07.2021
+ * @last_edited petak23<petak23@gmail.com> 03.09.2021
  */
 final class InventoryPresenter extends BaseAdminPresenter
 {
@@ -38,6 +38,8 @@ final class InventoryPresenter extends BaseAdminPresenter
   // Database tables	
   /** @var Model\PV_Units @inject */
 	public $units;
+  /** @var Model\PV_Devices @inject */
+	public $devices;
 
   public function __construct( InventoryDataSource $datasource,
                               \App\Services\Config $config )
@@ -59,7 +61,8 @@ final class InventoryPresenter extends BaseAdminPresenter
   public function renderHome()
   {
     $this->populateTemplate( 1 );
-    $this->template->devices = $this->datasource->getDevicesUser( $this->getUser()->id );
+    $this->template->devices = $this->devices->getDevicesUser( $this->getUser()->id );
+    $this->template->user_id = $this->getUser()->id;
   }
 
   public function renderUnits() {
