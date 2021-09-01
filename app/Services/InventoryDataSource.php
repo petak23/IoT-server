@@ -15,7 +15,7 @@ use \App\Model\ViewItem;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 19.07.2021
+ * @last_edited petak23<petak23@gmail.com> 01.09.2021
  */
 class InventoryDataSource 
 {
@@ -272,7 +272,7 @@ class InventoryDataSource
 
     public function createUser( $values ) 
     {
-        return $this->database->table('rausers')->insert($values);
+        return $this->database->table('user_main')->insert($values);
     }
 
     public function getViewSources()
@@ -348,7 +348,7 @@ class InventoryDataSource
     public function deleteUser( $id )
     {
         $this->database->query('
-            delete from rausers where id = ? 
+            delete from user_main where id = ? 
         ', $id);
     }
 
@@ -509,18 +509,10 @@ class InventoryDataSource
 
     public function getUser( $id )
     {
-        return $this->database->table('rausers')
+        return $this->database->table('user_main')
                         ->where('id', $id)
                         ->fetch();
     }
-
-    /*public function updateUser( $id, $values )
-    {
-        $this->database->query('UPDATE rausers SET ', [ 
-            'email' => $values['email'],
-            'monitoring_token' => $values['monitoring_token']
-        ] , 'WHERE id = ? ', $id);
-    }*/
 
     /**
      * Vraci ID zaznamu NEBO -1, pokud pro dane zarizeni a verzi uz existuje

@@ -23,7 +23,7 @@ services:
 	- App\Services\InventoryDataSource
 	security.passwords: Nette\Security\Passwords(::PASSWORD_BCRYPT, [cost: 11])		# zde se nastavuji pozadovane parametry hesla https://doc.nette.org/cs/3.0/passwords
 	router: App\Router\RouterFactory::createRouter
-	authenticator: App\Services\PVAuthenticator
+	authenticator: App\Services\Authenticator
 
 #forms:
 	#messages:

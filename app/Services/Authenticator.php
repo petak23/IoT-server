@@ -13,7 +13,7 @@ use App\Exceptions\UserNotEnrolledException;
 
 /**
  * Autenticator
- * Last change 24.08.2021
+ * Last change 01.09.2021
  * 
  * @github     Forked from petrbrouzda/RatatoskrIoT
  * 
@@ -21,9 +21,9 @@ use App\Exceptions\UserNotEnrolledException;
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
-class PVAuthenticator implements Security\Authenticator {
+class Authenticator implements Security\Authenticator {
   private $passwords;
   private $request;
 
@@ -42,7 +42,7 @@ class PVAuthenticator implements Security\Authenticator {
 
   private function badPasswordAction( $id, $badPwdCount, $lockoutTime, $ip, $browser ) {
     $this->pv_user->save( $id, [
-        'id_rauser_state' => 91,
+        'id_user_state' => 91,
         'bad_pwds_count' => $badPwdCount,
         'locked_out_until' => $lockoutTime,
         'last_error_time' => new DateTime(),
@@ -53,7 +53,7 @@ class PVAuthenticator implements Security\Authenticator {
 
   private function loginOkAction( $userData, $ip, $browser ) {
     $this->pv_user->save( $userData->id, [
-        'id_rauser_state' => 10,
+        'id_user_state' => 10,
         'bad_pwds_count' => 0,
         'cur_login_time' => new DateTime(),
         'cur_login_ip' => $ip,
@@ -87,20 +87,20 @@ class PVAuthenticator implements Security\Authenticator {
       Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: nenajdeny uzivatel s emailem: {$email}, '{$ua}'" ); 
 			throw new Security\AuthenticationException('', 1);
     }
-    if( $userData->id_rauser_state == 1 ) {
+    if( $userData->id_user_state == 1 ) {
       Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$email} state=1 " ); 
       throw new UserNotEnrolledException('');
-    } else if( $userData->id_rauser_state == 90 ) {
+    } else if( $userData->id_user_state == 90 ) {
       Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$email} state=90, '{$ua}'" ); 
       throw new Security\AuthenticationException('', 5);
-    } else if( $userData->id_rauser_state == 91 ) {
+    } else if( $userData->id_user_state == 91 ) {
       $lockoutTime = (DateTime::from( $userData->locked_out_until ))->getTimestamp();
       if( $lockoutTime > time() ) {
         $rest = $lockoutTime - time();
         Logger::log( self::NAME, Logger::ERROR , "[{$ip}] Login: {$email} state=91 for {$rest} sec; '{$ua}'" ); 
         throw new Security\AuthenticationException((string)$rest, 6);
       }
-    } else if( $userData->id_rauser_state == 10 ) {
+    } else if( $userData->id_user_state == 10 ) {
       // OK, korektni stav
     }
 
