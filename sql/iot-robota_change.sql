@@ -161,3 +161,9 @@ COMMENT='Hlavné údaje užívateľa';
 
 ALTER TABLE `rausers`
 RENAME TO `user_main`;
+
+ALTER TABLE `user_main`
+CHANGE `id_rauser_state` `id_user_state` int(11) NOT NULL DEFAULT '10' AFTER `prefix`;
+
+ALTER TABLE `rauser_state`
+RENAME TO `user_state`;

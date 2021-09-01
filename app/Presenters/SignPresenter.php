@@ -16,13 +16,13 @@ use PeterVojtech;
 
 /**
  * Sign in form
- * Last change 26.08.2021
+ * Last change 01.09.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 class SignPresenter extends MainBasePresenter {
   
@@ -34,7 +34,7 @@ class SignPresenter extends MainBasePresenter {
   /** @var Model\PV_User @inject */
 	public $pv_user;
 
-  /** @var Services\MailService @inject*/
+  /** @var Services\MailService */
   private $mailService;
 
   protected $my_params;
@@ -42,18 +42,20 @@ class SignPresenter extends MainBasePresenter {
   // -- Forms
   /** @var User\RegisterFormFactory @inject*/
 	public $registerForm;
-  ///** @var User\ResetPasswordFormFactory @inject*/
-	//public $resetPasswordForm;
+  /** @var User\ResetPasswordFormFactory @inject*/
+	public $resetPasswordForm;
   /** @var User\ForgottenPasswordFormFactory @inject*/
 	public $forgottenPasswordForm;
-  /** @var User\SignInFormFactory @inject*/
-	//public $signInForm;
 
   use PeterVojtech\User\signInTrait;
 
-  public function __construct($parameters, Services\Config $config ) {
+  public function __construct($parameters,
+                              Services\Config $config,
+                              Services\MailService $mailService
+                              ) {
     $this->links = $config->links;  // Definet in MainBasePresenter
     $this->my_params = $parameters;
+    $this->mailService = $mailService;
   }
 
   /** 
@@ -109,30 +111,46 @@ class SignPresenter extends MainBasePresenter {
     if (isset($fpuser->email) && $fpuser->email == $values->email) { //Uzivatel existuje
       $templ = new Latte\Engine;
       $params = [
-        //"site_name"             => $this->nazov_stranky,
-        "nadpis"                => sprintf($tp->translate('email_reset_nadpis'), 'iot...'),//$this->nazov_stranky),
-        "email_reset_txt"       => $tp->translate('email_reset_txt'),
-        "email_nefunkcny_odkaz" => $tp->translate('email_nefunkcny_odkaz'),
-        "email_pozdrav"         => $tp->translate('email_pozdrav'),
-        "nazov"                 => $tp->translate('forgot_pass'),
-        "odkaz" 		            => $this->link("//User:resetPassword", $fpuser->id, $new_password_key),
+        "site_name"  => $this->site_name,
+        "title"      => sprintf($tp->translate('email_reset_title'), $this->site_name),
+        "first_txt"  => $tp->translate('email_reset_txt'),
+        "second_txt" => $tp->translate('email_nefunkcny_odkaz'),
+        "greeting"   => $tp->translate('email_pozdrav'),
+        "link" 		   => $this->link("//Sign:resetPassword", $fpuser->id, $new_password_key),
       ];
       try {
-        $this->mailService->sendMail( 
+        $this->mailService->sendMail2( 
           $values->email,
-          $tp->translate('forgot_pass'),
-          $templ->renderToString(__DIR__ . '/templates/User/forgot_password-html.latte', $params)
-        );
+          __DIR__ . '/../templates/Sign/forgot_password-html.latte', 
+          $params );
         $this->pv_user->save($fpuser->id, [
           'new_password_key' => $new_password_key,
           'new_password_requested' => $new_password_requested,
         ]);
         $this->flashRedirect('Sign:in', $tp->translate('ForgottenPasswordForm_email_ok'), 'success');
-      } catch (Exception $e) {
+      } catch (Services\SendException $e) {
         $this->flashMessage(sprintf($tp->translate('ForgottenPasswordForm_email_err'), $e->getMessage()), 'danger');  
       }
     } else {													//Uzivatel neexzistuje
       $this->flashMessage(sprintf($tp->translate('ForgottenPasswordForm_email_err1'),$values->email), 'danger');
     }
+  }
+
+  /** 
+   * Akcia pre reset hesla pri zabudnutom hesle 
+   * @param int $id Id uzivatela pre reset hesla
+   * @param string $new_password_key Kontrolny retazec pre reset hesla */
+  public function actionResetPassword(int $id, string $new_password_key): void {
+    /*if (!isset($id) OR !isset($new_password_key)) {
+      $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err1'), 'danger');
+    } else {
+      $user_main_data = $this->user_main->find($id);
+      if ($new_password_key == $user_main_data->new_password_key){ 
+        $this->template->email = sprintf($this->texty_presentera->translate('reset_pass_email'), $user_main_data->email);
+        $this["resetPasswordForm"]->setDefaults(["id"=>$id]); //Nastav vychodzie hodnoty
+      } else { 
+        $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err'.($user_main_data->new_password_key == NULL ? '2' : '3')), 'danger');
+      }
+    }*/
   }
 }

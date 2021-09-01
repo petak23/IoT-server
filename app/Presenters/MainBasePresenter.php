@@ -12,15 +12,13 @@ use Language_support;
 /**
  * Zakladny presenter pre vsetky presentery
  * 
- * Posledna zmena(last change): 28.07.2021
- *
- *	Modul: FRONT
+ * Posledna zmena(last change): 31.08.2021
  *
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link      http://petak23.echo-msz.eu
- * @version 1.0.2
+ * @version 1.0.3
  */
 class MainBasePresenter extends Nette\Application\UI\Presenter {
 
@@ -31,15 +29,25 @@ class MainBasePresenter extends Nette\Application\UI\Presenter {
 
   public $links;
 
+  /** @var string kmenovy nazov stranky pre rozne ucely typu www.neco.sk*/
+  public $site_name;
+
   /** @var string Skratka aktualneho jazyka 
    * @persistent */
   public $language = 'sk';
+
+  /** @var Nette\Http\Request @inject*/
+  public $httpRequest;
 
   protected function startup() {
     parent::startup();
 
     //Nastavenie textov podla jazyka 
     $this->texty_presentera->setLanguage($this->language);
+
+    $httpR = $this->httpRequest->getUrl();
+    $this->site_name = $httpR->host.$httpR->scriptPath; // Nazov stranky v tvare www.nieco.sk
+    $this->site_name = substr($this->site_name, 0, strlen($this->site_name)-1);
 
     // Nacitanie uzivatela
     $user = $this->getUser(); 

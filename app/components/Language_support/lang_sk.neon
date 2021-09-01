@@ -317,7 +317,7 @@ email_change_mail_txt: 'Na stránke %s ste požiadali o zmenu e-mailovej adresy.
 email_change_mail_txt1: 'Ak ste o zmenu nepožiadali, tak nerobte nič len tento e-mail zmažte. Požiadavka sa zo systému zmaže sama po istom čase.'
 email_activate_nadpis: 'Aktivácia účtu po registrácii na %s !'
 email_activate_txt: 'Ďakujeme, že ste sa zaregistrovali na našej stránke. Pre ukončenie registrácie je potrebné Váš účet aktivovať. Aktiváciu vykonáte kliknutím na nasledujúci odkaz:'
-email_reset_nadpis: 'Reset hesla na %s !'
+email_reset_title: 'Reset hesla na stránke %s !'
 email_reset_txt: ' Na našej stránke ste požiadali o resetovanie hesla. Pre uskutčnenie tejto akcie je potrebné kliknúť na nasledujúci odkaz:'
 delete_user_user: 'užívateľa'
 delete_user_ok: 'Užívateľ s emailom %s bol zmazaný!'

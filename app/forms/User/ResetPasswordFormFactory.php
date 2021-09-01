@@ -49,14 +49,14 @@ class ResetPasswordFormFactory {
 //    $form->addProtection();
     $form->addHidden('id');
     $form->addPassword('new_heslo', 'ResetPasswordForm_new_heslo')
-         ->setHtmlAttribute('autofocus', 'autofocus')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
-				 ->setRequired('ResetPasswordForm_new_heslo_sr');
+          ->setHtmlAttribute('autofocus', 'autofocus')
+          ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
+          ->setRequired('ResetPasswordForm_new_heslo_sr');
 		$form->addPassword('new_heslo2', 'ResetPasswordForm_new_heslo2')
-         ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
-         ->addRule(Form::EQUAL, 'ResetPasswordForm_new_heslo2_ar', $form['new_heslo'])
-				 ->setRequired('ResetPasswordForm_new_heslo2_sr')
-         ->setOmitted();
+          ->setHtmlAttribute('size', 0)->setHtmlAttribute('maxlength', 100)
+          ->addRule(Form::EQUAL, 'ResetPasswordForm_new_heslo2_ar', $form['new_heslo'])
+          ->setRequired('ResetPasswordForm_new_heslo2_sr')
+          ->setOmitted();
 		$form->addSubmit('uloz', 'base_save');
     $form->onValidate[] = [$this, 'validateResetForm'];
     $form->onSuccess[] = [$this, 'userPasswordResetFormSubmitted'];
