@@ -143,7 +143,7 @@ class SignPresenter extends MainBasePresenter {
    * @param int $id Id uzivatela pre reset hesla
    * @param string $new_password_key Kontrolny retazec pre reset hesla */
   public function actionResetPassword(int $id, string $new_password_key): void {
-    /*if (!isset($id) OR !isset($new_password_key)) {
+    if (!isset($id) OR !isset($new_password_key)) {
       $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err1'), 'danger');
     } else {
       $user_main_data = $this->user_main->find($id);
@@ -153,6 +153,15 @@ class SignPresenter extends MainBasePresenter {
       } else { 
         $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err'.($user_main_data->new_password_key == NULL ? '2' : '3')), 'danger');
       }
-    }*/
+    }
   }
+
+   /**
+	 * Reset password user form component factory.
+	 * @return Nette\Application\UI\Form */
+	protected function createComponentResetPasswordForm() {
+    $form = $this->resetPasswordForm->create($this->language);
+    //$form['send']->onClick[] = [$this, 'resetPasswordFormSucceeded'];
+		return $form;
+	}
 }
