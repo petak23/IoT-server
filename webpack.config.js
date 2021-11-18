@@ -15,10 +15,11 @@ const VUE_LOADER_VERSION = require("vue-loader/package.json").version;
 // Webpack plugins
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const {VueLoaderPlugin} = require("vue-loader");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-//const WebpackAssetsManifest = require('webpack-assets-manifest');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+
+
 
 // Webpack abilities
 const WEBPACK_DEV_SERVER_HOST = process.env.WEBPACK_DEV_SERVER_HOST || 'localhost';
@@ -28,9 +29,9 @@ const WEBPACK_DEV_SERVER_PROXY_PORT = parseInt(process.env.WEBPACK_DEV_SERVER_PR
 
 // Config
 const ROOT_PATH = __dirname;
-const CACHE_PATH = ROOT_PATH + "/temp/webpack";
 
-//var AssetsPlugin = require('assets-webpack-plugin');
+
+var AssetsPlugin = require('assets-webpack-plugin');
 
 module.exports = {
   mode: devMode ? "development" : "production",
@@ -48,36 +49,36 @@ module.exports = {
     //chunkFilename: devMode ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js'
   },  
   module: {
-    noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
+    //noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
 		rules: [
 			{
         test: /\.js$/,
         exclude: path => /node_modules/.test(path) && !/\.vue\.js/.test(path),
         loader: 'babel-loader',
-        options: {
-          cacheDirectory: path.join(CACHE_PATH, 'babel-loader'),
-        }
+
+
+
       },
       {
-				test: /\.vue$/,
-				use: [
-					{
-						loader: 'vue-loader',
-						options: {
-							compilerOptions: {
-								preserveWhitespace: false
-							},
-							cacheDirectory: path.join(CACHE_PATH, "vue-loader"),
-							cacheIdentifier: [
-								process.env.NODE_ENV || 'development',
-								webpack.version,
-								VUE_VERSION,
-								VUE_LOADER_VERSION,
-							].join('|'),
-						}
-					}
-				]
-			},
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {
         test: /\.css$/,
         use: [
@@ -115,14 +116,14 @@ module.exports = {
       }
     ]
   },
-//  resolve: {
-//    extensions: ['*', '.js', '.jsx'], //		extensions: [".js", ".vue", ".ts", ".tsx"],
-//    alias: {
-//      'vue$': 'vue/dist/vue.esm.js' ,
-//      '@': path.resolve(__dirname, "app/assets")
-//    },
-//    modules: ['node_modules']
-//  },
+
+
+
+
+
+
+
+
   resolve: {
     alias: {
         'vue$': 'vue/dist/vue.esm.js',
@@ -147,12 +148,12 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: devMode ? '[name].bundle.css' : '[name].[chunkhash:8].bundle.css'
     }),
-    /*new AssetsPlugin({ // Pre aplikaciu filename: '[name].[contenthash:8].[ext]' a prepojenie s nette
+    new AssetsPlugin({ // Pre aplikaciu filename: '[name].[contenthash:8].[ext]' a prepojenie s nette
       includeManifest: 'manifest',
       path: path.join(ROOT_PATH, 'www/dist')
-    }),*/
-    new WebpackManifestPlugin({
-      fileName: 'manifest.json'
+
+
+
     })
   ],
   devtool: 'cheap-module-source-map',
@@ -177,7 +178,7 @@ if (process.env.NODE_ENV === 'development') {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': '*'
       },
-      stats: 'minimal',
+      stats: 'errors-only',
       hot: true,
       inline: true,
       proxy: {
@@ -201,8 +202,10 @@ if (process.env.NODE_ENV === 'production') {
       minimizer: [
         new TerserPlugin({
 					test: /\.m?js(\?.*)?$/i,
-				})
-      ]
+				}),
+        new CssMinimizerPlugin(),
+      ],
+      minimize: true,
     },
   };
 
