@@ -143,15 +143,17 @@ class SignPresenter extends MainBasePresenter {
    * @param int $id Id uzivatela pre reset hesla
    * @param string $new_password_key Kontrolny retazec pre reset hesla */
   public function actionResetPassword(int $id, string $new_password_key): void {
+    
     if (!isset($id) OR !isset($new_password_key)) {
-      $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err1'), 'danger');
+      $this->flashRedirect('Sign:in', $this->texty_presentera->translate('reset_pass_err1'), 'danger');
     } else {
-      $user_main_data = $this->user_main->find($id);
+      $user_main_data = $this->user_main->getUser($id);
+      //dumpe($new_password_key);
       if ($new_password_key == $user_main_data->new_password_key){ 
         $this->template->email = sprintf($this->texty_presentera->translate('reset_pass_email'), $user_main_data->email);
         $this["resetPasswordForm"]->setDefaults(["id"=>$id]); //Nastav vychodzie hodnoty
       } else { 
-        $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err'.($user_main_data->new_password_key == NULL ? '2' : '3')), 'danger');
+        $this->flashRedirect('Sign:in', $this->texty_presentera->translate('reset_pass_err'.($user_main_data->new_password_key == NULL ? '2' : '3')), 'danger');
       }
     }
   }
@@ -161,7 +163,10 @@ class SignPresenter extends MainBasePresenter {
 	 * @return Nette\Application\UI\Form */
 	protected function createComponentResetPasswordForm() {
     $form = $this->resetPasswordForm->create($this->language);
-    //$form['send']->onClick[] = [$this, 'resetPasswordFormSucceeded'];
+    $form->onSuccess[] = function(Form $form) {
+      $this->flashRedirect('Sign:in', $this->texty_presentera->translate('pass_change_ok'), 'success');
+    };
+        
 		return $form;
 	}
 }
