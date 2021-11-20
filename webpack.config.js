@@ -19,8 +19,6 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const {VueLoaderPlugin} = require("vue-loader");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-
-
 // Webpack abilities
 const WEBPACK_DEV_SERVER_HOST = process.env.WEBPACK_DEV_SERVER_HOST || 'localhost';
 const WEBPACK_DEV_SERVER_PORT = parseInt(process.env.WEBPACK_DEV_SERVER_PORT, 10) || 8080;
@@ -29,7 +27,6 @@ const WEBPACK_DEV_SERVER_PROXY_PORT = parseInt(process.env.WEBPACK_DEV_SERVER_PR
 
 // Config
 const ROOT_PATH = __dirname;
-
 
 var AssetsPlugin = require('assets-webpack-plugin');
 
@@ -55,30 +52,11 @@ module.exports = {
         test: /\.js$/,
         exclude: path => /node_modules/.test(path) && !/\.vue\.js/.test(path),
         loader: 'babel-loader',
-
-
-
       },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
       },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       {
         test: /\.css$/,
         use: [
@@ -116,14 +94,6 @@ module.exports = {
       }
     ]
   },
-
-
-
-
-
-
-
-
   resolve: {
     alias: {
         'vue$': 'vue/dist/vue.esm.js',
@@ -151,9 +121,6 @@ module.exports = {
     new AssetsPlugin({ // Pre aplikaciu filename: '[name].[contenthash:8].[ext]' a prepojenie s nette
       includeManifest: 'manifest',
       path: path.join(ROOT_PATH, 'www/dist')
-
-
-
     })
   ],
   devtool: 'cheap-module-source-map',

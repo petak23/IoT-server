@@ -69,8 +69,9 @@ webpack:
   build:
     directory: %wwwDir%/dist
     publicPath: dist/
-  devServer: # Tato cast je presunuta do local.neon
-    enabled: false
-    url: 'http://http://iot.echo-msz.eu/www/dist'
+  #devServer: # Tato cast je presunuta do local.neon
+  #  enabled: false
+  #  url: 'http://http://iot.echo-msz.eu/www/dist'
   manifest:  # Cez tento subor je prepojenie na filename: '[name].[contenthash:8].[ext]' vo webpack-u
-    name: manifest.json
+    name: webpack-assets.json  # ./www/dist/webpack-assets.json
+    mapper: Contributte\Webpack\Manifest\Mapper\AssetsWebpackPluginMapper
