@@ -6,21 +6,20 @@ namespace App\Presenters;
 
 use App\Model;
 use Nette;
-use Tracy\Debugger;
+/*use Tracy\Debugger;
 use Nette\Utils\DateTime;
 use Nette\Utils\Arrays;
 use Nette\Utils\Html;
 use Nette\Utils\Strings;
-use Nette\Application\UI;
+use Nette\Application\UI;*/
 use Nette\Application\UI\Form;
 use Nette\Http\Url;
-use Nette\Security\Passwords;
 
 use \App\Services\InventoryDataSource;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 19.07.2021
+ * @last_edited petak23<petak23@gmail.com> 27.06.2022
  */
 final class InventoryPresenter extends BaseAdminPresenter
 {
@@ -36,8 +35,8 @@ final class InventoryPresenter extends BaseAdminPresenter
   private $passwords;
 
   // Database tables	
-  /** @var Model\PV_Units @inject */
-	public $units;
+  /** @var Model\PV_Lang @inject */
+	public $lang;
 
   public function __construct( InventoryDataSource $datasource,
                               \App\Services\Config $config )
@@ -52,51 +51,33 @@ final class InventoryPresenter extends BaseAdminPresenter
     $this->passwords = $passwords;
   }
 
-
-  // Seznam  Zařízení
-
-  // http://lovecka.info/ra/inventory/home/
-  public function renderHome()
-  {
-    $this->populateTemplate( 1 );
-    $this->template->devices = $this->datasource->getDevicesUser( $this->getUser()->id );
-  }
-
-  public function renderUnits() {
-    //$this->populateTemplate( 5 );
-    $this->template->units = $this->units->getUnits();
-  }
-
-
-  // http://lovecka.info/ra/inventory/user/
+  // ./inventory/user/
   public function renderUser()
   {
-    $this->populateTemplate( 3 );
-    $this->template->userData = $this->datasource->getUser( $this->getUser()->id );
+    $this->template->userData = $this->user_main->getUser($this->getUser()->id); //$this->datasource->getUser( $this->getUser()->id );
 
-    if( $this->template->userData['prev_login_ip']!=NULL ) {
-      $this->template->prev_login_name = gethostbyaddr( $this->template->userData['prev_login_ip'] );
-      if( $this->template->prev_login_name===$this->template->userData['prev_login_ip'] ) {
+    if( $this->template->userData->prev_login_ip != NULL ) {
+      $this->template->prev_login_name = gethostbyaddr( $this->template->userData->prev_login_ip );
+      if( $this->template->prev_login_name === $this->template->userData->prev_login_ip ) {
         $this->template->prev_login_name = NULL;
       }
     }
-    if( $this->template->userData['last_error_ip']!=NULL ) {
-      $this->template->last_error_name = gethostbyaddr( $this->template->userData['last_error_ip'] );
-      if( $this->template->last_error_name===$this->template->userData['last_error_ip'] ) {
+    if( $this->template->userData->last_error_ip != NULL ) {
+      $this->template->last_error_name = gethostbyaddr( $this->template->userData->last_error_ip );
+      if( $this->template->last_error_name === $this->template->userData->last_error_ip ) {
         $this->template->last_error_name = NULL;
       }
     }
-
 
     $url = new Url( $this->getHttpRequest()->getUrl()->getBaseUrl() );
     $this->template->monitoringUrl = $url->getAbsoluteUrl() . "monitor/show/{$this->template->userData['monitoring_token']}/{$this->getUser()->id}/";
   }
    
-  public function actionEdit(): void {
-
+  public function actionEdit(): void 
+  {
     $post = $this->userInfo->getUser( $this->getUser()->id );
     if (!$post) {
-        $this->error('Uživatel nebyl nalezen');
+      $this->error($this->texty_presentera->translate('AuthenticationException_1'));
     }
     $this['userForm']->setDefaults($post);
   
@@ -107,16 +88,18 @@ final class InventoryPresenter extends BaseAdminPresenter
     $form = new Form;
     $form->addProtection();
 
-    $form->addEmail('email', 'E-mail adresa:')
-        ->setRequired("E-mailová adresa musí byť zadaná!")
-        ->setOption('description', 'Na tuto adresu se zasílají e-mail notifikace.'  )
+    $form->addEmail('email', 'RegisterForm_email')
+        ->setRequired('RegisterForm_email_sr')
+        ->setOption('description', 'RegisterForm_email_sr2' )
         ->setHtmlAttribute('size', 50);
 
-    $form->addText('monitoring_token', 'Bezpečnostní token pro výstup monitoringu:')
-        ->setOption('description', 'Pokud není vyplněn, data nejsou bez autorizace dostupná.'  )
+    $form->addText('monitoring_token', 'inv_monitoring_token_form')
+        ->setOption('description', 'inv_monitoring_token_form_de' )
         ->setHtmlAttribute('size', 50);
+    
+    $form->addSelect('id_lang', 'inv_userlang', $this->lang->langsForForm());
 
-    $form->addSubmit('send', 'Uložit')
+    $form->addSubmit('send', 'base_save')
          ->setHtmlAttribute('class', 'btn btn-success')
          ->setHtmlAttribute('onclick', 'if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;');
         
@@ -128,7 +111,11 @@ final class InventoryPresenter extends BaseAdminPresenter
   
   public function userFormSucceeded(Form $form, array $values): void {
     $this->userInfo->updateUser( $this->getUser()->id, $values );
-    $this->flashRedirect("Inventory:user", "Změny provedeny.", "success");
+    if ($this->language != ($_ac = $this->lang->find($values['id_lang'])->acronym)) {
+      $this->language = $_ac;
+      $this->texty_presentera->setLanguage($this->language);
+    }
+    $this->flashRedirect("Inventory:user", $this->texty_presentera->translate('base_save_ok'), "success");
   }
   
 
@@ -141,21 +128,22 @@ final class InventoryPresenter extends BaseAdminPresenter
     $form = new Form;
     $form->addProtection();
 
-    $form->addPassword('oldPassword', 'Stávající heslo:')
-        ->setOption('description', 'Vyplňte své aktuálně platné heslo.')
-        ->setRequired();
+    $form->addPassword('oldPassword', 'PasswordChangeForm_heslo')
+        ->setOption('description', 'PasswordChangeForm_heslo_de')
+        ->setRequired('PasswordChangeForm_heslo_sr');
 
-    $form->addPassword('password', 'Nové heslo:')
+    $form->addPassword('password', 'PasswordChangeForm_new_heslo')
+        ->addRule($form::MIN_LENGTH, 'PasswordChangeForm_new_heslo_ar', 5)
         ->setOption('description', 'Nové heslo, které chcete nastavit.')
-        ->setRequired();
+        ->setRequired('PasswordChangeForm_new_heslo_sr');
 
-    $form->addPassword('password2', 'Opakujte nové heslo:')
-        ->setOption('description', 'Zadejte nové heslo ještě jednou.')
-        ->setRequired('Zadajte, prosím, heslo ešte raz pre kontrolu')
-        ->addRule($form::EQUAL, 'Heslo musí být zadáno dvakrát stejně!', $form['password'])
+    $form->addPassword('password2', 'PasswordChangeForm_new_heslo2')
+        ->setOption('description', 'PasswordChangeForm_new_heslo2_de')
+        ->setRequired('PasswordChangeForm_new_heslo2_sr')
+        ->addRule($form::EQUAL, 'PasswordChangeForm_new_heslo2_ar', $form['password'])
         ->setOmitted(); // https://doc.nette.org/cs/3.1/form-presenter#toc-validacni-pravidla
 
-    $form->addSubmit('send', 'Změnit heslo')
+    $form->addSubmit('send', 'PasswordChangeForm_new_send')
          ->setHtmlAttribute('onclick', 'if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;');
         
     $form->onSuccess[] = [$this, 'passwordFormSucceeded'];
@@ -168,17 +156,16 @@ final class InventoryPresenter extends BaseAdminPresenter
     
     $post = $this->userInfo->getUser( $this->getUser()->id );
     if (!$post) {
-      $this->error('Uživatel nebyl nalezen');
+      $this->error($this->texty_presentera->translate('AuthenticationException_1'));
     }
     if (!$this->passwords->verify($values['oldPassword'], $post->phash)) {
-      $form->addError('Neplatné heslo - zadejte správné stávající heslo.');
+      $form->addError($this->texty_presentera->translate('pass_old_error'));
       return;
     }
 
     $hash = $this->passwords->hash($values['password']);
     $this->userInfo->updateUserPassword( $this->getUser()->id, $hash );
 
-    $this->flashMessage('Změna hesla provedena.');
-    $this->redirect("Inventory:user" );
+    $this->flashRedirect("Inventory:user", $this->texty_presentera->translate('pass_change_ok'), "success");
   }   
 }

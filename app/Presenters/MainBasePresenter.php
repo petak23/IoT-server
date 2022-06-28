@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App\Model;
 use App\Services\Logger;
 use Nette;
 use Nette\Application\UI\Form;
@@ -12,17 +13,19 @@ use Language_support;
 /**
  * Zakladny presenter pre vsetky presentery
  * 
- * Posledna zmena(last change): 31.08.2021
+ * Posledna zmena(last change): 27.06.2022
  *
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link      http://petak23.echo-msz.eu
- * @version 1.0.3
+ * @version 1.0.5
  */
 class MainBasePresenter extends Nette\Application\UI\Presenter {
 
   use Nette\SmartObject;
+
+  const DEFAULT_SIGN_IN_PAGE = 'Sign:in';
 
   /** @var Language_support\LanguageMain @inject */
   public $texty_presentera;
@@ -36,21 +39,25 @@ class MainBasePresenter extends Nette\Application\UI\Presenter {
    * @persistent */
   public $language = 'sk';
 
+  /** @persistent */
+	public $backlink = '';
+
   /** @var Nette\Http\Request @inject*/
   public $httpRequest;
+
+  // Database tables	
+  /** @var Model\PV_User @inject */
+	public $user_main;
 
   protected function startup() {
     parent::startup();
 
-    //Nastavenie textov podla jazyka 
-    $this->texty_presentera->setLanguage($this->language);
+    // Nacitanie uzivatela
+    $user = $this->getUser();
 
     $httpR = $this->httpRequest->getUrl();
     $this->site_name = $httpR->host.$httpR->scriptPath; // Nazov stranky v tvare www.nieco.sk
     $this->site_name = substr($this->site_name, 0, strlen($this->site_name)-1);
-
-    // Nacitanie uzivatela
-    $user = $this->getUser(); 
 
     // Kontrola prihlasenia
     if ($user->isLoggedIn()) { //Prihlaseny uzivatel
@@ -64,8 +71,10 @@ class MainBasePresenter extends Nette\Application\UI\Presenter {
     
         $this->getUser()->logout(true); // Odhlasenie spojene s odstranenim identity https://doc.nette.org/cs/3.1/access-control#toc-identita
 
-        $this->flashRedirect('Sign:in', 'Na požadovanú akciu nemáte dostatočné oprávnenie!', 'danger');
+        $this->flashRedirect(self::DEFAULT_SIGN_IN_PAGE, 'Na požadovanú akciu nemáte dostatočné oprávnenie!', 'danger');
       }
+      //Nastavenie jazyka podla užívateľa 
+      $this->language = $this->user_main->getUser($user->id)->lang->acronym;
     } else { //Neprihlaseny uzivatel
       if (!$user->isAllowed($this->name, $this->action)) { //Kontrola ACL
         if ($user->getLogoutReason() === Nette\Security\UserStorage::LOGOUT_INACTIVITY) {
@@ -73,15 +82,32 @@ class MainBasePresenter extends Nette\Application\UI\Presenter {
               "[{$this->getHttpRequest()->getRemoteAddress()}] ACCESS: Uzivatel je neprihlaseny, jdeme na login." ); 
 
           // https://pla.nette.org/cs/jak-po-odeslani-formulare-zobrazit-stejnou-stranku
-          $this->flashRedirect(['Sign:in', ['backlink' => $this->storeRequest()]], 'Boli ste príliš dlho neaktívny a preto ste boli odhlásený! Prosím, prihláste sa znovu.', 'danger');
+          $this->flashRedirect([self::DEFAULT_SIGN_IN_PAGE, ['backlink' => $this->storeRequest()]], 'Boli ste príliš dlho neaktívny a preto ste boli odhlásený! Prosím, prihláste sa znovu.', 'danger');
         } else {
           Logger::log( 'webapp', Logger::ERROR , 
               "[{$this->getHttpRequest()->getRemoteAddress()}] ACCESS: Uzivatel je neprihlaseny a nemá dostatočné oprávnenie na danú operáciu({$this->name}:{$this->action})." );
           $this->getUser()->logout(true); // Odhlasenie spojene s odstranenim identity https://doc.nette.org/cs/3.1/access-control#toc-identita
-          $this->flashRedirect('Sign:in', 'Nemáte dostatočné oprávnenie na danú operáciu!', 'danger');
+          $this->flashRedirect(self::DEFAULT_SIGN_IN_PAGE, 'Nemáte dostatočné oprávnenie na danú operáciu!', 'danger');
         }
       }
+      
     }
+    //Nastavenie textov podla jazyka 
+    $this->texty_presentera->setLanguage($this->language);
+  }
+
+  public function actionOut(): void {
+    $response = $this->getHttpResponse();
+    $response->setHeader('Cache-Control', 'no-cache');
+    $response->setExpiration('1 sec'); 
+
+    if( $this->getUser()->getIdentity() ) {
+      Logger::log( 'audit', Logger::INFO , 
+          "[{$this->getHttpRequest()->getRemoteAddress()}] Logout: odhlasen {$this->getUser()->getIdentity()->email}" ); 
+
+    }
+    $this->getUser()->logout(true); // Vymaže aj identitu
+    $this->flashRedirect(self::DEFAULT_SIGN_IN_PAGE, $this->texty_presentera->translate("base_log_out_mess"), "success");
   }
 
   public function beforeRender() {
@@ -165,6 +191,7 @@ class MainBasePresenter extends Nette\Application\UI\Presenter {
         $control->getSeparatorPrototype()->setName('div')->addClass('form-check');
       }
     }
+    $form->setTranslator($this->texty_presentera);
     return $form;
   }
 }

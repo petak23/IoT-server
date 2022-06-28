@@ -12,13 +12,13 @@ use Nette\Security;
 
 /**
  * Tovarnicka pre formular na pridanie a editaciu užívateľa
- * Posledna zmena 19.07.2021
+ * Posledna zmena 06.09.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
 class EditUserFormFactory {
   /** @var Model\PV_User */
@@ -75,7 +75,7 @@ class EditUserFormFactory {
         ->setOption('description', 'Adresa pro mailové notifikace.'  )
         ->setHtmlAttribute('size', 50);
 
-    $form->addSelect('id_rauser_state', 'Stav účtu:', $this->user_state)
+    $form->addSelect('id_user_state', 'Stav účtu:', $this->user_state)
         ->setDefaultValue('10')
         ->setPrompt('- Zvolte stav -')
         ->setRequired();

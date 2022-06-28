@@ -28,6 +28,9 @@ class InventoryDataSource
 		$this->database = $database;
 	}
 
+    /**
+     * @deprecated 
+     */
     public function getDevicesUser( $userId ) : Devices
     {
         $rc = new Devices();
@@ -97,12 +100,17 @@ class InventoryDataSource
         return $rc;
     }
     
-
+    /**
+     * @deprecated 
+     */
     public function createDevice( $values ) 
     {
         return $this->database->table('devices')->insert($values);
     }
 
+    /**
+     * @deprecated 
+     */
     public function getDevice( $deviceId )
     { 
         return $this->database->table('devices')->get($deviceId);

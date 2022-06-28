@@ -17,7 +17,7 @@ use App\Services;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 19.07.2021
+ * @last_edited petak23<petak23@gmail.com> 17.09.2021
  */
 final class UserPresenter extends BaseAdminPresenter
 {
@@ -113,7 +113,6 @@ final class UserPresenter extends BaseAdminPresenter
 		return $this->makeBootstrap4( $form );
 	}
 
-	/** @todo na konci  */
 	public function actionDelete( int $id ): void	{
 		$this->template->id = $id;
 
@@ -124,8 +123,7 @@ final class UserPresenter extends BaseAdminPresenter
 		}
 
 		$this->template->userData = $this->user_show;
-		/** @todo zmeň datasource na userInfo */
-		$this->template->devices = $this->datasource->getDevicesUser( $id );
+		$this->template->devices = $this->devices->getDevicesUser( $id );
 	}
 
 	protected function createComponentDeleteForm(): Form

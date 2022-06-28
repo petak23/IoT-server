@@ -15,7 +15,6 @@ session:
 services:
 	- App\Services\MailService(%from%, %admin% )
 	- App\Services\CrontaskDataSource
-	- App\Services\EnrollDataSource
 	- App\Services\RaDataSource
 	- App\Services\ChartDataSource
 	- App\Services\MsgProcessor

@@ -44,9 +44,9 @@ base_delete_text: 'Naozaj chceš zmazať %s: %s ?'
 base_AdminLink_name: 'Administrácia'
 
 base_prihlaste_sa: 'Prosím, prihláste sa!'
-base_save: 'Uložiť'
-base_not_save: 'Späť bez zmeny'
-base_save_ok: 'Údaje boli uložené v poriadku!'
+base_save: 'Uložit'                 #ok
+base_save_ok: 'Změny provedeny.'    #ok
+base_not_save: 'Zpět beze změny'    #ok
 base_form_required: '<span class="form_required">Červeno</span> označené položky sú povinné!'
 base_not_found: 'Položka sa žiaľ nenašla! Možná príčina: %s'
 base_platnost_do: 'Platnosť do: '
@@ -68,7 +68,7 @@ base_edit: 'Editácia'
 base_del: 'Vymazanie'
 base_last_update: 'Posledná aktualizácia'
 base_spravca: 'Správca obsahu'
-base_change_settings: 'Zmeniť nastavenia'
+base_change_settings: 'Změnit nastavení'      #ok
 komponent_kontakt_h4: 'Kontaktný formulár'
 komponent_kontakt_uvod: ''
 komponent_kontakt_header: 'Nová správa pre: '
@@ -109,10 +109,10 @@ base_nice_day: 'Príjemný deň praje '
 
 # --- RegisterForm ---
 RegisterForm_h2: 'Registrácia'
-RegisterForm_email: 'E-mailová adresa:'
+RegisterForm_email: 'E-mail adresa:' #ok
 RegisterForm_email_ar: 'Musíte zadať e-mailovú adresu v správnom tvare!(napr.: niekto@niekde.sk)'
-RegisterForm_email_sr: 'E-mailová adresa musí byť zadaná!'
-RegisterForm_email_sr2: 'Na túto adresu sa posielajú e-mailové notifikácie.'
+RegisterForm_email_sr: 'E-mailová adresa musí byť zadaná!' #ok
+RegisterForm_email_sr2: 'Na tuto adresu se zasílají e-mail notifikace.'
 RegisterForm_email_ph: 'zadajte e-mail'
 RegisterForm_email_info: 'E-mail adresa bude použitá ako prihlasovacie meno.<br /> Do e-mailu Vám bude poslaný potvrdzovací kód.'
 RegisterForm_psswd: 'Prihlasovacie heslo:'
@@ -171,7 +171,7 @@ SignInForm_register: 'Nemáte účet? Zaregistrujte se.'
 SignInForm_login_ok: 'Vítajte! Úspešne ste sa prihlásili!'
 SignInForm_main_error: 'Prihlásenie sa nepodarilo! Skúste neskôr znovu... Možná príčina je: %s'
 #validateSignInForm
-AuthenticationException_1: 'Užívateľ neexistuje.'
+AuthenticationException_1: 'Uživatel nebyl nalezen.' #ok
 AuthenticationException_2: 'Chybný prihlasovací email alebo heslo.'
 AuthenticationException_3: 'Iná chyba prihlásenia.'
 AuthenticationException_4: 'Účet nie je schválený.'
@@ -203,7 +203,7 @@ reset_pass_txt2: 'Zadajte a potvrďte opätovným zadaním vaše nové heslo. '
 reset_pass_err1: 'Pokúsili ste sa spustiť akciu s nesprávnym parametrom! Akcia bola ukončená!'
 reset_pass_err2: 'Pokúsili ste sa zresetovať heslo účtu! Vaša požiadavka nemôže byť akceptovaná, lebo daný úžívateľ o resetovanie hesla nepožiadal, alebo je táto požiadavka už neaktuálna!'
 reset_pass_err3: 'Pri pokuse o resetovanie hesla účtu došlo k chybe. Akciu nebolo možné uskutočniť! Skúste neskôr znovu... Ak sa to bude opakovať kontaktujte prosím administrátora(e-mail na spodku stránky)!'
-ResetPasswordForm_new_heslo: 'Nové heslo:'
+ResetPasswordForm_new_heslo: 'Nové heslo:' #ok
 ResetPasswordForm_new_heslo_sr: 'Nové heslo musí byť zadané!'
 ResetPasswordForm_new_heslo2: 'Potvrď nové heslo:'
 ResetPasswordForm_new_heslo2_ar: 'Zadané nové heslá sa musia zhodovať!'
@@ -273,7 +273,7 @@ user_edit_avatar_err: 'Pre avatar nebol použitý obrázok a tak nebol uložený
 user_edit_save_ok: 'Údaje boli uložené!'
 user_edit_save_err: 'Došlo k chybe a údaje o užívateľovi sa neuložili. Skúste neskôr znovu...'
 default_h2_edit: 'Editácia profilu'
-default_pass_change: ' Zmena hesla'
+default_pass_change: 'Změna hesla'          #ok
 default_h2_additional: 'Doplňujúce údaje:'
 default_delete: 'Vymazanie profilu'
 default_avatar_txt: 'Ak chceš zmeniť vlož obrázok s max. veľkosťou 300kB:'
@@ -301,20 +301,20 @@ activate_mail_ok: 'Váš nový email je od teraz aktívny!'
 activate_mail_err: 'Došlo k chybe pri aktivácii Vášho nového emailu. Skúste neskôr znovu...<br />'
 activate_mail_err1: 'Pri pokuse o aktiváciu nového emailu došlo k chybe. Aktiváciu nebolo možné uskutočniť! Skúste neskôr znovu... Ak sa to bude opakovať kontaktujte prosím administrátora(e-mail na spodku stránky)!'
 pass_change_h2: 'Zmena hesla užívateľa %s %s'
-PasswordChangeForm_heslo: 'Staré heslo:'
-PasswordChangeForm_heslo_sr: 'Staré prihlasovacie heslo musí byť zadané!'
-PasswordChangeForm_heslo_de: 'Vyplňte svoje aktuálne platné heslo.'
-PasswordChangeForm_new_heslo: 'Nové heslo:'
-PasswordChangeForm_new_heslo_ar: 'Nové heslo musí mať spoň %d znakov!'
-PasswordChangeForm_new_heslo_sr: 'Nové heslo musí byť zadané!'
-PasswordChangeForm_new_heslo_de: 'Nové heslo, ktoré chcete nastaviť.'
-PasswordChangeForm_new_heslo2: 'Potvrď nové heslo:'
-PasswordChangeForm_new_heslo2_ar: 'Zadné nové heslá sa musia zhodovať!'
-PasswordChangeForm_new_heslo2_sr: 'Potvrdené nové heslo musí byť zadané!'
-PasswordChangeForm_new_heslo2_de: 'Zadajte nové heslo ešte raz.'
-PasswordChangeForm_new_send: 'Zmeň heslo'
+PasswordChangeForm_heslo: 'Stávající heslo:'                                  #ok
+PasswordChangeForm_heslo_sr: 'Stávající přihlasovací heslo musí byť zadané!'  #ok
+PasswordChangeForm_heslo_de: 'Vyplňte své aktuálně platné heslo.'             #ok
+PasswordChangeForm_new_heslo: 'Nové heslo:'                                   #ok
+PasswordChangeForm_new_heslo_ar: 'Nové heslo musí mít alespoň %d znaků!'      #ok
+PasswordChangeForm_new_heslo_sr: 'Nové heslo musí být zadané!'                #ok
+PasswordChangeForm_new_heslo_de: 'Nové heslo, které chcete nastavit.'         #ok
+PasswordChangeForm_new_heslo2: 'Opakujte nové heslo:'                         #ok
+PasswordChangeForm_new_heslo2_ar: 'Heslo musí být zadáno dvakrát stejně!'     #ok
+PasswordChangeForm_new_heslo2_sr: 'Opakované nové heslo musí být zadané!'     #ok
+PasswordChangeForm_new_heslo2_de: 'Zadejte nové heslo ještě jednou.'          #ok
+PasswordChangeForm_new_send: 'Změnit heslo'                                   #ok
 pass_change_ok: 'Vaše heslo bolo úspešne zmenené!'
-pass_old_error: 'Neplatné heslo - zadajte správne staré heslo.'
+pass_old_error: 'Neplatné heslo - zadejte správné stávající heslo.'           #ok
 pass_change_err: 'Došlo k chybe a heslo nebolo zmenené. Skúste neskôr znovu...<br />'
 
 #E-mail template
@@ -354,38 +354,38 @@ main_li_log_out: 'Odhlásiť sa ...'
 
 ######################################################################################################################################
 # Units
-units_h1: 'Kódy jednotiek'
-units_info_text: 'Zoznam zaregistrovaných kódov jednotiek, ktoré je možné používať v senzoroch.'
+units_h1: 'Kódy jednotek'
+units_info_text: 'Seznam zaregistrovaných kódů jednotek, které je možné používat v senzorech.'
 units_table_unit: 'Jednotka'
 
 # Inventory
-inv_user_h1: 'Môj účet'
-inv_prev_login: 'Predchádzajúce prihlásenie:'
-inv_last_error_login: 'Posledné neúspešné prihlásenie:'
+inv_user_h1: 'Můj účet'
+inv_prev_login: 'Předešlé přihlášení:'
+inv_last_error_login: 'Poslední neúspěšné přihlášení:'
 inv_options_h3: 'Vlastnosti účtu'
-#inv_username: 'Prihlasovacie meno:'
-#inv_username_comm: 'Toto meno zadávate pri prihlasovaní.'
-inv_email: 'E-mailová adresa:'
-inv_email_comm: 'Tento e-mail zadávate pri prihlasovaní. Na tuto adresu budú posielané e-mail notifikácie.'
-inv_monitoring_token: 'Token pre prístup k monitoringu:'
+#inv_username: 'Přihlašovací jméno:'
+#inv_username_comm: 'Toto jméno zadáváte při přihlašování.'
+inv_email: 'E-mail adresa:'
+inv_email_comm: 'Tento e-mail zadáváte při přihlašování. Na tuto adresu budou zasílány e-mail notifikace.'
+inv_monitoring_token: 'Token pro přístup k monitoringu:'
 inv_monitoring_token_h3: 'Monitoring'
-inv_monitoring_token_t1: 'Dáta monitoringu sú dostupné tu:'
-inv_monitoring_token_t2: 'Každý, kto pozná túto URL, si môže dáta zobraziť. Prístup <b>nieje chránený heslom</b>.'
-inv_monitoring_token_form: 'Bezpečnostný token pre výstup monitoringu:'
-inv_monitoring_token_form_de: 'Pokiaľ nie je vyplnený, dáta nie sú bez autorizácie dostupné.'
-inv_retenction_h3: 'Retencia dat'
-inv_retenction_t1: 'Uložené dáta staršie ako určený čas budú zmazané.'
-inv_retenction_d1: 'Detailné dáta (zdrojové hodnoty):'
+inv_monitoring_token_t1: 'Data monitoringu jsou dostupná zde:'
+inv_monitoring_token_t2: 'Každý, kdo zná toto URL, si může data zobrazit. Přístup již dále <b>není chráněn heslem</b>.'
+inv_monitoring_token_form: 'Bezpečnostní token pro výstup monitoringu:'
+inv_monitoring_token_form_de: 'Pokud není vyplněn, data nejsou bez autorizace dostupná.'
+inv_retenction_h3: 'Retence dat'
+inv_retenction_t1: 'Uložená data starší než určený čas budou smazána.'
+inv_retenction_d1: 'Detailní data (zdrojové hodnoty):'
 inv_retenction_day: 'dní'
-inv_retenction_nr: 'neobmedzené'
-inv_retenction_sum: 'Sumárne dáta (hodinové priemery, maxima, minima):'
-inv_retenction_fil: 'Súbory:'
-inv_userlang: 'Jazyk prostredia'
-inv_userlang_comm: 'Jazyk v ktorom bude prostredie ale aj všetky texty v emailoch a pod.'
-inv_user_change_h1: 'Zmena nastavenia účtu užívateľa'
+inv_retenction_nr: 'neomezeno'
+inv_retenction_sum: 'Sumární data (hodinové průměry, maxima, minima):'
+inv_retenction_fil: 'Soubory:'
+inv_userlang: 'Jazyk prostredí'
+inv_userlang_comm: 'Jazyk ve kterém bude prostředí ale i všechny texty v emailech a pod.'
+inv_user_change_h1: 'Změna nastavení účtu uživatele'
 
 # Devices
-devices_h1: 'Zariadenia'
+devices_h1: 'Zařízení'
 
 # Graphs
 graphs_h1: 'Grafy'

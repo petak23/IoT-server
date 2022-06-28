@@ -87,6 +87,20 @@ class PV_Devices {
     return $rc;
   }
 
+  /** 
+   * Pridanie zariadenia
+   *    */
+  public function createDevice( $values ) {
+    return $this->devices->insert($values);
+  }
+
+  /** 
+   * Pridanie zariadenia
+   *    */
+  public function getDevice( $deviceId ) { 
+    return $this->devices->get($deviceId);
+  }
+
 } // End class PV_Devices
 
 class VDevices {

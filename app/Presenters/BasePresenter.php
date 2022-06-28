@@ -11,7 +11,13 @@ use Tracy\Debugger;
 use App\Services\Logger;
 
 /**
- * @last_edited petak23<petak23@gmail.com> 12.07.2021
+ * Last change 16.09.2021
+ * 
+ * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
+ * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @license
+ * @link       http://petak23.echo-msz.eu
+ * @version    1.0.1
  */
 class BasePresenter extends MainBasePresenter
 {
@@ -20,41 +26,12 @@ class BasePresenter extends MainBasePresenter
   /** @var Model\PV_Main_menu @inject */
 	public $main_menu;
 
-  public function checkUserRole( $reqRole ) {
-    /*if( !$this->getUser()->loggedIn ) {
-        Logger::log( 'webapp', Logger::ERROR , 
-            "[{$this->getHttpRequest()->getRemoteAddress()}] ACCESS: Uzivatel je neprihlaseny, jdeme na login." ); 
+  /**
+   * @deprecated 
+   */
+  public function checkUserRole( $reqRole ) {}
 
-      if ($this->getUser()->logoutReason === Nette\Security\IUserStorage::INACTIVITY) {
-        $this->flashMessage('Dlouho jste neudělal/a žádnou akci, z bezpečnostních důvodů došlo k odhlášení. Přihlašte se prosím znovu.');
-      } else {
-        $this->flashMessage('Pro využití této funkce se nejprve přihlašte.');
-      }
-
-      $response = $this->getHttpResponse();
-      $response->setHeader('Cache-Control', 'no-cache');
-      $response->setExpiration('1 sec'); 
- 
-      // https://pla.nette.org/cs/jak-po-odeslani-formulare-zobrazit-stejnou-stranku
-      $this->redirect('Sign:in', ['backlink' => $this->storeRequest()] );
-    }
-
-    if( !$this->getUser()->isInRole($reqRole) ) {
-      Logger::log( 'audit', Logger::ERROR , 
-          "[{$this->getHttpRequest()->getRemoteAddress()}] ACCESS: Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} zkusil pouzit funkci vyzadujici roli {$reqRole}" ); 
-
-      $response = $this->getHttpResponse();
-      $response->setHeader('Cache-Control', 'no-cache');
-      $response->setExpiration('1 sec'); 
-  
-      $this->getUser()->logout(true);
-      $this->flashMessage('Vaše úroveň oprávnění nestačí k použití této funkce!');
-      $this->redirect('Sign:in');
-    }*/
-  }
-
-  private function addMenuItem( $vals, $submenuAfterItem = FALSE, $submenu = NULL )
-  {
+  private function addMenuItem( $vals, $submenuAfterItem = FALSE, $submenu = NULL ) {
     $this->template->menu[] = $vals;
     if( $vals['id']==$submenuAfterItem ) {
       foreach( $submenu as $item ) {
@@ -63,8 +40,7 @@ class BasePresenter extends MainBasePresenter
     }
   }
 
-  public function populateMenu( $activeItem, $submenuAfterItem = FALSE, $submenu = NULL )
-  {
+  public function populateMenu( $activeItem, $submenuAfterItem = FALSE, $submenu = NULL ) {
     $this->template->menu = array();
 
     /*$this->addMenuItem( ['id' => '3', 'link' => 'inventory/user', 'name' => 'Můj účet'],
@@ -95,7 +71,7 @@ class BasePresenter extends MainBasePresenter
   /** 
    * Komponenta pre vykreslenie menu
    * @return Menu\Menu */
-  public function createComponentMenu() {
+  public function createComponentMenu(): Menu\Menu {
     $menu = new Menu\Menu;
     $hl_m = $this->main_menu->getMenu(/*$this->language*/);
     if (count($hl_m)) {

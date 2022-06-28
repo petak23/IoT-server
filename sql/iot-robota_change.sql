@@ -153,7 +153,7 @@ CREATE TABLE `lang` (
 INSERT INTO `lang` (`id`, `acronym`, `name`, `name_en`, `accepted`) VALUES
 (1,	'sk',	'Slovenčina',	'Slovak',	1);*/
 
-ALTER TABLE `rausers`
+/*ALTER TABLE `rausers`
 ADD `new_password_key` varchar(100) COLLATE 'utf8_bin' NULL COMMENT 'Kľúč nového hesla',
 ADD `new_password_requested` datetime NULL COMMENT 'Čas požiadavky na nové heslo' AFTER `new_password_key`,
 COMMENT='Hlavné údaje užívateľa';
@@ -166,4 +166,17 @@ ALTER TABLE `user_main`
 CHANGE `id_rauser_state` `id_user_state` int(11) NOT NULL DEFAULT '10' AFTER `prefix`;
 
 ALTER TABLE `rauser_state`
-RENAME TO `user_state`;
+RENAME TO `user_state`;*/
+
+UPDATE `user_permission` SET `id_user_roles` = '1' WHERE `id` = '2';
+
+UPDATE `main_menu` SET `link` = 'Device:List' WHERE `id` = '2';
+
+/* add 27.06.2022 */
+INSERT INTO `user_resource` (`name`)
+VALUES ('Units');
+
+INSERT INTO `user_permission` (`id_user_roles`, `id_user_resource`, `actions`)
+VALUES ('4', '19', NULL);
+
+UPDATE `main_menu` SET `link` = 'Units:' WHERE `id` = '4';

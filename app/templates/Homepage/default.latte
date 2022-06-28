@@ -1,10 +1,5 @@
 {layout '../@layoutEmpty.latte'}
+{block title}{_'SignInForm_h2'}{/block}
 
 {block content}
-<div class="form-signin">
-  <h1 n:block=title class="mb-3 text-center"> {_'SignInForm_h2'}</h1>
-
-  {*control signIn*}
-
-
-</div>
+{control signIn}

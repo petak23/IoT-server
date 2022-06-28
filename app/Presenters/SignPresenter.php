@@ -74,7 +74,7 @@ class SignPresenter extends MainBasePresenter {
     $this->template->links = $this->links;
   }
     
-  public function actionOut(): void {
+  /*public function actionOut(): void {
     $response = $this->getHttpResponse();
     $response->setHeader('Cache-Control', 'no-cache');
     $response->setExpiration('1 sec'); 
@@ -85,8 +85,8 @@ class SignPresenter extends MainBasePresenter {
 
     }
     $this->getUser()->logout(true); // Vymaže aj identitu
-    $this->flashRedirect('Sign:in', $this->texty_presentera->translate("base_log_out_mess"), "success");
-  }
+    $this->flashRedirect('Homepage:', $this->texty_presentera->translate("base_log_out_mess"), "success");
+  }*/
 
   public function renderForgottenPassword(): void {
     

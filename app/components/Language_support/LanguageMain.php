@@ -11,13 +11,13 @@ use Nette;
  * Môže spolupracovať s DB tabuľkou (meno tabuľky je ako parameter), v ktorej testuje existenciu daného jazyka.
  * Alebo je zoznam povolených jazykov uvedený v konfigurácii.
  * 
- * Posledna zmena(last change): 26.08.2021
+ * Posledna zmena(last change): 27.06.2022
  * 
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version 1.2.2
+ * @version 1.2.3
  *
  * @property-read string $jazyk Skratka aktualneho jazyka
  * @property-read int $language_id Id aktualneho jazyka
@@ -100,7 +100,7 @@ class LanguageMain implements Nette\Localization\Translator {
    * Preklad kluca
    * @param mixed $message Kluc na preklad
    * @return string */
-  public function translate(mixed $message, mixed ...$parameters): string {
+  public function translate($message, ...$parameters): string {
     // https://doc.nette.org/cs/3.1/strings#toc-webalize
     $tmpm = Nette\Utils\Strings::webalize($message, '_', false); // Prevod z dôvodu validačných hlášok vo formulároch
     return array_key_exists($tmpm, $this->out_texty) ?  $this->out_texty[$tmpm] : $message;

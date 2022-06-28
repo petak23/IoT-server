@@ -23,7 +23,7 @@
   <div n:foreach="$users as $u" n:class="row, my-2, px-2, $iterator->odd ? bg-light">
     <div class="col-4 col-lg-2 col-xl-1 "><a n:href="User:show $u->id">{$u->username}</a></div>
     <div class="col-8 col-lg-4 col-xl-2 ">{$u->user_roles->name}</div>
-    <div class="col-4 col-lg-2 col-xl-1 ">{$u->rauser_state->desc}</div>
+    <div class="col-4 col-lg-2 col-xl-1 ">{$u->user_state->desc}</div>
     <div class="col-8 col-lg-4 col-xl-2 ">
       <small>
         {if $u->locked_out_until && ($u->locked_out_until->getTimestamp() > time() )}

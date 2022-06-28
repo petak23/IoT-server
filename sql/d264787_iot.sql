@@ -43,11 +43,11 @@ CREATE TABLE `devices` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `devices_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `rausers` (`id`)
+  CONSTRAINT `devices_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_main` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci COMMENT='List of devices. Device has one or more Sensors.';
 
 INSERT INTO `devices` (`id`, `passphrase`, `name`, `desc`, `first_login`, `last_login`, `last_bad_login`, `user_id`, `json_token`, `blob_token`, `monitoring`, `app_name`, `uptime`, `rssi`, `config_ver`, `config_data`) VALUES
-(1,	'9b94e9a9444d8974bde34f1378d50ec0',	'ie:spalnatt',	'Teplomer v spálni',	NULL,	NULL,	NULL,	2,	'fn7q9u4qmjtwk5kgcke3x93p5mujqxy6x1lj20op',	'xvlctxc9fn0v4g9f86dadzggiwdwyrp98e8yzfai',	1,	NULL,	NULL,	NULL,	NULL,	NULL);
+(1,	'46c2e0cd0320dec47bf9a5456eb180df',	'ie:teplomer',	'Teplomer v spálni',	NULL,	NULL,	NULL,	2,	'0mudc9zpecsqbw2k218a3l9rkqr1pq0taxuxk7b3',	'7d59ajxxp488vaut2wfcqbskzq9um33ruhmmt6yh',	1,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `device_classes`;
 CREATE TABLE `device_classes` (
@@ -134,58 +134,6 @@ CREATE TABLE `prelogin` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci COMMENT='Sem se ukládají session po akci LOGINA - před tím, než je zařízení potvrdí via LOGINB';
 
-
-DROP TABLE IF EXISTS `rausers`;
-CREATE TABLE `rausers` (
-  `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) COLLATE utf8_bin NOT NULL,
-  `phash` varchar(255) COLLATE utf8_bin NOT NULL,
-  `role` varchar(100) COLLATE utf8_bin NOT NULL DEFAULT 'user',
-  `id_user_roles` int(11) NOT NULL DEFAULT 1 COMMENT 'Rola užívateľa',
-  `email` varchar(255) COLLATE utf8_bin NOT NULL,
-  `prefix` varchar(20) COLLATE utf8_bin NOT NULL,
-  `id_rauser_state` int(11) NOT NULL DEFAULT 10,
-  `bad_pwds_count` smallint(6) NOT NULL DEFAULT 0,
-  `locked_out_until` datetime DEFAULT NULL,
-  `measures_retention` int(11) NOT NULL DEFAULT 90 COMMENT 'jak dlouho se drží data v measures',
-  `sumdata_retention` int(11) NOT NULL DEFAULT 731 COMMENT 'jak dlouho se drží data v sumdata',
-  `blob_retention` int(11) NOT NULL DEFAULT 14 COMMENT 'jak dlouho se drží bloby',
-  `self_enroll` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = self-enrolled',
-  `self_enroll_code` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `self_enroll_error_count` tinyint(4) DEFAULT 0,
-  `cur_login_time` datetime DEFAULT NULL,
-  `cur_login_ip` varchar(32) COLLATE utf8_bin DEFAULT NULL,
-  `cur_login_browser` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `prev_login_time` datetime DEFAULT NULL,
-  `prev_login_ip` varchar(32) COLLATE utf8_bin DEFAULT NULL,
-  `prev_login_browser` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `last_error_time` datetime DEFAULT NULL,
-  `last_error_ip` varchar(32) COLLATE utf8_bin DEFAULT NULL,
-  `last_error_browser` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `monitoring_token` varchar(100) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_rauser_state` (`id_rauser_state`),
-  KEY `id_user_roles` (`id_user_roles`),
-  CONSTRAINT `rausers_ibfk_1` FOREIGN KEY (`id_rauser_state`) REFERENCES `rauser_state` (`id`),
-  CONSTRAINT `rausers_ibfk_2` FOREIGN KEY (`id_user_roles`) REFERENCES `user_roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-INSERT INTO `rausers` (`id`, `username`, `phash`, `role`, `id_user_roles`, `email`, `prefix`, `id_rauser_state`, `bad_pwds_count`, `locked_out_until`, `measures_retention`, `sumdata_retention`, `blob_retention`, `self_enroll`, `self_enroll_code`, `self_enroll_error_count`, `cur_login_time`, `cur_login_ip`, `cur_login_browser`, `prev_login_time`, `prev_login_ip`, `prev_login_browser`, `last_error_time`, `last_error_ip`, `last_error_browser`, `monitoring_token`) VALUES
-(1,	'admin',	'$2y$11$NIWfqAdFW3b67KqnU61bJOwv1YxAxa3Z6TXPnEdU9x79Ahgv5TtnW',	'admin,user',	4,	'petak23@gmail.com',	'AA',	10,	0,	'2021-08-19 12:43:48',	90,	731,	14,	0,	NULL,	0,	'2021-08-19 12:43:55',	'188.112.66.145',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-18 12:29:17',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-19 12:43:44',	'188.112.66.145',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	NULL),
-(2,	'iot@echo-msz.eu',	'$2y$11$DzEpn6JYKvd92k3ROb7rx.p.SUSBSRHuAW.JSUx9heM8k7TXtES4i',	'user',	3,	'iot@echo-msz.eu',	'ie',	10,	0,	NULL,	90,	366,	7,	1,	'4982',	0,	'2021-08-19 12:54:05',	'188.112.66.145',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-19 12:52:47',	'188.112.66.145',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	NULL,	NULL,	NULL,	'dv3v2x8iija6hwkdhk3bmnbs87qm0a4c930btqrz');
-
-DROP TABLE IF EXISTS `rauser_state`;
-CREATE TABLE `rauser_state` (
-  `id` int(11) NOT NULL,
-  `desc` varchar(100) COLLATE utf8_czech_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
-
-INSERT INTO `rauser_state` (`id`, `desc`) VALUES
-(1,	'čeká na zadání kódu z e-mailu'),
-(10,	'aktivní'),
-(90,	'zakázán administrátorem'),
-(91,	'dočasně uzamčen');
 
 DROP TABLE IF EXISTS `sensors`;
 CREATE TABLE `sensors` (
@@ -277,6 +225,47 @@ CREATE TABLE `updates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
+DROP TABLE IF EXISTS `user_main`;
+CREATE TABLE `user_main` (
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) COLLATE utf8_bin NOT NULL,
+  `phash` varchar(255) COLLATE utf8_bin NOT NULL,
+  `role` varchar(100) COLLATE utf8_bin NOT NULL DEFAULT 'user',
+  `id_user_roles` int(11) NOT NULL DEFAULT 1 COMMENT 'Rola užívateľa',
+  `email` varchar(255) COLLATE utf8_bin NOT NULL,
+  `prefix` varchar(20) COLLATE utf8_bin NOT NULL,
+  `id_user_state` int(11) NOT NULL DEFAULT 10,
+  `bad_pwds_count` smallint(6) NOT NULL DEFAULT 0,
+  `locked_out_until` datetime DEFAULT NULL,
+  `measures_retention` int(11) NOT NULL DEFAULT 90 COMMENT 'jak dlouho se drží data v measures',
+  `sumdata_retention` int(11) NOT NULL DEFAULT 731 COMMENT 'jak dlouho se drží data v sumdata',
+  `blob_retention` int(11) NOT NULL DEFAULT 14 COMMENT 'jak dlouho se drží bloby',
+  `self_enroll` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = self-enrolled',
+  `self_enroll_code` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `self_enroll_error_count` tinyint(4) DEFAULT 0,
+  `cur_login_time` datetime DEFAULT NULL,
+  `cur_login_ip` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `cur_login_browser` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `prev_login_time` datetime DEFAULT NULL,
+  `prev_login_ip` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `prev_login_browser` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `last_error_time` datetime DEFAULT NULL,
+  `last_error_ip` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `last_error_browser` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `monitoring_token` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `new_password_key` varchar(100) COLLATE utf8_bin DEFAULT NULL COMMENT 'Kľúč nového hesla',
+  `new_password_requested` datetime DEFAULT NULL COMMENT 'Čas požiadavky na nové heslo',
+  PRIMARY KEY (`id`),
+  KEY `id_user_state` (`id_user_state`),
+  KEY `id_user_roles` (`id_user_roles`),
+  CONSTRAINT `user_main_ibfk_1` FOREIGN KEY (`id_user_state`) REFERENCES `user_state` (`id`),
+  CONSTRAINT `user_main_ibfk_2` FOREIGN KEY (`id_user_roles`) REFERENCES `user_roles` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Hlavné údaje užívateľa';
+
+INSERT INTO `user_main` (`id`, `username`, `phash`, `role`, `id_user_roles`, `email`, `prefix`, `id_user_state`, `bad_pwds_count`, `locked_out_until`, `measures_retention`, `sumdata_retention`, `blob_retention`, `self_enroll`, `self_enroll_code`, `self_enroll_error_count`, `cur_login_time`, `cur_login_ip`, `cur_login_browser`, `prev_login_time`, `prev_login_ip`, `prev_login_browser`, `last_error_time`, `last_error_ip`, `last_error_browser`, `monitoring_token`, `new_password_key`, `new_password_requested`) VALUES
+(1,	'admin',	'$2y$11$5bCGPCSvLeJ/NudG64ceKuHjQ4CjomrUUyXh2Qw3iCWJxTVRnWeTy',	'admin,user',	4,	'petak23@gmail.com',	'AA',	10,	0,	'2021-09-01 10:48:21',	90,	731,	14,	0,	NULL,	0,	'2021-09-01 10:48:24',	'188.112.70.19',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-08-26 08:56:21',	'127.0.0.1',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-09-01 10:48:17',	'188.112.70.19',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	NULL,	NULL,	NULL),
+(2,	'iot@echo-msz.eu',	'$2y$11$Wa6jKjPGm.XEePrMg/QtVOX50iIgWhp7KKvNrMrkbWfkrZoRBpXGq',	'user',	3,	'iot@echo-msz.eu',	'ie',	10,	0,	NULL,	90,	366,	7,	1,	'8555',	0,	'2021-09-06 10:54:52',	'217.12.48.22',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	'2021-09-03 12:28:31',	'188.112.82.102',	'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0 / sk,cs;q=0.8,en-US;q=0.5,en;q=0.3',	NULL,	NULL,	NULL,	'c9r6b08epfosbko3s4zccwy1w7vsenkx103dutzi',	NULL,	NULL);
+
 DROP TABLE IF EXISTS `user_permission`;
 CREATE TABLE `user_permission` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Index',
@@ -353,6 +342,19 @@ INSERT INTO `user_roles` (`id`, `role`, `inherited`, `name`, `color`) VALUES
 (2,	'register',	'guest',	'Registrovaný ale neaktivovaný užívateľ',	'fffc29'),
 (3,	'active',	'register',	'Aktivovaný užívateľ',	'7ce300'),
 (4,	'admin',	'active',	'Administrátor',	'ff6a6a');
+
+DROP TABLE IF EXISTS `user_state`;
+CREATE TABLE `user_state` (
+  `id` int(11) NOT NULL,
+  `desc` varchar(100) COLLATE utf8_czech_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+INSERT INTO `user_state` (`id`, `desc`) VALUES
+(1,	'čeká na zadání kódu z e-mailu'),
+(10,	'aktivní'),
+(90,	'zakázán administrátorem'),
+(91,	'dočasně uzamčen');
 
 DROP TABLE IF EXISTS `value_types`;
 CREATE TABLE `value_types` (
@@ -433,4 +435,4 @@ INSERT INTO `view_source` (`id`, `desc`, `short_desc`) VALUES
 (10,	'Hodinový/denní součet',	'Pro krátké pohledy hodinový součet, pro dlouhé denní součet (typicky pro srážky)'),
 (11,	'Týdenní součet',	'Týdenní součet (pro srážky)');
 
--- 2021-08-20 06:00:26
+-- 2021-09-06 09:16:36

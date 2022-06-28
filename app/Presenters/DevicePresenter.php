@@ -4,166 +4,123 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App\Forms\Device;
+use App\Model;
 use Nette;
-use Tracy\Debugger;
-use Nette\Utils\Random;
+//use Tracy\Debugger;
+//use Nette\Utils\Random;
 use Nette\Utils\DateTime;
-use Nette\Utils\Arrays;
-use Nette\Utils\Html;
+//use Nette\Utils\Arrays;
+//use Nette\Utils\Html;
 use Nette\Utils\Strings;
 use Nette\Utils\FileSystem;
-use Nette\Application\UI;
+//use Nette\Application\UI;
 use Nette\Application\UI\Form;
 use Nette\Http\Url;
 use Nette\Application\Responses\FileResponse;
 
 use App\Services\Logger;
-use \App\Services\InventoryDataSource;
-use \App\Services\Config;
+//use \App\Services\InventoryDataSource;
+//use \App\Services\Config;
 
-final class DevicePresenter extends BaseAdminPresenter
-{
-    use Nette\SmartObject;
+/**
+ * Presenter pre prácu so zariadenimi
+ * Posledna zmena 17.09.2021
+ * 
+ * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
+ * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @license
+ * @link       http://petak23.echo-msz.eu
+ * @version    1.0.0
+ */
+final class DevicePresenter extends BaseAdminPresenter {
+  use Nette\SmartObject;
 
-    /** @persistent */
+  private $id_device = 0;
+
+  /** @persistent */
 	public $viewid = "";
     
-    /** @var \App\Services\InventoryDataSource */
-    private $datasource;
+  /** @var \App\Services\InventoryDataSource */
+  private $datasource;
 
-    /** @var \App\Services\Config */
-    private $config;
+  /** @var \App\Services\Config */
+  private $config;
+  
+  // Database tables
+  /** @var Model\PV_Devices @inject */
+	public $devices;
 
-    public function __construct(\App\Services\InventoryDataSource $datasource, 
-                                \App\Services\Config $config )
-    {
-        $this->datasource = $datasource;
-        $this->config = $config;
-        $this->links = $config->links;
-        $this->appName = $config->appName;
+  // Forms
+	/** @var Device\DeviceFormFactory @inject*/
+	public $deviceForm;
+
+  public function __construct(\App\Services\InventoryDataSource $datasource, 
+                              \App\Services\Config $config )
+  {
+      $this->datasource = $datasource;
+      $this->config = $config;
+      $this->links = $config->links;
+      $this->appName = $config->appName;
+  }
+
+  /**
+   * Zoznam zariadení
+   * @addr {server}/device/list/ */
+  public function renderList() {
+    $this->template->devices = $this->devices->getDevicesUser( $this->getUser()->id );
+  }
+
+
+  public function renderCreate() {
+      
+  }
+
+  public function actionEdit(int $id): void {
+
+    $this->template->path = '../';
+    $this->template->id = $id;
+    $this->id_device = $id;
+
+    $post = $this->devices->getDevice( $id );
+    if (!$post) {
+      $this->error('Zařízení nebylo nalezeno');
     }
 
+    Logger::log( 'audit', Logger::INFO ,
+        "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} edituje/prohlizi konfiguraci/heslo zarizeni {$id}" );
 
-    public function renderCreate()
-    {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-    }
+    $post = $post->toArray();
+    $post['passphrase'] = $this->config->decrypt( $post['passphrase'], $post['name'] );
+    $this->checkAcces( $post['user_id'] );
 
+    $this->template->name = $post['name'];
 
-    protected function createComponentDeviceForm(): Form
-    {
-        $form = new Form;
-        $form->addProtection();
+    $arr = Strings::split($post['name'], '~:~');
+    $post['name'] = $arr[1];
 
-        $form->addGroup('Základní údaje');
+    $this['deviceForm']->setDefaults($post);
+  }
 
-        $form->addText('name', 'Identifikátor (jméno):')
-            ->setRequired()
-            ->addRule(Form::PATTERN, 'Jen písmena a čísla', '([0-9A-Za-z]+)')
-            ->setOption('description', 'Toto jméno doplněné prefixem bude používáno pro přihlašování zařízení.'  )
-            ->setHtmlAttribute('size', 50);
-
-        $form->addText('passphrase', 'Komunikační heslo:')
-            ->setHtmlAttribute('size', 50)
-            ->setRequired();
-
-        $form->addTextArea('desc', 'Popis:')
-            ->setHtmlAttribute('rows', 4)
-            ->setHtmlAttribute('cols', 50)
-            ->setRequired();
-
-        $form->addGroup('Přístup k datům bez přihlášení');
-
-        $form->addText('json_token', 'Bezpečnostní token pro data:')
-            ->setOption('description', 'Pokud je vyplněn, kdokoli se znalostí správné adresy se může podívat na JSON s daty. Má smysl jen v případě, že má zařízení nějaké senzory.'  )
-            ->setHtmlAttribute('size', 50)
-            ->setDefaultValue( Random::generate(40) );
-
-        $form->addText('blob_token', 'Bezpečnostní token pro galerii:')
-            ->setOption('description', 'Pokud je vyplněn, kdokoli se znalostí správné adresy se může podívat na galerii obrázků. Má smysl jen tehdy, pokud zařízení nahrává obrázky.'  )
-            ->setHtmlAttribute('size', 50)
-            ->setDefaultValue( Random::generate(40) );
-
-        $form->addGroup('Monitoring');
-
-        $form->addCheckbox('monitoring', 'Zařadit do monitoringu funkce')
-            ->setOption('description', 'Pokud ze senzorů zařízení nebudou chodit data tak často, jak mají, bude zaslána notifikace.'  )
-            ->setDefaultValue(false);
-
-        $form->addSubmit('send', 'Uložit')
-            ->setHtmlAttribute('onclick', 'if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;');
-            
-        $form->onSuccess[] = [$this, 'deviceFormSucceeded'];
-
-        $this->makeBootstrap4( $form );
-        return $form;
-    }
-
-    
-    public function deviceFormSucceeded(Form $form, array $values): void
-    {
-        $values['name'] = "{$this->getUser()->getIdentity()->prefix}:{$values['name']}";
-        $values['user_id'] = $this->getUser()->id;
-
-        $values['passphrase'] = $this->config->encrypt( $values['passphrase'], $values['name'] );
-
-        $id = $this->getParameter('id');
-        if( $id ) {
-            // editace
-            $device = $this->datasource->getDevice( $id );
-            if (!$device) {
-                $this->error('Zařízení nebylo nalezeno');
-            }
-            $this->checkAcces( $device->user_id );
-            $device->update( $values );
+  protected function createComponentDeviceForm(): Form {
+		$form = $this->deviceForm->create($this->language, $this->id_device);
+		$form->onSuccess[] = function ($form) { 
+      $this->flashMessage("Změny provedeny.", 'success');
+        if( $this->id_device ) {
+            $this->redirect("Device:show", $this->id_device );
         } else {
-            // zalozeni
-            $this->datasource->createDevice( $values );
+            $this->redirect("Device:list" );
         }
+		};
+		return $this->makeBootstrap4( $form );
+	} 
 
-        $this->flashMessage("Změny provedeny.", 'success');
-        if( $id ) {
-            $this->redirect("Device:show", $id );
-        } else {
-            $this->redirect("Inventory:home" );
-        }
-    }
-    
-    public function actionEdit(int $id): void
-    {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '../';
-        $this->template->id = $id;
-
-        $post = $this->datasource->getDevice( $id );
-        if (!$post) {
-            $this->error('Zařízení nebylo nalezeno');
-        }
-
-        Logger::log( 'audit', Logger::INFO ,
-            "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} edituje/prohlizi konfiguraci/heslo zarizeni {$id}" );
-
-        $post = $post->toArray();
-        $post['passphrase'] = $this->config->decrypt( $post['passphrase'], $post['name'] );
-        $this->checkAcces( $post['user_id'] );
-
-        $this->template->name = $post['name'];
-
-        $arr = Strings::split($post['name'], '~:~');
-        $post['name'] = $arr[1];
-
-        $this['deviceForm']->setDefaults($post);
-    }
-
-    //----------------------------------------------------------------------
+  //----------------------------------------------------------------------
 
 
 
     public function renderConfig(int $id): void
     {
-        $this->checkUserRole( 'user' );
 
         $post = $this->datasource->getDevice( $id );
         if (!$post) {
@@ -235,7 +192,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     public function renderShow(int $id): void
     {
-        $this->checkUserRole( 'user' );
 
         $post = $this->datasource->getDevice( $id );
         if (!$post) {
@@ -315,7 +271,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     public function renderBlobs(int $id): void
     {
-        $this->checkUserRole( 'user' );
 
         $post = $this->datasource->getDevice( $id );
         if (!$post) {
@@ -342,7 +297,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     public function renderDownload(int $id, int $blobId ): void
     {
-        $this->checkUserRole( 'user' );
 
         $post = $this->datasource->getDevice( $id );
         if (!$post) {
@@ -380,8 +334,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     public function actionDelete( int $id ): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
         $this->template->path = '../';
 
         $post = $this->datasource->getDevice( $id );
@@ -442,8 +394,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     public function actionSendconfig(int $id): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
         $this->template->path = '../';
         $this->template->id = $id;
 
@@ -514,8 +464,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     public function actionUpdate(int $id): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
         $this->template->path = '../';
         $this->template->id = $id;
 

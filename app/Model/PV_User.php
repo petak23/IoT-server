@@ -13,15 +13,15 @@ use Nette\Utils\Random;
 
 
 /**
- * Model, ktory sa stara o tabulku rausers
+ * Model, ktory sa stara o tabulku user_main
  * 
- * Posledna zmena 30.08.2021
+ * Posledna zmena 06.09.2021
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.5
+ * @version    1.0.6
  */
 class PV_User {
 
@@ -96,7 +96,8 @@ class PV_User {
   public function updateUser(int $id, $values ) {
     return $this->save( $id, [ 
                     'email' => $values['email'],
-                    'monitoring_token' => $values['monitoring_token']
+                    'monitoring_token' => $values['monitoring_token'],
+                    'id_lang' => $values['id_lang']
                   ]);
   }
 
@@ -115,7 +116,7 @@ class PV_User {
         'id_user_roles'       => 2, // Registrácia cez web
         'email'               => $values->email,
         'prefix'              => $prefix,
-        'id_rauser_state'     => 1, // čeká na zadání kódu z e-mailu
+        'id_user_state'       => 1, // čeká na zadání kódu z e-mailu
         'self_enroll'         => 1, // self-enrolled
         'self_enroll_code'    => $code,
         'measures_retention'  => 90,
@@ -135,8 +136,8 @@ class PV_User {
   /**
    * Aktualizuje údaje špecifické pri registrácii */
   public function updateUserEnrollState(string $email, int $status, int $errCount, int $id_user_roles = 0) {
-    $this->getUserBy([ 'email' => $email, 'id_rauser_state' => 1 ])
-          ->update(['id_rauser_state' => $status, 
+    $this->getUserBy([ 'email' => $email, 'id_user_state' => 1 ])
+          ->update(['id_user_state' => $status, 
                     'id_user_roles' => $id_user_roles,
                     'self_enroll_error_count' => $errCount
                   ]);
@@ -146,7 +147,7 @@ class PV_User {
    * Vymaže užívateľa pri registrácii
    * @return int return number of affected rows */
   public function deleteUserByEmailEnroll( string $email ): int {
-    return strlen($email) ? $this->getUserBy([ 'email' => $email, 'id_rauser_state' => 1 ])->delete() : 0;
+    return strlen($email) ? $this->getUserBy([ 'email' => $email, 'id_user_state' => 1 ])->delete() : 0;
   }
 
   /** Test existencie emailu

@@ -19,7 +19,7 @@ use App\Services;
 
 /**
  * Registrácia užívateľa
- * Last change 26.08.2021
+ * Last change 06.09.2021
  * 
  * @github     Forked from petrbrouzda/RatatoskrIoT
  * 
@@ -27,7 +27,7 @@ use App\Services;
  * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 class EnrollPresenter extends MainBasePresenter {
 
@@ -145,9 +145,9 @@ class EnrollPresenter extends MainBasePresenter {
       $this->flashRedirect("Enroll:step2", sprintf($this->texty_presentera->translate("Enroll2Form_validate_not_found"), $email), "danger");
     }
 
-    if( $userdata->id_rauser_state != 1) {
+    if( $userdata->id_user_state != 1) {
       Logger::log( 'audit', Logger::ERROR , 
-          "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: chybny stav {$userdata->id_rauser_state} pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]" ); 
+          "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: chybny stav {$userdata->id_user_state} pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]" ); 
 
       $this->flashRedirect(["Sign:in", $email], sprintf($this->texty_presentera->translate("Enroll2Form_validate_ok_code"), $email), "success"); 
     }

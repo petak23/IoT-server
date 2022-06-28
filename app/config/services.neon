@@ -1,6 +1,7 @@
 services:
 
 	# Presenters
+	- App\Presenters\HomepagePresenter(%parameters%)
 	- App\Presenters\SignPresenter(%parameters%)
 	- App\Presenters\UserPresenter(%parameters%)
 	- App\Presenters\UserAclPresenter(%parameters%)
@@ -18,6 +19,7 @@ services:
 	- App\Model\PV_User_state
 
   # Forms
+	- App\Forms\Device\DeviceFormFactory
 	- App\Forms\User\EditUserFormFactory
 	- App\Forms\User\Enroll2FormFactory
 	- App\Forms\User\ForgottenPasswordFormFactory

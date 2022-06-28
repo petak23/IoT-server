@@ -3,14 +3,14 @@
 {block content}
 <div class="col-12">
   <div class="pb-3 pt-3 px-2">
-    <h1>Změna nastavení účtu uživatele {$userInfo->username}</h1>
+    <h1>{_'inv_user_change_h1'} {$userInfo->username}</h1>
 
     {control userForm}
   </div>
 
   <div class="row px-2 pt-3">
     <div class="col-12">
-      <a n:href="Inventory:user" class="btn btn-outline-primary btn-sm" role="button">Zpět beze změny</a>
+      <a n:href="Inventory:user" class="btn btn-outline-primary btn-sm" role="button">{_'base_not_save'}</a>
     </div>
   </div>
 </div>

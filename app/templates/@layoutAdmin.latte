@@ -13,7 +13,7 @@
   <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
       <button class="btn btn-link btn-sm ml-2 mr-2" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
-      <a class="navbar-brand" href="#">{$appName}</a>
+      <a class="navbar-brand" n:href="Inventory:user">{$appName}</a>
       <ul class="navbar-nav ml-auto mr-0 mr-md-3">
         <li class="nav-item dropdown">
           <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -21,11 +21,11 @@
           </a>
           {* dropdown-menu-right - lebo css je bootstrap 4, ale js je bootstrap 5 *}
           <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="userDropdown">
-            <li><span class="dropdown-item-text">Uživatel: <b>{$userInfo->username}</b></span></li>
-            <li><span class="dropdown-item-text"><small>Rola: {$userInfo->user_role->name}</small></span></li>
-            <li><span class="dropdown-item-text"><small>Prefix: {$userInfo->prefix}</small></span></li>
+            <li><span class="dropdown-item-text">{_'main_li_user'} <b>{$userInfo->username}</b></span></li>
+            <li><span class="dropdown-item-text"><small>{_'main_li_role'} {$userInfo->user_role->name}</small></span></li>
+            <li><span class="dropdown-item-text"><small>{_'main_li_prefix'} {$userInfo->prefix}</small></span></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" n:href="Sign:out">Odhlásit</a></li>
+            <li><a class="dropdown-item" n:href="Homepage:out" title="{_'main_li_log_out'}">{_'main_li_log_out'}</a></li>
           </ul>
         </li>
       </ul>
@@ -50,7 +50,7 @@
         <footer class="py-4 bg-dark mt-auto">
           <div class="container-fluid">
             <div class="d-flex align-items-center justify-content-between small">
-              <div class="text-muted">RatatoskrIoT</div>
+              <div class="text-muted">(Ratatoskr)IoT-server</div>
               <div n:inner-foreach="$links as $link">
                 <a href="{$link['link']}" n:tag-if="strlen($link['link'])>0">{$link['name']}</a>
                 {sep}&middot;{/sep}

@@ -26,6 +26,7 @@ final class RouterFactory
 		$router->addRoute('monitor/show/<token>/<id>/', 'Monitor:show');
     $router->addRoute('device/<action>[/<id>]', 'Device:show');
 		$router->addRoute('useracl[/<action>[/<id>]]', 'UserAcl:default');
+		$router->addRoute('units[/<action>[/<id>]]', 'Units:default');
 		$router->addRoute('<presenter>/<action>[/<id>]', 'Homepage:default');
 		return $router;
 	}
