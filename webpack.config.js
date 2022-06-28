@@ -17,6 +17,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const {VueLoaderPlugin} = require("vue-loader");
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // Webpack abilities
@@ -27,6 +28,7 @@ const WEBPACK_DEV_SERVER_PROXY_PORT = parseInt(process.env.WEBPACK_DEV_SERVER_PR
 
 // Config
 const ROOT_PATH = __dirname;
+const CACHE_PATH = ROOT_PATH + "/temp/webpack";
 
 var AssetsPlugin = require('assets-webpack-plugin');
 
@@ -34,8 +36,8 @@ module.exports = {
   mode: devMode ? "development" : "production",
   context: path.join(ROOT_PATH, "app/assets"),
   entry: {
-    front: [path.join(ROOT_PATH, "app/assets/css/main.css"), path.join(ROOT_PATH, "app/assets/js/main.js")],
-    //admin: [path.join(ROOT_PATH, "app/assets/admin/css/main.css"), path.join(ROOT_PATH, "app/assets/admin/js/main.js")]
+    front: path.join(ROOT_PATH, "app/assets/js/main.js"),
+    //admin: path.join(ROOT_PATH, "app/assets/admin/js/main.js")
     //texyla: [path.join(ROOT_PATH, "www/texyla/css/main.css"), path.join(ROOT_PATH, "www/texyla/texyla-init.js")]
   },
   output: {
@@ -44,56 +46,151 @@ module.exports = {
     filename: devMode ? '[name].bundle.js' : '[name].[chunkhash:8].bundle.js',
     clean: true,
     //chunkFilename: devMode ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js'
-  },  
+  },
+  devtool: 'cheap-module-source-map',
   module: {
-    //noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
+		noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
 		rules: [
 			{
-        test: /\.js$/,
-        exclude: path => /node_modules/.test(path) && !/\.vue\.js/.test(path),
-        loader: 'babel-loader',
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-      },
-      {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader'
-        ]
-      },
-      {
-        test: /\.svg$/,
-        loader: 'raw-loader'
-      },
-      {
-        test: /\.(png|svg|jpe?g|gif|webp|ico)$/,
-        use: [
+				test: /\.vue$/,
+				use: [
+					{
+						loader: 'vue-loader',
+						options: {
+							compilerOptions: {
+								preserveWhitespace: false
+							},
+						}
+					}
+				]
+			},
+			{
+				test: /\.js$/,
+				exclude: file => (
+					/node_modules/.test(file) &&
+					!/\.vue\.js/.test(file)
+				),
+				use: [
+					{
+						loader: 'babel-loader',
+					}
+				]
+			},
+			/*{
+				test: /\.tsx?$/,
+				exclude: /node_modules/,
+				use: [{
+					loader: 'awesome-typescript-loader',
+				}
+				]
+			},*/
+			{
+				test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
+				use: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: 4096,
+							fallback: {
+								loader: 'file-loader',
+								options: {
+									name: 'fonts/[name].[hash:8].[ext]'
+								}
+							}
+						}
+					}
+				]
+			},
+			{
+				test: /\.(svg)(\?.*)?$/,
+				use: [
+					{
+						loader: 'file-loader',
+						options: {
+							name: 'imgs/[name].[hash:8].[ext]'
+						}
+					}
+				]
+			},
+			{
+				test: /\.(png|jpe?g|gif|webp|ico)(\?.*)?$/,
+				use: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: 4096,
+							fallback: {
+								loader: 'file-loader',
+								options: {
+									name: 'imgs/[name].[hash:8].[ext]'
+								}
+							}
+						}
+					}
+				]
+			},
+			{
+				test: /\.(css|scss)$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					{
+						loader: 'css-loader',
+						options: {
+							sourceMap: false,
+							importLoaders: 2,
+							modules: false
+						}
+					},
+					{
+						loader: "postcss-loader",
+						options: {
+							postcssOptions: {
+								ident: "postcss",
+								plugins: [require("autoprefixer")]
+							}
+						}
+					},
           {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[hash:8].[ext]',
-              outputPath: 'images/'
-            }
-          }  
-        ]
-      },
+            loader: 'sass-loader',
+            //options: {
+              // This is the path to your variables
+              //additionalData: "@import '@/admin/css/scss/variables.scss';"
+            //},
+          },
+				],
+			},
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [
+				test: /\.sass$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					{
+						loader: 'css-loader',
+						options: {
+							sourceMap: false,
+							importLoaders: 2,
+							modules: false
+						}
+					},
+					{
+						loader: "postcss-loader",
+						options: {
+							postcssOptions: {
+								ident: "postcss",
+								plugins: [require("autoprefixer")]
+							}
+						}
+					},
           {
-            loader: 'file-loader',
+            loader: 'sass-loader',
             options: {
-              name: '[name].[hash:8].[ext]',
-              outputPath: 'fonts/'
-            }
-          }
-        ]
-      }
-    ]
-  },
+              // This is the path to your variables
+              additionalData: "@import '@/admin/css/scss/variables.scss'"
+            },
+          },
+				],
+			},
+		]
+	}, 
   resolve: {
     alias: {
         'vue$': 'vue/dist/vue.esm.js',
@@ -104,6 +201,8 @@ module.exports = {
   plugins: [
     // enable vue-loader to use existing loader rules for other module types
 		new VueLoaderPlugin(),
+
+    new VuetifyLoaderPlugin(),
     
     // fix legacy jQuery plugins which depend on globals
 		new webpack.ProvidePlugin({
@@ -119,11 +218,11 @@ module.exports = {
       filename: devMode ? '[name].bundle.css' : '[name].[chunkhash:8].bundle.css'
     }),
     new AssetsPlugin({ // Pre aplikaciu filename: '[name].[contenthash:8].[ext]' a prepojenie s nette
-      includeManifest: 'manifest',
+      //includeManifest: 'manifest',
       path: path.join(ROOT_PATH, 'www/dist')
     })
   ],
-  devtool: 'cheap-module-source-map',
+  //devtool: 'cheap-module-source-map',
   performance: {
     hints: false
   }
@@ -139,15 +238,15 @@ if (process.env.NODE_ENV === 'development') {
     devServer: {
       host: WEBPACK_DEV_SERVER_HOST,
       port: WEBPACK_DEV_SERVER_PORT,
-      disableHostCheck: true,
-      contentBase: path.join(ROOT_PATH, 'www'),
+      //disableHostCheck: true,
+      //contentBase: path.join(ROOT_PATH, 'www'),
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': '*'
       },
-      stats: 'errors-only',
+      //stats: 'errors-only',
       hot: true,
-      inline: true,
+      //inline: true,
       proxy: {
         '/': `http://${WEBPACK_DEV_SERVER_PROXY_HOST}:${WEBPACK_DEV_SERVER_PROXY_PORT}`
       }

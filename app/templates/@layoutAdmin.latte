@@ -16,11 +16,15 @@
       <a class="navbar-brand" n:href="Inventory:user">{$appName}</a>
       <ul class="navbar-nav ml-auto mr-0 mr-md-3">
         <li class="nav-item dropdown">
-          <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="btn btn-dark dropdown-toggle" href="#" 
+            role="button" id="userDropdown"
+            data-display="static"
+            data-toggle="dropdown" aria-expanded="false">
             {$userInfo->prefix} <i class="fas fa-user fa-fw"></i>
           </a>
           {* dropdown-menu-right - lebo css je bootstrap 4, ale js je bootstrap 5 *}
-          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="userDropdown">
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end dropdown-menu-lg-start"
+            aria-labelledby="userDropdown">
             <li><span class="dropdown-item-text">{_'main_li_user'} <b>{$userInfo->username}</b></span></li>
             <li><span class="dropdown-item-text"><small>{_'main_li_role'} {$userInfo->user_role->name}</small></span></li>
             <li><span class="dropdown-item-text"><small>{_'main_li_prefix'} {$userInfo->prefix}</small></span></li>
