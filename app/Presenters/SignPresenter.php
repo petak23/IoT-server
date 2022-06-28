@@ -23,6 +23,8 @@ use PeterVojtech;
  * @license
  * @link       http://petak23.echo-msz.eu
  * @version    1.0.2
+ * 
+ * @todo https://getbootstrap.com/docs/5.1/components/navs-tabs/#javascript-behavior
  */
 class SignPresenter extends MainBasePresenter {
   
@@ -32,7 +34,7 @@ class SignPresenter extends MainBasePresenter {
 	public $backlink = '';
 
   /** @var Model\PV_User @inject */
-	public $pv_user;
+	public $user_main;
 
   /** @var Services\MailService */
   private $mailService;
@@ -47,7 +49,7 @@ class SignPresenter extends MainBasePresenter {
   /** @var User\ForgottenPasswordFormFactory @inject*/
 	public $forgottenPasswordForm;
 
-  use PeterVojtech\User\signInTrait;
+  use PeterVojtech\User\Sign\signInTrait;
 
   public function __construct($parameters,
                               Services\Config $config,
@@ -104,7 +106,7 @@ class SignPresenter extends MainBasePresenter {
   /** 
    * Spracovanie formulara zabudnuteho hesla */
   public function forgotPasswordFormSucceeded(Form $form, \stdClass $values): void {
-    $fpuser = $this->pv_user->getUserBy(['email'=>$values->email]);
+    $fpuser = $this->user_main->getUserBy(['email'=>$values->email]);
     $tp = $this->texty_presentera; // Pre skrátenie
     $new_password_requested = StrFTime("%Y-%m-%d %H:%M:%S", Time());
     $new_password_key = Nette\Utils\Random::generate(25);
@@ -123,7 +125,7 @@ class SignPresenter extends MainBasePresenter {
           $values->email,
           __DIR__ . '/../templates/Sign/forgot_password-html.latte', 
           $params );
-        $this->pv_user->save($fpuser->id, [
+        $this->user_main->save($fpuser->id, [
           'new_password_key' => $new_password_key,
           'new_password_requested' => $new_password_requested,
         ]);
@@ -141,16 +143,30 @@ class SignPresenter extends MainBasePresenter {
    * @param int $id Id uzivatela pre reset hesla
    * @param string $new_password_key Kontrolny retazec pre reset hesla */
   public function actionResetPassword(int $id, string $new_password_key): void {
-    /*if (!isset($id) OR !isset($new_password_key)) {
-      $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err1'), 'danger');
+    
+    if (!isset($id) OR !isset($new_password_key)) {
+      $this->flashRedirect('Sign:in', $this->texty_presentera->translate('reset_pass_err1'), 'danger');
     } else {
-      $user_main_data = $this->user_main->find($id);
+      $user_main_data = $this->user_main->getUser($id);
+      //dumpe($new_password_key);
       if ($new_password_key == $user_main_data->new_password_key){ 
         $this->template->email = sprintf($this->texty_presentera->translate('reset_pass_email'), $user_main_data->email);
         $this["resetPasswordForm"]->setDefaults(["id"=>$id]); //Nastav vychodzie hodnoty
       } else { 
-        $this->flashRedirect('Homepage:', $this->texty_presentera->translate('reset_pass_err'.($user_main_data->new_password_key == NULL ? '2' : '3')), 'danger');
+        $this->flashRedirect('Sign:in', $this->texty_presentera->translate('reset_pass_err'.($user_main_data->new_password_key == NULL ? '2' : '3')), 'danger');
       }
-    }*/
+    }
   }
+
+   /**
+	 * Reset password user form component factory.
+	 * @return Nette\Application\UI\Form */
+	protected function createComponentResetPasswordForm() {
+    $form = $this->resetPasswordForm->create($this->language);
+    $form->onSuccess[] = function(Form $form) {
+      $this->flashRedirect('Sign:in', $this->texty_presentera->translate('pass_change_ok'), 'success');
+    };
+        
+		return $form;
+	}
 }

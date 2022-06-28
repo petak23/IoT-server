@@ -17,5 +17,5 @@ services:
   - PeterVojtech\UserAcl\EditRoleFormFactory
 
 # Component SignIn
-  - PeterVojtech\User\ISignInControl
-  - PeterVojtech\User\SignInFormFactory
+  - PeterVojtech\User\Sign\ISignInControl
+  - PeterVojtech\User\Sign\SignInFormFactory

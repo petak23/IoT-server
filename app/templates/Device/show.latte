@@ -13,36 +13,36 @@
         </div>
     </div>
     <div class="row px-2  pt-3">
-        <div class="col-12">
-            {*<a n:href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">Zobrazit konfiguraci</a>*}
-            <a class="btn btn-primary" data-toggle="collapse" href="#collapseConfigInfo" role="button" aria-expanded="false" aria-controls="collapseConfigInfo">
-                Zobrazit konfiguraci
-            </a>
-        </div>
+      <div class="col-12">
+        {*<a n:href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">Zobrazit konfiguraci</a>*}
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConfigInfo" aria-expanded="false" aria-controls="collapseConfigInfo">
+          Zobraziť konfiguráciu
+        </button>
+      </div>
     </div>
 
     <div class="collapse" id="collapseConfigInfo">
-        <div class="card card-body">
-            <div class="row px-2">
-                <div class="col-12">
-                    <h3>Konfigurace zařízení</h3>
-                    <i>Tuto konfiguraci nastavte v zařízení.</i>
-                </div>
-            </div>
-
-            <div class="row px-2 bg-light">
-                <div class="col-12 col-md-2">RA URL:</div>
-                <div class="col-12 col-md-10"><b>{$url}</b></div>
-            </div>
-            <div class="row px-2 ">
-                <div class="col-12 col-md-2">RA device name:</div>
-                <div class="col-12 col-md-10"><b>{$device['name']}</b></div>
-            </div>
-            <div class="row px-2 bg-light">
-                <div class="col-12 col-md-2">RA passphrase:</div>
-                <div class="col-12 col-md-10"><b>{$device['passphrase']}</b></div>
-            </div>
+      <div class="card card-body">
+        <div class="row px-2">
+          <div class="col-12">
+            <h3>Konfigurácia zariadenia</h3>
+            <i>Túto konfiguráciu nastavte v zariadení.</i>
+          </div>
         </div>
+
+        <div class="row px-2 bg-light">
+          <div class="col-12 col-md-2">RA URL:</div>
+          <div class="col-12 col-md-10"><b>{$url}</b></div>
+        </div>
+        <div class="row px-2 ">
+          <div class="col-12 col-md-2">RA device name:</div>
+          <div class="col-12 col-md-10"><b>{$device['name']}</b></div>
+        </div>
+        <div class="row px-2 bg-light">
+          <div class="col-12 col-md-2">RA passphrase:</div>
+          <div class="col-12 col-md-10"><b>{$device['passphrase']}</b></div>
+        </div>
+      </div>
     </div>
 
     <div class="row px-2 pt-3">

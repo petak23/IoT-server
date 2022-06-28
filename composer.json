@@ -4,6 +4,16 @@
 	"keywords": ["nette", "IoT-server"],
 	"type": "project",
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Peter Vojtech",
+			"homepage": "http://petak23.echo-msz.eu"
+		},
+		{
+			"name": "Nette Community",
+			"homepage": "https://nette.org/contributors"
+		}
+	],
 	"require": {
 		"php": ">= 7.2",
 		"nette/application": "^3.0.6",

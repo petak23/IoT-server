@@ -1,18 +1,18 @@
 <?php
-namespace PeterVojtech\User;
+namespace PeterVojtech\User\Sign;
 
 use Language_support;
 use Nette;
 
 /**
  * Komponenta pre zobrazenie prihlasovacieho formulára
- * Posledna zmena(last change): 27.08.2021
+ * Posledna zmena(last change): 03.09.2021
  * 
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com> 
  * @copyright Copyright (c) 2021 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link http://petak23.echo-msz.eu
- * @version 1.0.0
+ * @version 1.0.1
  */
 class SignInControl extends Nette\Application\UI\Control {
   
