@@ -386,6 +386,18 @@ inv_user_change_h1: 'Změna nastavení účtu uživatele'
 
 # Devices
 devices_h1: 'Zařízení'
+device_list_h1: 'Moje zařízení'
+device_list_new: 'Nové zařízení'
+device_list_zero: 'Zatím nemáte žádná zařízení.'
+device_list_first_login: 'První přihlášení'
+device_list_last_login: 'Poslední přihlášení'
+device_list_txt: 'Popis'
+device_list_login_error_title: 'Zařízení má problém s přihlášením. Poslední neúspěšné přihlášení:'
+device_list_config_cange_wait: 'Pro zařízení čeká změna konfigurace'
+device_list_info: 'Info'
+device_list_edit: 'Edit'
+device_list_chart: 'Graf'
+device_list_stat: 'Statistika'
 
 # Graphs
 graphs_h1: 'Grafy'

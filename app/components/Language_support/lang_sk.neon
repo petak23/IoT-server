@@ -386,6 +386,18 @@ inv_user_change_h1: 'Zmena nastavenia účtu užívateľa'
 
 # Devices
 devices_h1: 'Zariadenia'
+device_list_h1: 'Moje zariadenia'
+device_list_new: 'Nové zariadenie'
+device_list_zero: 'Zatiaľ nemáte žiadne zariadenia.'
+device_list_first_login: 'Prvé prihlásenie'
+device_list_last_login: 'Posledné prihlásenie'
+device_list_txt: 'Popis'
+device_list_login_error_title: 'Zariadenie má problém s prihlásením. Posledné neúspešné prihlásenie:'
+device_list_config_cange_wait: 'Zariadenie čaká zmena konfigurácie'
+device_list_info: 'Info'
+device_list_edit: 'Edit'
+device_list_chart: 'Graf'
+device_list_stat: 'Štatistika'
 
 # Graphs
 graphs_h1: 'Grafy'

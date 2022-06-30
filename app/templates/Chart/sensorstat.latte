@@ -50,7 +50,7 @@
 		<a href="../../../../chart/sensor/show/{$id}/?dateFrom={$sumdataStats->max_time |date:'Y-m-d'}&lenDays={$lenDays}&altYear={$altYear}"
 		>{$sumdataStats->max_time |date:'d.m.Y'}</a>.
 	{else}
-		{if ($sensor['device_class']==2) }
+		{if ($sensor['id_device_classes']==2) }
 			Pro toto zařízení nejsou počítána sumární data.
 		{else}
 			Nejsou dostupná žádná sumární data.

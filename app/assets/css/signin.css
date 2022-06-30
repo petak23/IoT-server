@@ -17,17 +17,10 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+.flash
 
-.center-content {
-  width: 100%;
-  max-width: 35rem;
-  padding: 1rem;
-  margin: auto;
+.sign-in-form {
   background-color: rgba(200,200,200,.5);
-}
-.center-content ul {
-  list-style-type: none;
-  padding: 0;
 }
 
 .form-signin label {

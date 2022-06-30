@@ -18,7 +18,8 @@ use Nette\Utils\DateTime;
  * @link       http://petak23.echo-msz.eu
  * @version    1.0.1
  */
-class PV_Devices {
+class PV_Devices
+{
 
   use Nette\SmartObject;
 
@@ -26,61 +27,62 @@ class PV_Devices {
   protected $tableName = 'devices';
 
   /** @var Database\Table\Selection */
-	private $devices;
+  private $devices;
 
   /** @var Database\Table\Selection */
-	private $sensors;
+  private $sensors;
 
-  public function __construct(Nette\Database\Explorer $database) {
-		$this->devices = $database->table("devices");
+  public function __construct(Nette\Database\Explorer $database)
+  {
+    $this->devices = $database->table("devices");
     $this->sensors = $database->table("sensors");
-	}
+  }
 
-  public function getDevicesUser( $userId ) : VDevices {
+  public function getDevicesUser($userId): VDevices
+  {
     $rc = new VDevices();
 
     // nacteme zarizeni
-    
-    $result = $this->devices->where(['user_id'=>$userId])->order('name ASC');
+
+    $result = $this->devices->where(['user_id' => $userId])->order('name ASC');
 
     foreach ($result as $row) {
-      $dev = new VDevice( $row->toArray() );
+      $dev = new VDevice($row->toArray());
       $dev->attrs['problem_mark'] = false;
-      if( $dev->attrs['last_bad_login'] != NULL ) {
-        if( $dev->attrs['last_login'] != NULL ) {
-          $lastLoginTs = (DateTime::from( $dev->attrs['last_login']))->getTimestamp();
-          $lastErrLoginTs = (DateTime::from(  $dev->attrs['last_bad_login']))->getTimestamp();
-          if( $lastErrLoginTs >  $lastLoginTs ) {
+      if ($dev->attrs['last_bad_login'] != NULL) {
+        if ($dev->attrs['last_login'] != NULL) {
+          $lastLoginTs = (DateTime::from($dev->attrs['last_login']))->getTimestamp();
+          $lastErrLoginTs = (DateTime::from($dev->attrs['last_bad_login']))->getTimestamp();
+          if ($lastErrLoginTs >  $lastLoginTs) {
             $dev->attrs['problem_mark'] = true;
           }
         } else {
           $dev->attrs['problem_mark'] = true;
         }
       }
-      $rc->add( $dev );
+      $rc->add($dev);
     }
-    
+
     // a k nim senzory
 
-    $result = $this->sensors->where(['device_id.user_id'=>$userId])->order('name ASC');
+    $result = $this->sensors->where(['device_id.user_id' => $userId])->order('name ASC');
 
     foreach ($result as $row) {
       $r = $row->toArray();
-      $device = $rc->get( $r['device_id'] );
+      $device = $rc->get($r['device_id']);
       $r['warningIcon'] = 0;
-      $r['dc_desc'] = $row->device_class->desc;
+      $r['dc_desc'] = $row->device_classes->desc;
       $r['unit'] = $row->value_type->unit;
-      dump($row->value_type->unit);
-      dumpe($r);
-      if( $r['last_data_time'] ) {
-        $utime = (DateTime::from( $r['last_data_time'] ))->getTimestamp();
-        if( time()-$utime > $r['msg_rate'] ) {
-          $r['warningIcon'] = ( $device->attrs['monitoring']==1 ) ? 1 : 2;
-        } 
+      //dumpe($r);
+      if ($r['last_data_time']) {
+        $utime = (DateTime::from($r['last_data_time']))->getTimestamp();
+        if (time() - $utime > $r['msg_rate']) {
+          $r['warningIcon'] = ($device->attrs['monitoring'] == 1) ? 1 : 2;
+        }
       }
-      
-      if( isset($device) ) {
-        $device->addSensor( $r );
+
+      if (isset($device)) {
+        $device->addSensor($r);
       }
     }
 
@@ -90,36 +92,39 @@ class PV_Devices {
   /** 
    * Pridanie zariadenia
    *    */
-  public function createDevice( $values ) {
+  public function createDevice($values)
+  {
     return $this->devices->insert($values);
   }
 
   /** 
    * Pridanie zariadenia
    *    */
-  public function getDevice( $deviceId ) { 
+  public function getDevice($deviceId)
+  {
     return $this->devices->get($deviceId);
   }
-
 } // End class PV_Devices
 
-class VDevices {
+class VDevices
+{
   use Nette\SmartObject;
 
   public $devices = [];
-  
-  public function add( VDevice $device )
+
+  public function add(VDevice $device)
   {
-      $this->devices[ $device->attrs['id'] ] = $device;
+    $this->devices[$device->attrs['id']] = $device;
   }
 
-  public function get( $id ) : VDevice
+  public function get($id): VDevice
   {
-      return $this->devices[$id];
+    return $this->devices[$id];
   }
 }
 
-class VDevice {
+class VDevice
+{
   use Nette\SmartObject;
 
   /**
@@ -129,15 +134,17 @@ class VDevice {
 
   /**
    * Pole poli s indexy
-   * id	device_id	channel_id	name	device_class	value_type	msg_rate	desc	display_nodata_interval	preprocess_data	preprocess_factor	dc_desc	unit
+   * id	device_id	channel_id	name	id_device_classes	value_type	msg_rate	desc	display_nodata_interval	preprocess_data	preprocess_factor	dc_desc	unit
    */
   public $sensors = [];
 
-  public function __construct( $attrs ) {
+  public function __construct($attrs)
+  {
     $this->attrs = $attrs;
   }
-  
-  public function addSensor( $sensorAttrs ) {
-      $this->sensors[ $sensorAttrs['id'] ] = $sensorAttrs;
+
+  public function addSensor($sensorAttrs)
+  {
+    $this->sensors[$sensorAttrs['id']] = $sensorAttrs;
   }
 }

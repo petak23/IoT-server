@@ -28,9 +28,9 @@
 
 <div class="row px-2">
     <div class="col-12 col-md-4">Typ měřených dat:</div>
-    <div class="col-12 col-md-8"><b>{$sensor['device_class']}</b> - 
+    <div class="col-12 col-md-8"><b>{$sensor['id_device_classes']}</b> - 
     
-        {if ($sensor['device_class']==1) }
+        {if ($sensor['id_device_classes']==1) }
             Kontinuální se sumarizací.
             <small>
             <br>Předpokládá se, že se měří spojitá veličina jako je například teplota, tlak, nebo výška hladiny 
@@ -39,13 +39,13 @@
             <br>Pro rychlé vykreslení delších grafů je možné používat sumární data.
             <br>Detailní naměřená data se po určité době mažou, sumární data zůstávají.
             </small>
-        {elseif ($sensor['device_class']==2) }
+        {elseif ($sensor['id_device_classes']==2) }
             Kontinuální bez sumarizace.
             <small>
             <br>Předpokládá se, že se měří spojitá veličina jako je například teplota, tlak, nebo výška hladiny. 
             <br>Nepočítají se sumární data.
             </small>
-        {elseif ($sensor['device_class']==3) }
+        {elseif ($sensor['id_device_classes']==3) }
             Impulzní data se sumarizací.
             <small>
             <br>Měří se impulzní veličina - tj. počet jednotek načtených z plynoměru, počet přeskočení srážkoměru atd.

@@ -3,50 +3,53 @@
 {block content}
 <div class="col-12">
   <nav class="navbar navbar-light bg-light mx-0 mb-1">
-    <h1>Moje zařízení <small>[user_id = {$user->id}]</small></h1>
-    <a n:href="Device:create" class="btn btn-outline-success" type="button">Nové zařízení</a>
+    <h1>{_'device_list_h1'} <small>[user_id = {$user->id}]</small></h1>
+    <a n:href="Device:create" class="btn btn-outline-success" type="button">{_'device_list_new'}</a>
   </nav>
 </div>
 
 <div class="col-12">
-    {if (sizeof($devices->devices)==0)}
-        <div class="row px-2 ">
-            Zatím nemáte žádná zařízení.
-        </div>
-    {/if}
+  <div n:if="(sizeof($devices->devices)==0)" class="row px-2 ">{_'device_list_zero'}</div>
 
-    {foreach $devices->devices as $device }
+  {foreach $devices->devices as $device }
 
-        {first}
-            <div class="row px-2 text-secondary ">
-                <div class="col-4 col-md-2 ">Zařízení</div>
-                <div class="col-4  col-md-2">První přihlášení</div>
-                <div class="col-4  col-md-2">Poslední přihlášení</div>
-                <div class="col-12 col-md-1 ">Popis</div>
-            </div>
-        {/first}
+    {first}
+      <div class="row px-2 text-secondary ">
+        <div class="col-4 col-md-2 ">{_'devices_h1'}</div>
+        <div class="col-4  col-md-2">{_'device_list_first_login'}</div>
+        <div class="col-4  col-md-2">{_'device_list_last_login'}</div>
+        <div class="col-12 col-md-1 ">{_'device_list_txt'}</div>
+      </div>
+    {/first}
 
-        <div class="row my-2 px-2 bg-primary text-white">
-            <div class="col-4 col-md-2 "><b><a n:href="Device:show $device->attrs['id']" class="text-white">{$device->attrs['name']}</a></b>
-                {if ($device->attrs['problem_mark'])} 
-                    <a href="#" data-toggle="tooltip" data-placement="top" title="Zařízení má problém s přihlášením. Poslední neúspěšné přihlášení: 
-                    {$device->attrs['last_bad_login']}."
-                    ><i class="text-warning fas fa-exclamation-triangle"></i></a>
-                {/if}        
-                {if $device->attrs['config_data'] }
-                    <a href="#" data-toggle="tooltip" data-placement="top" title="Pro zařízení čeká změna konfigurace" 
-                    ><i class="text-warning fas fa-share-square"></i></a>
-                {/if}
-            </div>
-            <div class="col-4 col-md-2">{$device->attrs['first_login']}</div>
-            <div class="col-4 col-md-2">{$device->attrs['last_login']}</div>
-            <div class="col-12 col-md-4"><i>{$device->attrs['desc']}</i></div>
-            <div class="col-6 col-md-2 text-white">
-                <a n:href="Device:show $device->attrs['id']" class="text-white">Info</a>
-                · 
-                <a n:href="Device:edit $device->attrs['id']" class="text-white">Edit</a>
-            </div>
-        </div>
+    <div class="row my-2 px-2 bg-primary text-white">
+      <div class="col-4 col-md-2 "><b><a n:href="Device:show $device->attrs['id']" class="text-white">{$device->attrs['name']}</a></b>
+        {if ($device->attrs['problem_mark'])} 
+          <a href="#" 
+            data-toggle="tooltip" 
+            data-placement="top" 
+            title="{_'device_list_login_error_title'} {$device->attrs['last_bad_login']}."
+          >
+            <i class="text-warning fas fa-exclamation-triangle"></i>
+          </a>
+        {/if}        
+        {if $device->attrs['config_data'] }
+          <a href="#" data-toggle="tooltip" data-placement="top" title="{_'device_list_config_cange_wait'}" 
+          ><i class="text-warning fas fa-share-square"></i></a>
+        {/if}
+      </div>
+      <div class="col-4 col-md-2">{$device->attrs['first_login']}</div>
+      <div class="col-4 col-md-2">{$device->attrs['last_login']}</div>
+      <div class="col-12 col-md-4"><i>{$device->attrs['desc']}</i></div>
+      <div class="col-6 col-md-2 text-white">
+        <a n:href="Device:show $device->attrs['id']" class="text-white" title="{_'device_list_info'}">
+          <i class="fa-solid fa-circle-info"></i>
+        </a>&nbsp;
+        <a n:href="Device:edit $device->attrs['id']" class="text-white" title="{_'device_list_edit'}">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </a>
+      </div>
+    </div>
             
         {foreach $device->sensors as $sensor }
             {first}
@@ -85,7 +88,7 @@
                             {/if}
                         </div>
                         <div class="col-1">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{$sensor['dc_desc']}">#{$sensor['device_class']}</a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{$sensor['dc_desc']}">#{$sensor['id_device_classes']}</a>
                         </div>
                         <div class="col-6 col-md-1">
                             {if ($sensor['preprocess_data']==1)}
@@ -105,13 +108,17 @@
                             <i>{$sensor['desc']}</i>
                         </div>
                         <div class="col-6 col-md-2">
-                            <a href="../chart/sensorstat/show/{$sensor['id']}/?current=1">Statistika</a>
-                            · 
-                            <a href="../chart/sensor/show/{$sensor['id']}/?current=1">Graf</a>
-                            · 
-                            <a n:href="Sensor:show $sensor['id']" >Info</a>
-                            · 
-                            <a n:href="Sensor:edit $sensor['id']" >Edit</a>
+                            <a href="../chart/sensorstat/show/{$sensor['id']}/?current=1" title="{_'device_list_stat'}">
+                              <i class="fa-solid fa-chart-simple"></i></a>
+                            &nbsp;
+                            <a href="../chart/sensor/show/{$sensor['id']}/?current=1" title="{_'device_list_chart'}">
+                              <i class="fa-solid fa-chart-line"></i></a>
+                            &nbsp; 
+                            <a n:href="Sensor:show $sensor['id']" title="{_'device_list_info'}">
+                              <i class="fa-solid fa-circle-info"></i></a>
+                            &nbsp;
+                            <a n:href="Sensor:edit $sensor['id']" title="{_'device_list_edit'}">
+                              <i class="fa-solid fa-pen-to-square"></i></a>
                         </div>
                     </div>
 
@@ -120,6 +127,6 @@
             {/last}
         {/foreach}
         
-    {/foreach}
+  {/foreach}
 
 </div>
