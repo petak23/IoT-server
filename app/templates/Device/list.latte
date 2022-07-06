@@ -10,7 +10,7 @@
 
 <div class="col-12">
   <div n:if="(sizeof($devices->devices)==0)" class="row px-2 ">{_'device_list_zero'}</div>
-
+  
   {foreach $devices->devices as $device }
 
     {first}
@@ -23,109 +23,109 @@
     {/first}
 
     <div class="row my-2 px-2 bg-primary text-white">
-      <div class="col-4 col-md-2 "><b><a n:href="Device:show $device->attrs['id']" class="text-white">{$device->attrs['name']}</a></b>
-        {if ($device->attrs['problem_mark'])} 
+      <div class="col-4 col-md-2 "><b><a n:href="Device:show $device->attrs->id" class="text-white">{$device->attrs->name}</a></b>
+        {if ($device->problem_mark)} 
           <a href="#" 
             data-toggle="tooltip" 
             data-placement="top" 
-            title="{_'device_list_login_error_title'} {$device->attrs['last_bad_login']}."
+            title="{_'device_list_login_error_title'} {$device->attrs->last_bad_login}."
           >
             <i class="text-warning fas fa-exclamation-triangle"></i>
           </a>
         {/if}        
-        {if $device->attrs['config_data'] }
+        {if $device->attrs->config_data }
           <a href="#" data-toggle="tooltip" data-placement="top" title="{_'device_list_config_cange_wait'}" 
           ><i class="text-warning fas fa-share-square"></i></a>
         {/if}
       </div>
-      <div class="col-4 col-md-2">{$device->attrs['first_login']}</div>
-      <div class="col-4 col-md-2">{$device->attrs['last_login']}</div>
-      <div class="col-12 col-md-4"><i>{$device->attrs['desc']}</i></div>
+      <div class="col-4 col-md-2">{$device->attrs->first_login}</div>
+      <div class="col-4 col-md-2">{$device->attrs->last_login}</div>
+      <div class="col-12 col-md-4"><i>{$device->attrs->desc}</i></div>
       <div class="col-6 col-md-2 text-white">
-        <a n:href="Device:show $device->attrs['id']" class="text-white" title="{_'device_list_info'}">
+        <a n:href="Device:show $device->attrs->id" class="text-white" title="{_'device_list_info'}">
           <i class="fa-solid fa-circle-info"></i>
         </a>&nbsp;
-        <a n:href="Device:edit $device->attrs['id']" class="text-white" title="{_'device_list_edit'}">
+        <a n:href="Device:edit $device->attrs->id" class="text-white" title="{_'device_list_edit'}">
           <i class="fa-solid fa-pen-to-square"></i>
         </a>
       </div>
     </div>
-            
-        {foreach $device->sensors as $sensor }
-            {first}
-                <div class="row pl-4 pr-1 py-2"><div class="col-12">
-                    <div class="row text-secondary">
-                        <div class="col-6 col-md-2">Senzor</div>
-                        <div class="col-5 col-md-2">Stav</div>
-                        <div class="col-1">Typ</div>
-                        <div class="col-6 col-md-1">Faktor</div>
-                        <div class="col-6 col-md-2">Interval</div>
-                        <div class="col-12 col-md-2">Popis</div>
-                    </div>
-            {/first}
 
-                    <div class="row {if $iterator->odd}bg-light{/if}">
-                        <div class="col-6 col-md-2"><b><a n:href="Sensor:show $sensor['id']" >{$sensor['name']}</a>
-                            {if ($sensor['warningIcon']>0)} 
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Senzor nedodává data. Poslední data: {$sensor['last_data_time']}."
-                                ><i class="{if ($sensor['warningIcon']==1)}text-danger{else}text-warning{/if} fas fa-exclamation-triangle"></i></a>
-                            {/if}
-                        </b></div>
-                        <div class="col-5 col-md-2">
-                            {if ($sensor['last_out_value']!==NULL)}
-                                {$sensor['last_out_value']} {$sensor['unit']}
+    {foreach $device->sensors as $sensor_main }
+      {var $sensor = $sensor_main['sensor']}
+        {first}
+          <div class="row pl-4 pr-1 py-2"><div class="col-12">
+            <div class="row text-secondary">
+              <div class="col-6 col-md-2">{_'sensor_list_t_name'}</div>
+              <div class="col-5 col-md-2">{_'sensor_list_t_status'}</div>
+              <div class="col-1">{_'sensor_list_t_type'}</div>
+              <div class="col-6 col-md-1">{_'sensor_list_t_fa'}</div>
+              <div class="col-6 col-md-2">{_'sensor_list_t_int'}</div>
+              <div class="col-12 col-md-2">{_'sensor_list_t_desc'}</div>
+            </div>
+        {/first}
 
-                                {if ($sensor['warn_max_fired'])} 
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Od {$sensor['warn_max_fired']} je hodnota nad limitem."
-                                    ><i class="text-danger fas fa-arrow-circle-up"></i></a>
-                                {/if}
-                                {if ($sensor['warn_min_fired'])} 
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Od {$sensor['warn_min_fired']} je hodnota pod limitem."
-                                    ><i class="text-danger fas fa-arrow-circle-down"></i></a>
-                                {/if}
-                            {else}  
-                                - [{$sensor['unit']}]
-                            {/if}
-                        </div>
-                        <div class="col-1">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{$sensor['dc_desc']}">#{$sensor['id_device_classes']}</a>
-                        </div>
-                        <div class="col-6 col-md-1">
-                            {if ($sensor['preprocess_data']==1)}
-                                x {$sensor['preprocess_factor']}
-                            {/if}
-                        </div>
-                        <div class="col-6 col-md-2">{$sensor['msg_rate']}, {$sensor['display_nodata_interval']}</div>
-                        <div class="col-12 col-md-2">
-                            {if $sensor['warn_max']} 
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Senzor má nastaveno posílání varování při překročení horního limitu."
-                                    ><i class="fas fa-sort-amount-up"></i></a>
-                            {/if}
-                            {if $sensor['warn_min']} 
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Senzor má nastaveno posílání varování při překročení spodního limitu."
-                                    ><i class="fas fa-sort-amount-down"></i></a>
-                            {/if}                    
-                            <i>{$sensor['desc']}</i>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <a href="../chart/sensorstat/show/{$sensor['id']}/?current=1" title="{_'device_list_stat'}">
-                              <i class="fa-solid fa-chart-simple"></i></a>
-                            &nbsp;
-                            <a href="../chart/sensor/show/{$sensor['id']}/?current=1" title="{_'device_list_chart'}">
-                              <i class="fa-solid fa-chart-line"></i></a>
-                            &nbsp; 
-                            <a n:href="Sensor:show $sensor['id']" title="{_'device_list_info'}">
-                              <i class="fa-solid fa-circle-info"></i></a>
-                            &nbsp;
-                            <a n:href="Sensor:edit $sensor['id']" title="{_'device_list_edit'}">
-                              <i class="fa-solid fa-pen-to-square"></i></a>
-                        </div>
-                    </div>
+            <div n:class="row,  $iterator->odd ? bg-light">
+              <div class="col-6 col-md-2 font-weight-bold">
+                <a n:href="Sensor:show $sensor->id" >{$sensor->name}</a>
+                <a n:if="$sensor_main['warningIcon']>0" href="#" 
+                  data-toggle="tooltip" data-placement="top" title="{_'sensor_list_not_data'} {$sensor->last_data_time}.">
+                  <i n:class="($sensor_main['warningIcon']==1) ? text-danger : text-warning, fas, fa-exclamation-triangle"></i>
+                </a>
+              </div>
+              <div class="col-5 col-md-2">
+                {if ($sensor->last_out_value!==NULL)}
+                  {$sensor->last_out_value} {$sensor->value_types->unit}
+                  <a n:if="$sensor->warn_max_fired" href="#" 
+                    data-toggle="tooltip" data-placement="top" title="{_'base from'} {$sensor->warn_max_fired} {_'sensor_list_data_ol'}">
+                    <i class="text-danger fas fa-arrow-circle-up"></i>
+                  </a>
+                  <a n:if="$sensor->warn_min_fired" href="#"
+                    data-toggle="tooltip" data-placement="top" title="{_'base_from'} {$sensor->warn_min_fired} {_'sensor_list_data_ul'}">
+                    <i class="text-danger fas fa-arrow-circle-down"></i>
+                  </a>
+                {else}  
+                  - [{$sensor->value_types->unit}]
+                {/if}
+              </div>
+              <div class="col-1">
+                <a href="#" data-toggle="tooltip" data-placement="top" title="{$sensor->device_classes->desc}">#{$sensor->id_device_classes}</a>
+              </div>
+              <div class="col-6 col-md-1">
+                {if ($sensor->preprocess_data==1)}
+                  x {$sensor->preprocess_factor}
+                {/if}
+              </div>
+              <div class="col-6 col-md-2">{$sensor->msg_rate}, {$sensor->display_nodata_interval}</div>
+              <div class="col-12 col-md-2">
+                <a n:if="$sensor->warn_max" href="#" 
+                  data-toggle="tooltip" data-placement="top" title="{_'sensor_list_warn_up'}">
+                  <i class="fas fa-sort-amount-up"></i>
+                </a>
+                <a n:if="$sensor->warn_min" href="#" 
+                  data-toggle="tooltip" data-placement="top" title="{_'sensor_list_warn_dwn'}">
+                  <i class="fas fa-sort-amount-down"></i>
+                </a> 
+                <i>{$sensor->device_classes->desc}</i>
+              </div>
+              <div class="col-6 col-md-2 text-right"> 
+                <div class="btn-group btn-group-sm" role="group">
+                  <a n:href="Chart:sensorstat $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_stat'}">
+                    <i class="fa-solid fa-chart-simple"></i></a>
+                  <a n:href="Chart:sensor $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_chart'}">
+                    <i class="fa-solid fa-chart-line"></i></a>
+                  <a n:href="Sensor:show $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_info'}">
+                    <i class="fa-solid fa-circle-info"></i></a>
+                  <a n:href="Sensor:edit $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_edit'}">
+                    <i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+              </div>
+            </div>
 
-            {last}
-                </div></div>
-            {/last}
-        {/foreach}
+      {last}
+        </div></div>
+      {/last}
+    {/foreach}
         
   {/foreach}
 

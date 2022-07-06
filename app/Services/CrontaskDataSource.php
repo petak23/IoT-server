@@ -183,7 +183,7 @@ class CrontaskDataSource
             on d.user_id = u1.id
 
             left outer join value_types vt
-            on s.value_type = vt.id
+            on s.id_value_types = vt.id
             
             where status=0
             order by id asc

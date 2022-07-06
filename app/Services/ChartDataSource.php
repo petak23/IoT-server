@@ -452,7 +452,7 @@ class ChartDataSource
             on d.id = s.device_id
 
             left outer join value_types vt
-            on s.value_type = vt.id
+            on s.id_value_types = vt.id
 
             WHERE s.id = ?
 

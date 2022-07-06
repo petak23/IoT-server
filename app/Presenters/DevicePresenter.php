@@ -84,11 +84,11 @@ final class DevicePresenter extends BaseAdminPresenter {
 
     $post = $this->devices->getDevice( $id );
     if (!$post) {
-      $this->error('Zařízení nebylo nalezeno');
-    }
-
+      $this->setView('notFound');
+      return;
+    } 
     Logger::log( 'audit', Logger::INFO ,
-        "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} edituje/prohlizi konfiguraci/heslo zarizeni {$id}" );
+      sprintf($this->texty_presentera->translate('log_device_edit'), $this->getUser()->id, $this->getUser()->getIdentity()->email, $id));
 
     $post = $post->toArray();
     $post['passphrase'] = $this->config->decrypt( $post['passphrase'], $post['name'] );
@@ -104,13 +104,8 @@ final class DevicePresenter extends BaseAdminPresenter {
 
   protected function createComponentDeviceForm(): Form {
 		$form = $this->deviceForm->create($this->language, $this->id_device);
-		$form->onSuccess[] = function ($form) { 
-      $this->flashMessage("Změny provedeny.", 'success');
-        if( $this->id_device ) {
-            $this->redirect("Device:show", $this->id_device );
-        } else {
-            $this->redirect("Device:list" );
-        }
+		$form->onSuccess[] = function () { 
+      $this->flashRedirect($this->id_device ? ["Device:show", $this->id_device] : "Device:list", $this->texty_presentera->translate('base_save_ok'), 'success');
 		};
 		return $this->makeBootstrap4( $form );
 	} 
@@ -122,9 +117,10 @@ final class DevicePresenter extends BaseAdminPresenter {
     public function renderConfig(int $id): void
     {
 
-        $post = $this->datasource->getDevice( $id );
+        $post = $this->devices->getDevice( $id );
         if (!$post) {
-            $this->error('Zařízení nebylo nalezeno');
+          $this->setView('notFound');
+          return;
         }
         $post = $post->toArray();
         $post['passphrase'] = $this->config->decrypt( $post['passphrase'], $post['name'] );
@@ -132,7 +128,7 @@ final class DevicePresenter extends BaseAdminPresenter {
         $this->template->device = $post;
 
         Logger::log( 'audit', Logger::INFO ,
-            "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} prohlizi konfiguraci/heslo zarizeni {$id}" );
+          sprintf($this->texty_presentera->translate('log_device_view'), $this->getUser()->id, $this->getUser()->getIdentity()->email, $id));
 
         $blobCount = $this->datasource->getBlobCount( $id );
 
@@ -140,14 +136,14 @@ final class DevicePresenter extends BaseAdminPresenter {
         $url->setScheme('http');
         $url1 = $url->getAbsoluteUrl() . 'ra';
         $this->template->url = substr( $url1 , 7 );
-
+        /*
         $submenu = array();
         $submenu[] =   ['id' => '102', 'link' => "device/show/{$id}", 'name' => "· Zařízení {$post['name']}" ];
         if( $blobCount>0 ) {
             $submenu[] =   ['id' => '103', 'link' => "device/blobs/{$id}", 'name' => "· · Soubory ({$blobCount})" ];
         }
         $this->populateTemplate( 102, 1, $submenu );
-        $this->template->path = '../';
+        $this->template->path = '../';*/
     }
 
 

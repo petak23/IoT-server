@@ -2,31 +2,32 @@
 
 {block content}
 <div class="col-12">
-    <div class="pb-3 pt-3 px-2">
-    <h1>Zařízení {$device['name']}</h1>
-    </div>
+  <div class="pb-3 pt-3 px-2">
+    <h1>{_'device_h1'} {$device['name']}</h1>
+  </div>
 
-    <div class="row px-2">
-        <div class="col-12">
-            <h3>Konfigurace zařízení</h3>
-            <i>Po stisku tlačítka se zobrazí konfigurace, kterou je potřeba nastavit do zařízení v konfiguračním portálu zařízení.</i>
-        </div>
+  <div class="row px-2">
+    <div class="col-12">
+      <h3>{_'device_show_h3'}</h3>
+      <i>{_'device_show_desc'}</i>
     </div>
+  </div>
     <div class="row px-2  pt-3">
       <div class="col-12">
-        {*<a n:href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">Zobrazit konfiguraci</a>*}
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConfigInfo" aria-expanded="false" aria-controls="collapseConfigInfo">
-          Zobraziť konfiguráciu
+        {*<a n:href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_config'}</a>*}
+        <button class="btn btn-primary" type="button" 
+                data-toggle="collapse" data-target="#collapseConfigInfo"
+                aria-expanded="false" aria-controls="collapseConfigInfo">
+          {_'device_show_config'}
         </button>
       </div>
     </div>
 
     <div class="collapse" id="collapseConfigInfo">
-      <div class="card card-body">
+      <div class="card border-warning card-body">
         <div class="row px-2">
           <div class="col-12">
-            <h3>Konfigurácia zariadenia</h3>
-            <i>Túto konfiguráciu nastavte v zariadení.</i>
+            <i>{_'device_show_config_info'}</i>
           </div>
         </div>
 

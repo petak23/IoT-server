@@ -241,7 +241,7 @@ class RaDataSource
                 'channel_id' => $channel,
                 'name' => $name,
                 'id_device_classes' => $devClass,
-                'value_type' => $valueType,
+                'id_value_types' => $valueType,
                 'msg_rate' => $msgRate,
                 'preprocess_data' => $process,
                 'preprocess_factor' => $factor

@@ -44,7 +44,7 @@
         <main>
           <div class="container-fluid px-0 mx-0 px-md-2 px-lg-4" {ifset $isChart} style="max-width: {$maxW}px;" {/ifset} >
             <div class="row">
-              <div class="col-12" n:inner-foreach="$flashes as $flash">
+              <div class="col-12" n:if="count($flashes)" n:inner-foreach="$flashes as $flash">
                 <div class="alert flash alert-{$flash->type}">{$flash->message}</div>
               </div>
               {include content}

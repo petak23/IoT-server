@@ -1,18 +1,15 @@
 {layout '../@layoutAdmin.latte'}
 
-{define content}
+{block content}
 
 <div class="pb-3 pt-3 px-2">
-<h1>Nové zařízení</h1>
+  <h1>{_'device_create_h1'}</h1>
 
-{control deviceForm}
+  {control deviceForm}
 </div>
 
-<div class="row px-2 pt-3">
-    <div class="col-12">
-        <a n:href="Inventory:home" class="btn btn-outline-primary btn-sm" role="button">Zpět beze změny</a>
-    </div>
+<div class="row px-2 py-3">
+  <div class="col-12">
+    <a n:href="Device:list" class="btn btn-outline-primary btn-sm" role="button">{_'base_not_save'}</a>
+  </div>
 </div>
-
-
-{/define}
