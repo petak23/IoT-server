@@ -8,9 +8,11 @@ services:
 
 
   # Models
+	- App\Model\PV_Blobs
 	- App\Model\PV_Devices
 	- App\Model\PV_Lang
 	- App\Model\PV_Main_menu
+	- App\Model\PV_Sensors
 	- App\Model\PV_Units
 	- App\Model\PV_User
 	- App\Model\PV_User_permission

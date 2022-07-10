@@ -15,7 +15,7 @@ use \App\Model\ViewItem;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 01.09.2021
+ * @last_edited petak23<petak23@gmail.com> 08.07.2022
  */
 class InventoryDataSource
 {
@@ -109,7 +109,7 @@ class InventoryDataSource
     }
 
     /**
-     * @deprecated 
+     * @deprecated use PV_Devices\getDevice
      */
     public function getDevice($deviceId)
     {
@@ -464,18 +464,6 @@ class InventoryDataSource
         ', $id);
 
         Logger::log('webapp', Logger::DEBUG,  "Smazano.");
-    }
-
-    public function getBlobCount($deviceId)
-    {
-        $row = $this->database->fetch('
-            select count(*) as ct
-            from blobs
-            where device_id = ?
-            and status>0
-        ', $deviceId);
-
-        return $row->ct;
     }
 
     public function getBlobs($deviceId)

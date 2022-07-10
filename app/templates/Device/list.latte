@@ -16,9 +16,9 @@
     {first}
       <div class="row px-2 text-secondary ">
         <div class="col-4 col-md-2 ">{_'devices_h1'}</div>
-        <div class="col-4  col-md-2">{_'device_list_first_login'}</div>
-        <div class="col-4  col-md-2">{_'device_list_last_login'}</div>
-        <div class="col-12 col-md-1 ">{_'device_list_txt'}</div>
+        <div class="col-4  col-md-2">{_'device_first_login'}</div>
+        <div class="col-4  col-md-2">{_'device_last_login'}</div>
+        <div class="col-12 col-md-1 ">{_'description'}</div>
       </div>
     {/first}
 
@@ -28,13 +28,13 @@
           <a href="#" 
             data-toggle="tooltip" 
             data-placement="top" 
-            title="{_'device_list_login_error_title'} {$device->attrs->last_bad_login}."
+            title="{_'device_login_error_title'} {$device->attrs->last_bad_login}."
           >
             <i class="text-warning fas fa-exclamation-triangle"></i>
           </a>
         {/if}        
         {if $device->attrs->config_data }
-          <a href="#" data-toggle="tooltip" data-placement="top" title="{_'device_list_config_cange_wait'}" 
+          <a href="#" data-toggle="tooltip" data-placement="top" title="{_'device_config_change_wait'}" 
           ><i class="text-warning fas fa-share-square"></i></a>
         {/if}
       </div>
@@ -56,8 +56,8 @@
         {first}
           <div class="row pl-4 pr-1 py-2"><div class="col-12">
             <div class="row text-secondary">
-              <div class="col-6 col-md-2">{_'sensor_list_t_name'}</div>
-              <div class="col-5 col-md-2">{_'sensor_list_t_status'}</div>
+              <div class="col-6 col-md-2">{_'sensor'}</div>
+              <div class="col-5 col-md-2">{_'status'}</div>
               <div class="col-1">{_'sensor_list_t_type'}</div>
               <div class="col-6 col-md-1">{_'sensor_list_t_fa'}</div>
               <div class="col-6 col-md-2">{_'sensor_list_t_int'}</div>
