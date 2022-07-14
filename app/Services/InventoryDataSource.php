@@ -15,24 +15,26 @@ use \App\Model\ViewItem;
  */
 class InventoryDataSource
 {
-    use Nette\SmartObject;
+  use Nette\SmartObject;
 
-    private $database;
+  private $database;
 
-    public function __construct(Nette\Database\Explorer $database)
-    {
-        $this->database = $database;
-    }
+  public function __construct(Nette\Database\Explorer $database)
+  {
+    $this->database = $database;
+  }
 
-    /**
+  /* *
      * @deprecated use PV_Devices\getDevice
      */
+  //------
 
-
-
-    public function getSensor($sensorId)
-    {
-        return $this->database->fetch('
+  /**
+   * @deprecated not used
+   */
+  public function getSensor($sensorId)
+  {
+    return $this->database->fetch('
             select 
                 s.*, 
                 d.name as dev_name, d.desc as dev_desc, d.user_id,  
@@ -47,78 +49,78 @@ class InventoryDataSource
             
             where s.id = ?
         ', $sensorId);
+  }
+
+  public function updateSensor($id, $values)
+  {
+    $outvalues = [];
+    $outvalues['desc'] = $values['desc'];
+    $outvalues['display_nodata_interval'] = $values['display_nodata_interval'];
+    $outvalues['preprocess_data'] = $values['preprocess_data'];
+    $outvalues['preprocess_factor'] =  ($values['preprocess_data'] == '1' ? $values['preprocess_factor'] : "1");
+
+    if (isset($values['warn_max'])) {
+      $outvalues['warn_max'] = $values['warn_max'];
+      $outvalues['warn_max_val'] = ($values['warn_max'] == '1' ? $values['warn_max_val'] : 0);
+      $outvalues['warn_max_val_off'] = ($values['warn_max'] == '1' ? $values['warn_max_val_off'] : 0);
+      $outvalues['warn_max_after'] = ($values['warn_max'] == '1' ? $values['warn_max_after'] : 0);
+      $outvalues['warn_max_text'] = $values['warn_max_text'];
+      $outvalues['warn_min'] = $values['warn_min'];
+      $outvalues['warn_min_val'] = ($values['warn_min'] == '1' ? $values['warn_min_val'] : 0);
+      $outvalues['warn_min_val_off'] = ($values['warn_min'] == '1' ? $values['warn_min_val_off'] : 0);
+      $outvalues['warn_min_after'] = ($values['warn_min'] == '1' ? $values['warn_min_after'] : 0);
+      $outvalues['warn_min_text'] = $values['warn_min_text'];
     }
 
-    public function updateSensor($id, $values)
-    {
-        $outvalues = array();
-        $outvalues['desc'] = $values['desc'];
-        $outvalues['display_nodata_interval'] = $values['display_nodata_interval'];
-        $outvalues['preprocess_data'] = $values['preprocess_data'];
-        $outvalues['preprocess_factor'] =  ($values['preprocess_data'] == '1' ? $values['preprocess_factor'] : "1");
-
-        if (isset($values['warn_max'])) {
-            $outvalues['warn_max'] = $values['warn_max'];
-            $outvalues['warn_max_val'] = ($values['warn_max'] == '1' ? $values['warn_max_val'] : 0);
-            $outvalues['warn_max_val_off'] = ($values['warn_max'] == '1' ? $values['warn_max_val_off'] : 0);
-            $outvalues['warn_max_after'] = ($values['warn_max'] == '1' ? $values['warn_max_after'] : 0);
-            $outvalues['warn_max_text'] = $values['warn_max_text'];
-            $outvalues['warn_min'] = $values['warn_min'];
-            $outvalues['warn_min_val'] = ($values['warn_min'] == '1' ? $values['warn_min_val'] : 0);
-            $outvalues['warn_min_val_off'] = ($values['warn_min'] == '1' ? $values['warn_min_val_off'] : 0);
-            $outvalues['warn_min_after'] = ($values['warn_min'] == '1' ? $values['warn_min_after'] : 0);
-            $outvalues['warn_min_text'] = $values['warn_min_text'];
-        }
-
-        $this->database->query('UPDATE sensors SET ', $outvalues, ' WHERE id = ?', $id);
-    }
+    $this->database->query('UPDATE sensors SET ', $outvalues, ' WHERE id = ?', $id);
+  }
 
 
 
-    public $views;
-    public $tokens;
-    public $tokenView;
+  public $views;
+  public $tokens;
+  public $tokenView;
 
-    public function getViews($userId)
-    {
-        $this->views = array();
-        $this->tokens = array();
-        $this->tokenView = array();
+  public function getViews($userId)
+  {
+    $this->views = array();
+    $this->tokens = array();
+    $this->tokenView = array();
 
-        // nacteme pohledy
+    // nacteme pohledy
 
-        $result = $this->database->query('
+    $result = $this->database->query('
             select * from views
             where user_id = ?
             order by token asc, vorder desc
         ', $userId);
 
-        foreach ($result as $viewMeta) {
-            $view = new View($viewMeta->name, $viewMeta->vdesc, $viewMeta->allow_compare, $viewMeta->app_name, $viewMeta->render);
-            $view->token = $viewMeta->token;
-            $view->vorder = $viewMeta->vorder;
-            $view->render = $viewMeta->render;
-            $view->id = $viewMeta->id;
-            $this->views[$view->id] = $view;
+    foreach ($result as $viewMeta) {
+      $view = new View($viewMeta->name, $viewMeta->vdesc, $viewMeta->allow_compare, $viewMeta->app_name, $viewMeta->render);
+      $view->token = $viewMeta->token;
+      $view->vorder = $viewMeta->vorder;
+      $view->render = $viewMeta->render;
+      $view->id = $viewMeta->id;
+      $this->views[$view->id] = $view;
 
-            if (!isset($this->tokens[$view->token])) {
-                $this->tokens[$view->token] = $view->token;
-            }
+      if (!isset($this->tokens[$view->token])) {
+        $this->tokens[$view->token] = $view->token;
+      }
 
-            if (isset($this->tokenView[$view->token])) {
-                $token = $this->tokenView[$view->token];
-                $token[] = $view;
-                $this->tokenView[$view->token] = $token;
-            } else {
-                $token = array();
-                $token[] = $view;
-                $this->tokenView[$view->token] = $token;
-            }
-        }
+      if (isset($this->tokenView[$view->token])) {
+        $token = $this->tokenView[$view->token];
+        $token[] = $view;
+        $this->tokenView[$view->token] = $token;
+      } else {
+        $token = array();
+        $token[] = $view;
+        $this->tokenView[$view->token] = $token;
+      }
+    }
 
-        // a k nim nacteme polozky
+    // a k nim nacteme polozky
 
-        $result = $this->database->query('
+    $result = $this->database->query('
             select vd.* , v.user_id, vs.short_desc as view_source_desc
             from view_detail vd
             left outer join views v
@@ -129,29 +131,29 @@ class InventoryDataSource
             order by view_id asc, vorder asc
         ', $userId);
 
-        foreach ($result as $row) {
-            $vi = new ViewItem();
-            $vi->vorder = $row->vorder;
-            $vi->axisY = $row->y_axis;
-            $vi->source = $row->view_source_id;
-            $vi->sourceDesc = $row->view_source_desc;
-            $vi->setColor(1, $row->color_1);
-            $vi->setColor(2, $row->color_2);
-            $vi->id = $row->id;
+    foreach ($result as $row) {
+      $vi = new ViewItem();
+      $vi->vorder = $row->vorder;
+      $vi->axisY = $row->y_axis;
+      $vi->source = $row->view_source_id;
+      $vi->sourceDesc = $row->view_source_desc;
+      $vi->setColor(1, $row->color_1);
+      $vi->setColor(2, $row->color_2);
+      $vi->id = $row->id;
 
-            $sids = explode(',', $row->sensor_ids);
-            $vi->sensorIds = $sids;
+      $sids = explode(',', $row->sensor_ids);
+      $vi->sensorIds = $sids;
 
-            $this->views[$row->view_id]->items[] = $vi;
-        }
+      $this->views[$row->view_id]->items[] = $vi;
     }
+  }
 
 
-    public function getSensors($userId)
-    {
-        $sensors = array();
+  public function getSensors($userId)
+  {
+    $sensors = array();
 
-        $result = $this->database->query('
+    $result = $this->database->query('
             select 
                 s.*, 
                 d.name as dev_name, d.desc as dev_desc, d.user_id,
@@ -165,53 +167,48 @@ class InventoryDataSource
             order by vt.unit asc, d.name asc, s.name asc
         ', $userId);
 
-        foreach ($result as $row) {
-            $sensors[$row->id] = $row;
-        }
-
-        return $sensors;
+    foreach ($result as $row) {
+      $sensors[$row->id] = $row;
     }
 
-
-    public function updateView($id, $values)
-    {
-        $this->database->query('UPDATE views SET ', [
-            'vdesc' => $values['vdesc'],
-            'name' => $values['name'],
-            'app_name' => $values['app_name'],
-            'token' => $values['token'],
-            'render' => $values['render'],
-            'vorder' => $values['vorder'],
-            'allow_compare' => $values['allow_compare']
-        ], 'WHERE id = ?', $id);
-    }
+    return $sensors;
+  }
 
 
-    public function createView($values)
-    {
-        return $this->database->table('views')->insert($values);
-    }
-
-    public function createUser($values)
-    {
-        return $this->database->table('user_main')->insert($values);
-    }
-
-    public function getViewSources()
-    {
-        return $this->database->table('view_source')->fetchAll();
-    }
+  public function updateView($id, $values)
+  {
+    $this->database->query('UPDATE views SET ', [
+      'vdesc' => $values['vdesc'],
+      'name' => $values['name'],
+      'app_name' => $values['app_name'],
+      'token' => $values['token'],
+      'render' => $values['render'],
+      'vorder' => $values['vorder'],
+      'allow_compare' => $values['allow_compare']
+    ], 'WHERE id = ?', $id);
+  }
 
 
-    public function createViewitem($values)
-    {
-        return $this->database->table('view_detail')->insert($values);
-    }
+  public function createView($values)
+  {
+    return $this->database->table('views')->insert($values);
+  }
+
+  public function getViewSources()
+  {
+    return $this->database->table('view_source')->fetchAll();
+  }
 
 
-    public function getViewItem($viId)
-    {
-        return $this->database->fetch('
+  public function createViewitem($values)
+  {
+    return $this->database->table('view_detail')->insert($values);
+  }
+
+
+  public function getViewItem($viId)
+  {
+    return $this->database->fetch('
             select 
             vi.*,
             v.user_id
@@ -220,67 +217,67 @@ class InventoryDataSource
             on vi.view_id = v.id
             where vi.id=?
         ', $viId);
-    }
+  }
 
-    public function updateViewItem($id, $values)
-    {
-        $this->database->query('UPDATE view_detail SET ', [
-            'vorder' => $values['vorder'],
-            'sensor_ids' => $values['sensor_ids'],
-            'y_axis' => $values['y_axis'],
-            'view_source_id' => $values['view_source_id'],
-            'color_1' => $values['color_1'],
-            'color_2' => $values['color_2']
-        ], 'WHERE id = ?', $id);
-    }
+  public function updateViewItem($id, $values)
+  {
+    $this->database->query('UPDATE view_detail SET ', [
+      'vorder' => $values['vorder'],
+      'sensor_ids' => $values['sensor_ids'],
+      'y_axis' => $values['y_axis'],
+      'view_source_id' => $values['view_source_id'],
+      'color_1' => $values['color_1'],
+      'color_2' => $values['color_2']
+    ], 'WHERE id = ?', $id);
+  }
 
-    public function deleteViewItem($id)
-    {
-        $this->database->query('
+  public function deleteViewItem($id)
+  {
+    $this->database->query('
             DELETE from view_detail  
             WHERE id = ?
         ', $id);
-    }
+  }
 
-    public function deleteView($id)
-    {
-        $this->database->query('
+  public function deleteView($id)
+  {
+    $this->database->query('
             DELETE from view_detail  
             WHERE view_id = ?
         ', $id);
 
-        $this->database->query('
+    $this->database->query('
             DELETE from views  
             WHERE id = ?
         ', $id);
-    }
+  }
 
-    public function deleteViewsForUser($id)
-    {
-        $this->database->query('
+  public function deleteViewsForUser($id)
+  {
+    $this->database->query('
             delete from view_detail 
             where view_id in ( select id from views where user_id = ? )
         ', $id);
 
-        $this->database->query('
+    $this->database->query('
             delete from views where user_id = ? 
         ', $id);
-    }
+  }
 
-    public function deleteUser($id)
-    {
-        $this->database->query('
+  public function deleteUser($id)
+  {
+    $this->database->query('
             delete from user_main where id = ? 
         ', $id);
-    }
+  }
 
 
-    /**
-     * sensor_id	pocet	name	desc
-     */
-    public function getDataStatsMeasures($id)
-    {
-        return $this->database->fetchAll('
+  /**
+   * sensor_id	pocet	name	desc
+   */
+  public function getDataStatsMeasures($id)
+  {
+    return $this->database->fetchAll('
             select 
             d.*, s.name, s.desc
             from 
@@ -297,14 +294,14 @@ class InventoryDataSource
             
             order by s.name
         ', $id);
-    }
+  }
 
-    /**
-     * sensor_id	pocet	name	desc
-     */
-    public function getDataStatsSumdata($id)
-    {
-        return $this->database->fetchAll('
+  /**
+   * sensor_id	pocet	name	desc
+   */
+  public function getDataStatsSumdata($id)
+  {
+    return $this->database->fetchAll('
             select 
             d.*, s.name, s.desc
             from 
@@ -321,68 +318,68 @@ class InventoryDataSource
             
             order by s.name
         ', $id);
-    }
+  }
 
 
-    public function deleteSession($id)
-    {
-        $this->database->query('
+  public function deleteSession($id)
+  {
+    $this->database->query('
             DELETE from sessions
             WHERE device_id = ?
         ', $id);
-    }
+  }
 
 
-    public function deleteDevice($id)
-    {
-        Logger::log('webapp', Logger::DEBUG,  "Mazu session device {$id}");
+  public function deleteDevice($id)
+  {
+    Logger::log('webapp', Logger::DEBUG,  "Mazu session device {$id}");
 
-        // nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
-        $this->database->query("
+    // nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
+    $this->database->query("
             update devices
             set passphrase = 'x' 
             WHERE id = ?
         ", $id);
 
-        $this->database->query('
+    $this->database->query('
             DELETE from sessions
             WHERE device_id = ?
         ', $id);
 
-        Logger::log('webapp', Logger::DEBUG,  "Mazu measures device {$id}");
+    Logger::log('webapp', Logger::DEBUG,  "Mazu measures device {$id}");
 
-        // smazat data
-        $this->database->query('
+    // smazat data
+    $this->database->query('
             DELETE from measures  
             WHERE sensor_id in (select id from sensors where device_id = ?)
         ', $id);
 
-        Logger::log('webapp', Logger::DEBUG,  "Mazu sumdata device {$id}");
+    Logger::log('webapp', Logger::DEBUG,  "Mazu sumdata device {$id}");
 
-        $this->database->query('
+    $this->database->query('
             DELETE from sumdata
             WHERE sensor_id in (select id from sensors where device_id = ?)
         ', $id);
 
-        Logger::log('webapp', Logger::DEBUG,  "Mazu device {$id}");
+    Logger::log('webapp', Logger::DEBUG,  "Mazu device {$id}");
 
-        // smazat senzory a zarizeni
-        $this->database->query('
+    // smazat senzory a zarizeni
+    $this->database->query('
             DELETE from sensors
             WHERE device_id = ?
         ', $id);
 
-        $this->database->query('
+    $this->database->query('
             DELETE from devices
             WHERE id = ?
         ', $id);
 
-        Logger::log('webapp', Logger::DEBUG,  "Smazano.");
-    }
+    Logger::log('webapp', Logger::DEBUG,  "Smazano.");
+  }
 
-    public function getDeviceSensors($deviceId)
-    {
-        return $this->database->fetchAll('
+  public function getDeviceSensors($deviceId)
+  {
+    return $this->database->fetchAll('
             select s.*,
             vt.unit
             from  sensors s
@@ -391,67 +388,67 @@ class InventoryDataSource
             where device_id = ?
             order by id asc
         ', $deviceId);
-    }
+  }
 
-    /**
-     * Vraci ID zaznamu NEBO -1, pokud pro dane zarizeni a verzi uz existuje
-     */
-    public function otaUpdateCreate($id, $fromVersion, $fileHash)
-    {
-        $rs1 = $this->database->fetchAll('
+  /**
+   * Vraci ID zaznamu NEBO -1, pokud pro dane zarizeni a verzi uz existuje
+   */
+  public function otaUpdateCreate($id, $fromVersion, $fileHash)
+  {
+    $rs1 = $this->database->fetchAll('
             select *
             from  updates
             where device_id = ?
                 and fromVersion = ?
         ', $id, $fromVersion);
-        if (count($rs1) != 0) {
-            return -1;
-        }
-
-        $this->database->query('INSERT INTO updates ', [
-            'device_id' => $id,
-            'fromVersion' => $fromVersion,
-            'fileHash' => $fileHash,
-            'inserted' => new \DateTime(),
-        ]);
-
-        return $this->database->getInsertId();
+    if (count($rs1) != 0) {
+      return -1;
     }
 
-    public function otaDeleteUpdate($deviceId, $updateId)
-    {
-        $this->database->query('DELETE FROM updates 
+    $this->database->query('INSERT INTO updates ', [
+      'device_id' => $id,
+      'fromVersion' => $fromVersion,
+      'fileHash' => $fileHash,
+      'inserted' => new \DateTime(),
+    ]);
+
+    return $this->database->getInsertId();
+  }
+
+  public function otaDeleteUpdate($deviceId, $updateId)
+  {
+    $this->database->query('DELETE FROM updates 
             where id = ?
             and device_id= ?
         ', $updateId, $deviceId);
-    }
+  }
 
 
-    public function meteoGetWeekData($sensorId, $dateFrom)
-    {
-        return $this->database->fetch('
+  public function meteoGetWeekData($sensorId, $dateFrom)
+  {
+    return $this->database->fetch('
             select sum(sum_val) as celkem, max(max_val) as maximum, min(min_val) as minimum 
             from sumdata
             where sensor_id = ?
             and rec_date > ?
             and sum_type = 2
         ', $sensorId, $dateFrom);
-    }
+  }
 
-    public function meteoGetDayData($sensorId, $date)
-    {
-        return $this->database->fetch('
+  public function meteoGetDayData($sensorId, $date)
+  {
+    return $this->database->fetch('
             select sum(sum_val) as celkem, max(max_val) as maximum, min(min_val) as minimum 
             from sumdata
             where sensor_id = ?
             and rec_date = ?
             and sum_type = 2
         ', $sensorId, $date);
-    }
+  }
 
-    public function meteoGetNightData($sensorId, $dateYesterday, $dateToday)
-    {
-        return $this->database->fetch('
+  public function meteoGetNightData($sensorId, $dateYesterday, $dateToday)
+  {
+    return $this->database->fetch('
             select sum(sum_val) as celkem, max(max_val) as maximum, min(min_val) as minimum from sumdata
             where sensor_id = ?
             and 
@@ -461,5 +458,5 @@ class InventoryDataSource
             )
             and sum_type = 1
         ', $sensorId, $dateYesterday, $dateToday);
-    }
+  }
 }
