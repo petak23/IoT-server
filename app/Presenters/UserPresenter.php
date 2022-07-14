@@ -69,11 +69,11 @@ final class UserPresenter extends BaseAdminPresenter
 				last_error_time	last_error_ip	last_error_browser	monitoring_token	desc
 	*/
 	public function renderList(): void {
-		$this->template->users = $this->userInfo->getUsers();
+		$this->template->users = $this->user_main->getUsers();
 	}
 
 	public function actionShow(int $id) {
-		$this->user_show = $this->userInfo->getUser( $id );
+		$this->user_show = $this->user_main->getUser( $id );
 		if ($this->user_show == null) {
 			$this->setView("notFound");
 			$this->user_show = $id;
@@ -91,7 +91,7 @@ final class UserPresenter extends BaseAdminPresenter
 	public function actionEdit(int $id): void {
 		$this->template->id = $id;
 
-		$this->user_show = $this->userInfo->getUser( $id );
+		$this->user_show = $this->user_main->getUser( $id );
 		if ($this->user_show == null) {
 			$this->setView("notFound");
 			$this->user_show = $id;
@@ -116,7 +116,7 @@ final class UserPresenter extends BaseAdminPresenter
 	public function actionDelete( int $id ): void	{
 		$this->template->id = $id;
 
-		$this->user_show = $this->userInfo->getUser( $id );
+		$this->user_show = $this->user_main->getUser( $id );
 		if ($this->user_show == null) {
 			$this->setView("notFound");
 			$this->user_show = $id;
@@ -145,7 +145,7 @@ final class UserPresenter extends BaseAdminPresenter
 		return $form;
 	}
 
-	/** @todo zmeň datasource na userInfo */
+	/** @todo zmeň datasource na user_main */
 	public function deleteFormSucceeded(Form $form, array $values): void
 	{
 		$this->checkUserRole( 'admin' );
@@ -153,7 +153,7 @@ final class UserPresenter extends BaseAdminPresenter
 
 		if( $id ) {
 			// overeni prav
-			$this->user_show = $this->userInfo->getUser( $id );
+			$this->user_show = $this->user_main->getUser( $id );
 			if ($this->user_show == null) {
 				$this->setView("notFound");
 				$this->user_show = $id;
@@ -161,7 +161,7 @@ final class UserPresenter extends BaseAdminPresenter
 			Logger::log( 'audit', Logger::INFO , "[{$this->getHttpRequest()->getRemoteAddress()}, {$this->getUser()->getIdentity()->username}] Mazu uzivatele {$id}" ); 
 
 			$this->datasource->deleteViewsForUser( $id );            
-			$devices = $this->datasource->getDevicesUser( $id );
+			$devices = $this->devices->getDevicesUser( $id );
 			foreach( $devices->devices as $device ) {
 					
 					$this->datasource->deleteDevice( $device->attrs['id'] );

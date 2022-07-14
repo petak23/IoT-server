@@ -20,14 +20,14 @@
             role="button" id="userDropdown"
             data-display="static"
             data-toggle="dropdown" aria-expanded="false">
-            {$userInfo->prefix} <i class="fas fa-user fa-fw"></i>
+            {$user_main->prefix} <i class="fas fa-user fa-fw"></i>
           </a>
           {* dropdown-menu-right - lebo css je bootstrap 4, ale js je bootstrap 5 *}
           <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end dropdown-menu-lg-start"
             aria-labelledby="userDropdown">
-            <li><span class="dropdown-item-text">{_'main_li_user'} <b>{$userInfo->username}</b></span></li>
-            <li><span class="dropdown-item-text"><small>{_'main_li_role'} {$userInfo->user_role->name}</small></span></li>
-            <li><span class="dropdown-item-text"><small>{_'main_li_prefix'} {$userInfo->prefix}</small></span></li>
+            <li><span class="dropdown-item-text">{_'main_li_user'} <b>{$user_main->username}</b></span></li>
+            <li><span class="dropdown-item-text"><small>{_'main_li_role'} {$user_main->user_role->name}</small></span></li>
+            <li><span class="dropdown-item-text"><small>{_'main_li_prefix'} {$user_main->prefix}</small></span></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" n:href="Sign:out" title="{_'main_li_log_out'}">{_'main_li_log_out'}</a></li>
           </ul>

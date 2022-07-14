@@ -23,7 +23,7 @@ use Nette\Utils\Random;
  * @link       http://petak23.echo-msz.eu
  * @version    1.0.6
  */
-class PV_User {
+class PV_User_main {
 
   use Nette\SmartObject;
 
@@ -152,8 +152,8 @@ class PV_User {
 
   /** Test existencie emailu
    * @param string $email
-   * @return boolean */
-  public function testEmail($email) {
+   * @return bool */
+  public function testEmail(string $email): bool {
     return $this->dbtable()->where('email', $email)->count() > 0 ? true : false;
   }
 

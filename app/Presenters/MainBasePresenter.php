@@ -13,13 +13,13 @@ use Language_support;
 /**
  * Zakladny presenter pre vsetky presentery
  * 
- * Posledna zmena(last change): 27.06.2022
+ * Posledna zmena(last change): 14.07.2022
  *
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
+ * @copyright Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link      http://petak23.echo-msz.eu
- * @version 1.0.5
+ * @version 1.0.6
  */
 class MainBasePresenter extends Nette\Application\UI\Presenter
 {
@@ -47,7 +47,7 @@ class MainBasePresenter extends Nette\Application\UI\Presenter
   public $httpRequest;
 
   // Database tables	
-  /** @var Model\PV_User @inject */
+  /** @var Model\PV_User_main @inject */
   public $user_main;
 
   protected function startup()

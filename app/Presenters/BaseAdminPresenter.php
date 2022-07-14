@@ -21,9 +21,6 @@ class BaseAdminPresenter extends BasePresenter
 {
   use Nette\SmartObject;
 
-  /** @var Model\PV_User @inject */
-  public $userInfo;
-
   public function checkAcces(int $deviceUserId, string $type = "zařízení")
   {
     if ($this->getUser()->id != $deviceUserId) {
@@ -58,7 +55,7 @@ class BaseAdminPresenter extends BasePresenter
     parent::beforeRender();
     $user = $this->getUser();
     if ($user->isLoggedIn()) {
-      $this->template->userInfo = $this->userInfo->getUser($user->id);
+      $this->template->user_main = $this->user_main->getUser($user->id);
     }
     $this->template->appName = $this->appName;
     $this->template->links = $this->links;

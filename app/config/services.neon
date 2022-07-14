@@ -14,7 +14,8 @@ services:
 	- App\Model\PV_Main_menu
 	- App\Model\PV_Sensors
 	- App\Model\PV_Units
-	- App\Model\PV_User
+	- App\Model\PV_Updates
+	- App\Model\PV_User_main
 	- App\Model\PV_User_permission
 	- App\Model\PV_User_resource
 	- App\Model\PV_User_roles

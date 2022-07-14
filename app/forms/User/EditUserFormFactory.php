@@ -12,16 +12,16 @@ use Nette\Security;
 
 /**
  * Tovarnicka pre formular na pridanie a editaciu užívateľa
- * Posledna zmena 06.09.2021
+ * Posledna zmena 14.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.4
+ * @version    1.0.5
  */
 class EditUserFormFactory {
-  /** @var Model\PV_User */
+  /** @var Model\PV_User_main */
 	private $pv_user;
   /** @var array */
   private $user_state;
@@ -37,7 +37,7 @@ class EditUserFormFactory {
   private $remoteAddress;
 
 	
-  public function __construct(Model\PV_User $pv_user,
+  public function __construct(Model\PV_User_main $pv_user,
                               Model\PV_User_roles $pv_user_roles,
                               Model\PV_User_state $user_state,
                               Security\User $user, Security\Passwords $passwords) {

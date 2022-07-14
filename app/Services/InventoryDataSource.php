@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Nette;
-use Nette\Utils\DateTime;
-use Tracy\Debugger;
 
-use \App\Model\Device;
-use \App\Model\Devices;
 use \App\Model\View;
 use \App\Model\ViewItem;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 08.07.2022
+ * @last_edited petak23<petak23@gmail.com> 14.07.2022
  */
 class InventoryDataSource
 {
@@ -29,92 +25,10 @@ class InventoryDataSource
     }
 
     /**
-     * @deprecated 
-     */
-    public function getDevicesUser($userId): Devices
-    {
-        $rc = new Devices();
-
-        // nacteme zarizeni
-
-        $result = $this->database->query('
-            select * 
-            from devices
-            where user_id = ?
-            order by name asc
-        ', $userId);
-
-        foreach ($result as $row) {
-            $dev = new Device($row);
-            $dev->attrs['problem_mark'] = false;
-
-            if ($dev->attrs['last_bad_login'] != NULL) {
-                if ($dev->attrs['last_login'] != NULL) {
-                    $lastLoginTs = (DateTime::from($dev->attrs['last_login']))->getTimestamp();
-                    $lastErrLoginTs = (DateTime::from($dev->attrs['last_bad_login']))->getTimestamp();
-                    if ($lastErrLoginTs >  $lastLoginTs) {
-                        $dev->attrs['problem_mark'] = true;
-                    }
-                } else {
-                    $dev->attrs['problem_mark'] = true;
-                }
-            }
-
-            $rc->add($dev);
-        }
-
-        // a k nim senzory
-
-        $result = $this->database->query('
-            select s.*, dc.desc as dc_desc, vt.unit
-            from sensors s
-            left outer join device_classes dc
-            on s.id_device_classes=dc.id
-            left outer join value_types vt
-            on s.id_value_types=vt.id
-            left outer join devices d
-            on s.device_id = d.id
-            where d.user_id = ?
-            order by s.name asc
-        ', $userId);
-
-        foreach ($result as $row) {
-            $device = $rc->get($row['device_id']);
-            $row['warningIcon'] = 0;
-            if ($row['last_data_time']) {
-                $utime = (DateTime::from($row['last_data_time']))->getTimestamp();
-                if (time() - $utime > $row['msg_rate']) {
-                    if ($device->attrs['monitoring'] == 1) {
-                        $row['warningIcon'] = 1;
-                    } else {
-                        $row['warningIcon'] = 2;
-                    }
-                }
-            }
-
-            if (isset($device)) {
-                $device->addSensor($row);
-            }
-        }
-
-        return $rc;
-    }
-
-    /**
-     * @deprecated 
-     */
-    public function createDevice($values)
-    {
-        return $this->database->table('devices')->insert($values);
-    }
-
-    /**
      * @deprecated use PV_Devices\getDevice
      */
-    public function getDevice($deviceId)
-    {
-        return $this->database->table('devices')->get($deviceId);
-    }
+
+
 
     public function getSensor($sensorId)
     {
@@ -466,29 +380,6 @@ class InventoryDataSource
         Logger::log('webapp', Logger::DEBUG,  "Smazano.");
     }
 
-    public function getBlobs($deviceId)
-    {
-        return $this->database->fetchAll('
-            select *
-            from  blobs
-            where device_id = ?
-                and status>0
-            order by id desc
-        ', $deviceId);
-    }
-
-
-    public function getBlob($deviceId, $blobId)
-    {
-        return $this->database->fetch('
-            select *
-            from  blobs
-            where id = ? 
-                and device_id = ?
-                and status>0
-        ', $blobId, $deviceId);
-    }
-
     public function getDeviceSensors($deviceId)
     {
         return $this->database->fetchAll('
@@ -500,14 +391,6 @@ class InventoryDataSource
             where device_id = ?
             order by id asc
         ', $deviceId);
-    }
-
-
-    public function getUser($id)
-    {
-        return $this->database->table('user_main')
-            ->where('id', $id)
-            ->fetch();
     }
 
     /**
@@ -533,17 +416,6 @@ class InventoryDataSource
         ]);
 
         return $this->database->getInsertId();
-    }
-
-
-    public function getOtaUpdates($id)
-    {
-        return $this->database->fetchAll('
-            select *
-            from updates
-            where device_id = ?
-            order by id asc
-        ', $id);
     }
 
     public function otaDeleteUpdate($deviceId, $updateId)

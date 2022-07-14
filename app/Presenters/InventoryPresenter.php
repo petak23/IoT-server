@@ -5,21 +5,14 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App\Model;
+use App\Services;
 use Nette;
-/*use Tracy\Debugger;
-use Nette\Utils\DateTime;
-use Nette\Utils\Arrays;
-use Nette\Utils\Html;
-use Nette\Utils\Strings;
-use Nette\Application\UI;*/
 use Nette\Application\UI\Form;
 use Nette\Http\Url;
 
-use \App\Services\InventoryDataSource;
-
 
 /**
- * @last_edited petak23<petak23@gmail.com> 27.06.2022
+ * @last_edited petak23<petak23@gmail.com> 11.07.2022
  */
 final class InventoryPresenter extends BaseAdminPresenter
 {
@@ -28,9 +21,6 @@ final class InventoryPresenter extends BaseAdminPresenter
   /** @persistent */
   public $viewid = "";
 
-  /** @var \App\Services\InventoryDataSource */
-  private $datasource;
-
   /** @var Nette\Security\Passwords */
   private $passwords;
 
@@ -38,11 +28,7 @@ final class InventoryPresenter extends BaseAdminPresenter
   /** @var Model\PV_Lang @inject */
   public $lang;
 
-  public function __construct(
-    InventoryDataSource $datasource,
-    \App\Services\Config $config
-  ) {
-    $this->datasource = $datasource;
+  public function __construct(Services\Config $config) {
     $this->links = $config->links;
     $this->appName = $config->appName;
   }
@@ -55,7 +41,7 @@ final class InventoryPresenter extends BaseAdminPresenter
   // ./inventory/user/
   public function renderUser()
   {
-    $this->template->userData = $this->user_main->getUser($this->getUser()->id); //$this->datasource->getUser( $this->getUser()->id );
+    $this->template->userData = $this->user_main->getUser($this->getUser()->id);
 
     if ($this->template->userData->prev_login_ip != NULL) {
       $this->template->prev_login_name = gethostbyaddr($this->template->userData->prev_login_ip);
@@ -76,7 +62,7 @@ final class InventoryPresenter extends BaseAdminPresenter
 
   public function actionEdit(): void
   {
-    $post = $this->userInfo->getUser($this->getUser()->id);
+    $post = $this->user_main->getUser($this->getUser()->id);
     if (!$post) {
       $this->error($this->texty_presentera->translate('AuthenticationException_1'));
     }
@@ -111,7 +97,7 @@ final class InventoryPresenter extends BaseAdminPresenter
 
   public function userFormSucceeded(Form $form, array $values): void
   {
-    $this->userInfo->updateUser($this->getUser()->id, $values);
+    $this->user_main->updateUser($this->getUser()->id, $values);
     if ($this->language != ($_ac = $this->lang->find($values['id_lang'])->acronym)) {
       $this->language = $_ac;
       $this->texty_presentera->setLanguage($this->language);
@@ -158,7 +144,7 @@ final class InventoryPresenter extends BaseAdminPresenter
   public function passwordFormSucceeded(Form $form, array $values): void
   {
 
-    $post = $this->userInfo->getUser($this->getUser()->id);
+    $post = $this->user_main->getUser($this->getUser()->id);
     if (!$post) {
       $this->error($this->texty_presentera->translate('AuthenticationException_1'));
     }
@@ -168,7 +154,7 @@ final class InventoryPresenter extends BaseAdminPresenter
     }
 
     $hash = $this->passwords->hash($values['password']);
-    $this->userInfo->updateUserPassword($this->getUser()->id, $hash);
+    $this->user_main->updateUserPassword($this->getUser()->id, $hash);
 
     $this->flashRedirect("Inventory:user", $this->texty_presentera->translate('pass_change_ok'), "success");
   }

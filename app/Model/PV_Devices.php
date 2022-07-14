@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Model;
 use Nette;
 use Nette\Utils\DateTime;
 
 /**
  * Model, ktory sa stara o tabulku devices
  * 
- * Posledna zmena 04.07.2022
+ * Posledna zmena 11.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.2
+ * @version    1.0.3
  */
 class PV_Devices
 {
@@ -28,17 +29,18 @@ class PV_Devices
   /** @var Database\Table\Selection */
   private $sensors;
 
-  public function __construct(Nette\Database\Explorer $database)
+  private $pv_sensors;
+
+  public function __construct(Nette\Database\Explorer $database, Model\PV_Sensors $pv_sensors)
   {
     $this->devices = $database->table("devices");
-    $this->sensors = $database->table("sensors");
+    $this->pv_sensors = $pv_sensors;
   }
 
   public function getDevicesUser($userId): VDevices
   {
     $rc = new VDevices();
-
-    // nacteme zarizeni
+    // načítame zariadenia
 
     $result = $this->devices->where(['user_id' => $userId])->order('name ASC');
 
@@ -55,29 +57,9 @@ class PV_Devices
           $dev->problem_mark = true;
         }
       }
-      $rc->add($dev);
+      // Pridám zariadenie a k nemu načítam senzory
+      $rc->addWithSensors($dev, $this->pv_sensors->getDeviceSensors($row->id, $row->monitoring));
     }
-
-    // a k nim senzory
-
-    $result = $this->sensors->where(['device_id.user_id' => $userId])->order('name ASC');
-
-    foreach ($result as $row) {
-      $device = $rc->get($row->device_id); // Nájdem príslušné zariadenie
-      $r['warningIcon'] = 0;
-      $r['sensor'] = $row;
-      if ($row->last_data_time) {
-        $utime = (DateTime::from($row->last_data_time))->getTimestamp();
-        if (time() - $utime > $row->msg_rate) {
-          $r['warningIcon'] = ($device->attrs['monitoring'] == 1) ? 1 : 2;
-        }
-      }
-
-      if (isset($device)) {
-        $device->addSensor($r);
-      }
-    }
-
     return $rc;
   }
 
@@ -96,9 +78,12 @@ class PV_Devices
   {
     return $this->devices->get($deviceId);
   }
-} // End class PV_Devices
+} 
+// ------------------------------------  End class PV_Devices
 
-/** Objekt všetkých zariadení */
+/** 
+ * Objekt všetkých zariadení 
+ * */
 class VDevices
 {
   use Nette\SmartObject;
@@ -115,9 +100,22 @@ class VDevices
   {
     return $this->devices[$id];
   }
+
+  /** Pridanie zariadenia aj so senzormi */
+  public function addWithSensors(VDevice $device, ?Nette\Database\Table\Selection $sensors): void
+  {
+    $this->devices[$device->attrs['id']] = $device;
+    if ($sensors != null && $sensors->count()) {
+      foreach ($sensors as $s) {
+        $this->devices[$device->attrs['id']]->addSensor($s);
+      }
+    }
+  }
 }
 
-/** Objekt jedného zariadenia */
+/** 
+ * Objekt jedného zariadenia 
+ * */
 class VDevice
 {
   use Nette\SmartObject;
@@ -128,19 +126,16 @@ class VDevice
   /** @var bool Príznak problému */
   public $problem_mark = false;
 
-  /**
-   * Pole senzorov zariadenia
-   * id	device_id	channel_id	name	id_device_classes	value_type	msg_rate	desc	display_nodata_interval	preprocess_data	preprocess_factor	dc_desc	unit
-   */
+  /** @var array Pole senzorov zariadenia */
   public $sensors = [];
 
-  public function __construct($attrs)
+  public function __construct(Nette\Database\Table\ActiveRow $attrs)
   {
     $this->attrs = $attrs;
   }
 
-  public function addSensor($sensorAttrs)
+  public function addSensor(Nette\Database\Table\ActiveRow $sensorAttrs): void
   {
-    $this->sensors[$sensorAttrs['sensor']->id] = $sensorAttrs;
+    $this->sensors[$sensorAttrs->id] = $sensorAttrs;
   }
 }

@@ -9,25 +9,25 @@ use Nette\Security;
 
 /**
  * Formular pre vlozenie emailu v pripade zabudnuteho hesla
- * Posledna zmena 03.09.2021
+ * Posledna zmena 14.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 class ForgottenPasswordFormFactory
 {
   /** @var Language_support\LanguageMain */
   private $texts;
-  /** @var Model\PV_User */
+  /** @var Model\PV_User_main */
   public $user_main;
   /** @var Nette\Security\User */
   public $user;
 
   /** @param Security\User $user   */
-  public function __construct(Security\User $user, Language_support\LanguageMain $language_main, Model\PV_User $user_main)
+  public function __construct(Security\User $user, Language_support\LanguageMain $language_main, Model\PV_User_main $user_main)
   {
     $this->user = $user;
     $this->texts = $language_main;

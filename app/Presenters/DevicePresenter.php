@@ -25,13 +25,13 @@ use App\Services\Logger;
 
 /**
  * Presenter pre prácu so zariadenimi
- * Posledna zmena 17.09.2021
+ * Posledna zmena 14.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2022 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
 final class DevicePresenter extends BaseAdminPresenter
 {
@@ -55,6 +55,8 @@ final class DevicePresenter extends BaseAdminPresenter
   public $devices;
   /** @var Model\PV_Sensors @inject */
   public $sensors;
+  /** @var Model\PV_Updates @inject */
+  public $updates;
 
   // Forms
   /** @var Device\DeviceFormFactory @inject*/
@@ -145,20 +147,20 @@ final class DevicePresenter extends BaseAdminPresenter
       sprintf($this->texty_presentera->translate('log_device_view'), $this->getUser()->id, $this->getUser()->getIdentity()->email, $id)
     );
 
-    //$blobCount = $this->datasource->getBlobCount($id);
-
     $url = new Url($this->getHttpRequest()->getUrl()->getBaseUrl());
     $url->setScheme('http');
     $url1 = $url->getAbsoluteUrl() . 'ra';
-    $this->template->url = substr($url1, 7);
+    $this->template->url = substr( $url1 , 7 );
+
     /*
-        $submenu = array();
-        $submenu[] =   ['id' => '102', 'link' => "device/show/{$id}", 'name' => "· Zařízení {$post['name']}" ];
-        if( $blobCount>0 ) {
-            $submenu[] =   ['id' => '103', 'link' => "device/blobs/{$id}", 'name' => "· · Soubory ({$blobCount})" ];
-        }
-        $this->populateTemplate( 102, 1, $submenu );
-        $this->template->path = '../';*/
+    $blobCount = $this->blobs->getBlobCount( $id );
+    $submenu = array();
+    $submenu[] =   ['id' => '102', 'link' => "device/show/{$id}", 'name' => "· Zařízení {$post['name']}" ];
+    if( $blobCount>0 ) {
+        $submenu[] =   ['id' => '103', 'link' => "device/blobs/{$id}", 'name' => "· · Soubory ({$blobCount})" ];
+    }
+    $this->populateTemplate( 102, 1, $submenu );
+    $this->template->path = '../';*/
   }
 
 
@@ -249,22 +251,13 @@ final class DevicePresenter extends BaseAdminPresenter
     $this->template->device = $post;
     $this->template->soubory = $blobCount;
 
-    $this->template->sensors = $this->datasource->getDeviceSensors($id);
-    $this->template->sensors1 = $this->sensors->getDeviceSensors($id);
+    $this->template->sensors = $this->sensors->getDeviceSensors($id, $post['monitoring']);
 
     $lastTime = $lastLoginTs;
 
     foreach ($this->template->sensors as $sensor) {
-      $sensor['warningIcon'] = 0;
-      if ($sensor['last_data_time']) {
-        $utime = (DateTime::from($sensor['last_data_time']))->getTimestamp();
-        if (time() - $utime > $sensor['msg_rate']) {
-          if ($post['monitoring'] == 1) {
-            $sensor['warningIcon'] = 1;
-          } else {
-            $sensor['warningIcon'] = 2;
-          }
-        }
+      if ($sensor->last_data_time) {
+        $utime = (DateTime::from($sensor->last_data_time))->getTimestamp();
         if (!$lastTime || ($utime > $lastTime)) {
           $lastTime = $utime;
         }
@@ -272,7 +265,7 @@ final class DevicePresenter extends BaseAdminPresenter
     }
     $this->template->lastComm = $lastTime;
 
-    $this->template->updates = $this->datasource->getOtaUpdates($id);
+    $this->template->updates = $this->updates->getOtaUpdates($id);
 
     $this->template->jsonUrl = $this->link('//Json:data', ['token' => $post['json_token'], 'id' => $post['id']]);
     $this->template->jsonUrl2 = $this->link('//Json:meteo', ['token' => $post['json_token'], 'id' => $post['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']);
@@ -283,21 +276,22 @@ final class DevicePresenter extends BaseAdminPresenter
   public function renderBlobs(int $id): void
   {
 
-    $post = $this->datasource->getDevice($id);
+    $post = $this->devices->getDevice($id);
     if (!$post) {
-      $this->error('Zařízení nebylo nalezeno');
+      $this->setView('notFound');
+      return;
     }
     $post = $post->toArray();
     $this->checkAcces($post['user_id']);
 
-    $blobs = $this->datasource->getBlobs($id);
+    $blobs = $this->blobs->getBlobs($id);
     $blobCount = count($blobs);
 
-    $submenu = array();
+    /*$submenu = array();
     $submenu[] =   ['id' => '102', 'link' => "device/show/{$id}", 'name' => "· Zařízení {$post['name']}"];
     $submenu[] =   ['id' => '103', 'link' => "device/blobs/{$id}", 'name' => "· · Soubory ({$blobCount})"];
     $this->populateTemplate(103, 1, $submenu);
-    $this->template->path = '../';
+    $this->template->path = '../';*/
 
     $this->template->id = $id;
     $this->template->device = $post;
@@ -309,14 +303,14 @@ final class DevicePresenter extends BaseAdminPresenter
   public function renderDownload(int $id, int $blobId): void
   {
 
-    $post = $this->datasource->getDevice($id);
+    $post = $this->devices->getDevice($id);
     if (!$post) {
       $this->error('Zařízení nebylo nalezeno');
     }
     $post = $post->toArray();
     $this->checkAcces($post['user_id']);
 
-    $blob = $this->datasource->getBlob($id, $blobId);
+    $blob = $this->blobs->getBlob($id, $blobId);
     if (!$blob) {
       $this->error('Soubor nenalezen nebo k němu nejsou práva.');
     }
@@ -347,7 +341,7 @@ final class DevicePresenter extends BaseAdminPresenter
   {
     $this->template->path = '../';
 
-    $post = $this->datasource->getDevice($id);
+    $post = $this->devices->getDevice($id);
     if (!$post) {
       $this->error('Zařízení nebylo nalezeno');
     }
@@ -382,7 +376,7 @@ final class DevicePresenter extends BaseAdminPresenter
 
     if ($id) {
       // overeni prav
-      $post = $this->datasource->getDevice($id);
+      $post = $this->devices->getDevice($id);
       if (!$post) {
         $this->error('Zařízení nebylo nalezeno');
       }
@@ -407,7 +401,7 @@ final class DevicePresenter extends BaseAdminPresenter
     $this->template->path = '../';
     $this->template->id = $id;
 
-    $post = $this->datasource->getDevice($id);
+    $post = $this->devices->getDevice($id);
     if (!$post) {
       $this->error('Zařízení nebylo nalezeno');
     }
@@ -447,7 +441,7 @@ final class DevicePresenter extends BaseAdminPresenter
     $id = $this->getParameter('id');
     if ($id) {
       // editace
-      $device = $this->datasource->getDevice($id);
+      $device = $this->devices->getDevice($id);
       if (!$device) {
         $this->error('Zařízení nebylo nalezeno');
       }
@@ -477,7 +471,7 @@ final class DevicePresenter extends BaseAdminPresenter
     $this->template->path = '../';
     $this->template->id = $id;
 
-    $post = $this->datasource->getDevice($id);
+    $post = $this->devices->getDevice($id);
     if (!$post) {
       $this->error('Zařízení nebylo nalezeno');
     }
@@ -545,7 +539,7 @@ final class DevicePresenter extends BaseAdminPresenter
     $id = $this->getParameter('id');
     if ($id) {
       // editace
-      $device = $this->datasource->getDevice($id);
+      $device = $this->devices->getDevice($id);
       if (!$device) {
         $this->error('Zařízení nebylo nalezeno');
       }
@@ -591,7 +585,7 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function renderDeleteupdate(int $device_id, int $update_id): void
   {
-    $device = $this->datasource->getDevice($device_id);
+    $device = $this->devices->getDevice($device_id);
     if (!$device) {
       $this->error('Zařízení nebylo nalezeno');
     }
