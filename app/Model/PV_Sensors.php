@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Nette\Utils\DateTime;
 
@@ -38,5 +39,72 @@ class PV_Sensors extends Table
     }
 
     return $sensors;
+  }
+
+  /**
+   * Info o senzore
+   */
+  public function getSensor(int $sensorId): ?ActiveRow
+  {
+    /*return $this->database->fetch('
+            select 
+                s.*, 
+                d.name as dev_name, d.desc as dev_desc, d.user_id,  
+                vt.unit
+            from sensors s
+
+            left outer join devices d
+            on s.device_id = d.id
+
+            left outer join value_types vt
+            on s.id_value_types = vt.id
+            
+            where s.id = ?
+        ', $sensorId);*/
+    return $this->find($sensorId);
+  }
+
+  /**
+   * sensor_id	pocet	name	desc
+   */
+  public function getDataStatsMeasures($id)
+  {
+    return $this->connection->fetchAll('
+      select d.*, s.name, s.desc
+      from (
+        select sensor_id, count(*) as pocet
+        from measures
+        where sensor_id in (select id from sensors where device_id = ?)
+        group by sensor_id
+      ) d
+        
+      left outer join sensors s on d.sensor_id = s.id
+        
+      order by s.name
+    ', $id);
+  }
+
+  /**
+   * sensor_id	pocet	name	desc
+   */
+  public function getDataStatsSumdata($id)
+  {
+    return $this->connection->fetchAll('
+            select 
+            d.*, s.name, s.desc
+            from 
+            (
+            select sensor_id, count(*) as pocet
+            from sumdata
+            where 
+            sensor_id in (select id from sensors where device_id = ?)
+            group by sensor_id
+            ) d
+            
+            left outer join sensors s
+            on d.sensor_id = s.id
+            
+            order by s.name
+        ', $id);
   }
 }

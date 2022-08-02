@@ -7,7 +7,7 @@ namespace App\Presenters;
 use App\Forms\User;
 use App\Model;
 use App\Services;
-use App\Services\Logger;
+//use App\Services\Logger;
 use Latte;
 use Nette;
 use Nette\Application\UI\Form;
@@ -16,17 +16,17 @@ use PeterVojtech;
 
 /**
  * Sign in form
- * Last change 14.07.2022
+ * Last change 02.08.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  * 
  * @todo https://getbootstrap.com/docs/5.1/components/navs-tabs/#javascript-behavior
  */
-class SignPresenter extends MainBasePresenter
+class SignPresenter extends BasePresenter
 {
 
   public $email = '';
@@ -54,10 +54,9 @@ class SignPresenter extends MainBasePresenter
 
   public function __construct(
     $parameters,
-    Services\Config $config,
     Services\MailService $mailService
   ) {
-    $this->links = $config->links;  // Definet in MainBasePresenter
+    $this->links = $parameters['links'];
     $this->my_params = $parameters;
     $this->mailService = $mailService;
   }
@@ -80,23 +79,7 @@ class SignPresenter extends MainBasePresenter
     $this->template->links = $this->links;
   }
 
-  /*public function actionOut(): void {
-    $response = $this->getHttpResponse();
-    $response->setHeader('Cache-Control', 'no-cache');
-    $response->setExpiration('1 sec'); 
-
-    if( $this->getUser()->getIdentity() ) {
-      Logger::log( 'audit', Logger::INFO , 
-          "[{$this->getHttpRequest()->getRemoteAddress()}] Logout: odhlasen {$this->getUser()->getIdentity()->email}" ); 
-
-    }
-    $this->getUser()->logout(true); // Vymaže aj identitu
-    $this->flashRedirect('Homepage:', $this->texty_presentera->translate("base_log_out_mess"), "success");
-  }*/
-
-  public function renderForgottenPassword(): void
-  {
-  }
+  public function renderForgottenPassword(): void {}
 
   /**
    * Forgot password user form component factory.

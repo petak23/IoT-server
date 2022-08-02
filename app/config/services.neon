@@ -2,7 +2,10 @@ services:
 
 	# Presenters
 	- App\Presenters\HomepagePresenter(%parameters%)
+	- App\Presenters\InventoryPresenter(%parameters%)
+	- App\Presenters\SensorPresenter(%parameters%)
 	- App\Presenters\SignPresenter(%parameters%)
+	- App\Presenters\UnitsPresenter(%parameters%)
 	- App\Presenters\UserPresenter(%parameters%)
 	- App\Presenters\UserAclPresenter(%parameters%)
 
@@ -13,6 +16,7 @@ services:
 	- App\Model\PV_Lang
 	- App\Model\PV_Main_menu
 	- App\Model\PV_Sensors
+	- App\Model\PV_Sessions
 	- App\Model\PV_Units
 	- App\Model\PV_Updates
 	- App\Model\PV_User_main

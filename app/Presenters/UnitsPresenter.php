@@ -22,10 +22,9 @@ class UnitsPresenter extends BaseAdminPresenter
   /** @var Model\PV_Units @inject */
 	public $units;
 
-  public function __construct(Services\Config $config )
-  {
-    $this->links = $config->links;
-    $this->appName = $config->appName;
+  public function __construct($parameters) {
+    $this->links = $parameters['links'];
+		$this->appName = $parameters['title'];
   }
 
   public function renderDefault() {

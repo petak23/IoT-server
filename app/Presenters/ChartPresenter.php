@@ -22,7 +22,7 @@ use \App\Model\Avg;
 use \App\Services\Logger;
 
 /**
- * @last_edited petak23<petak23@gmail.com> 23.06.2021 - function intRenderChart, render_Avgyears
+ * @last_edited petak23<petak23@gmail.com> 01.08.2021 - function intRenderChart, render_Avgyears
  */
 final class ChartPresenter extends BasePresenter
 {
@@ -49,16 +49,38 @@ final class ChartPresenter extends BasePresenter
         $this->config = $config;
     }
 
-    // duplicita s BaseAdminPresenter->populateTemplate !
-    private function populateChartMenu($sensorId, $sensorName, $activeItem, $devId, $devName)
-    {
-        $submenu = array();
-        $submenu[] =   ['id' => '103', 'link' => "device/show/{$devId}", 'name' => "· Zařízení {$devName}"];
-        $submenu[] =   ['id' => '102', 'link' => "sensor/show/{$sensorId}", 'name' => "· · Senzor {$sensorName}"];
-        $submenu[] =   ['id' => '100', 'link' => "chart/sensorstat/show/{$sensorId}", 'name' => "· · · Statistika"];
-        $submenu[] =   ['id' => '101', 'link' => "chart/sensor/show/{$sensorId}", 'name' => "· · · Graf"];
-        $this->populateMenu($activeItem, 1, $submenu);
+  public function beforeRender()
+  {
+    parent::beforeRender();
+    $user = $this->getUser();
+    if ($user->isLoggedIn()) {
+      $this->template->user_main = $this->user_main->getUser($user->id);
     }
+  }
+
+  private function populateChartMenu($sensorId, $sensorName, $activeItem, $devId, $devName)
+  {
+    $this['menu']->addNode(2, [
+      'name' => "· Zařízení {$devName}",
+      'link' => $this->link("Device:show", $devId),
+      'id'   => $devId
+    ]);
+    $this['menu']->addNode(2, [
+      'name' => "· · Senzor {$sensorName}",
+      'link' => $this->link("Sensor:show", $sensorId),
+      'id'   => $sensorId
+    ]);
+    $this['menu']->addNode(2, [
+      'name' => "· · · Statistika",
+      'link' => $this->link("Chart:sensorstat", $sensorId),
+      'id'   => $sensorId
+    ]);
+    $this['menu']->addNode(2, [
+      'name' => "· · · Graf",
+      'link' => $this->link("Chart:sensor", $sensorId),
+      'id'   => $sensorId
+    ]);
+  }
 
 
     private $image;
@@ -1522,9 +1544,7 @@ final class ChartPresenter extends BasePresenter
      * Generuje obrazek - carovy graf pro jeden senzor, autorizovany (z administrace)
      */
     public function renderSensorchart($id, $dateFrom, $lenDays, $altYear = NULL)
-    {
-        $this->checkUserRole('user');
-
+    { 
         // vypocet datumu
         $dateTimeFrom = DateTime::from($dateFrom);
 
@@ -1759,8 +1779,6 @@ final class ChartPresenter extends BasePresenter
     ) {
         // Debugger::log( "view:{$id} from:{$dateFrom} alt:{$altYear} len:{$lenDays}"  );
 
-        $this->checkUserRole('user');
-
         $params = new ChartParameters(
             $dateFrom,
             $lenDays,
@@ -1877,8 +1895,6 @@ final class ChartPresenter extends BasePresenter
         $currentday = ""
     ) {
         // Debugger::log( "view:{$id} from:{$dateFrom} alt:{$altYear} len:{$lenDays}"  );
-
-        $this->checkUserRole('user');
 
         $params = new ChartParameters(
             $dateFrom,

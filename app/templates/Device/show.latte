@@ -5,7 +5,6 @@
   <div class="pb-3 pt-3 px-2">
     <h1>{_'device_h1'} {$device['name']}</h1>
   </div>
-{dump $device}
   <div class="row px-2">
     <div class="col-12">
       <h3>{_'device_show_h3'}</h3>
@@ -14,7 +13,6 @@
   </div>
     <div class="row px-2  pt-3">
       <div class="col-12">
-        {*<a n:href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_config'}</a>*}
         <button class="btn btn-primary" type="button" 
                 data-toggle="collapse" data-target="#collapseConfigInfo"
                 aria-expanded="false" aria-controls="collapseConfigInfo">
@@ -52,7 +50,7 @@
       </div>
     </div>
     <div class="row px-2 bg-light">
-      <div class="col-12 col-md-2">{_'description'}:</div>
+      <div class="col-12 col-md-2">{_'base_description'}:</div>
       <div class="col-12 col-md-10">{$device['desc']}</div>
     </div>
     <div class="row px-2">
@@ -166,7 +164,7 @@
       </div>
     {/if}
 
-    {foreach $sensors1 as $sensor}
+    {foreach $sensors as $sensor}
       {first}
         <div class="px-2 pb-0 pt-4">
           <h3>{_'senzors'}</h3>
@@ -180,7 +178,7 @@
                 data-placement="top" title="{_'sensor_list_warn_imp'}"
               ><i class="fas fa-question-circle"></i></a>
             </div>
-            <div class="col-12 col-md-4">{_'description'}</div>
+            <div class="col-12 col-md-4">{_'base_description'}</div>
           </div>
       {/first}
 
@@ -251,8 +249,8 @@
     <div n:if="$device['blob_token']" class="px-2 pb-2 pt-4">
       <h3>{_'device_galery'}</h3>
       {_'device_galery_link'}: 
-      <br><small><a href="{$blobUrl}">{$blobUrl}</a></small>
-      <br><small>{_'device_galery_link_desc'|noescape}</small>
+      <br /><small><a href="{$blobUrl}">{$blobUrl}</a></small>
+      <br /><small>{_'device_galery_link_desc'|noescape}</small>
     </div>
 
     <div n:if="$soubory>0" class="row px-2 pt-3">
@@ -262,9 +260,9 @@
       </div>
     </div>
 
-    <div class="row px-2  pt-3">
+    <div class="row px-2 py-3">
       <div class="col-12">
-        <a n:href="Inventory:home" class="btn btn-primary btn-sm" role="button">{_'base_return'}</a>
+        <a n:href="Device:list" class="btn btn-primary btn-sm" role="button">{_'base_return'}</a>
       </div>
     </div>
 </div>

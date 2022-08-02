@@ -12,7 +12,7 @@
 
 {if isset($startNode) && count($startNode)}
   <h4 n:if="$nastav['nadpis']">{$nastav['nadpis']}</h4>
-  <ul {if $nastav['divClass']}class="{$nastav['divClass']}"{/if}>
+  <ul n:class="$nastav['divClass'] ? $nastav['divClass']">
   {foreach $startNode as $subNode}
     {if $subNode->id > 0 && $subNode->parent->id < 0}
       {include #link n => $subNode, akoLi => $iterator->counter}

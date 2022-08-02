@@ -111,6 +111,10 @@ base_to: 'Do'       #ok
 base_yes: 'Ano'     #ok
 base_no: 'Nie'      #ok
 base_return: 'Zpět' #ok
+base_description: 'Popis' #ok
+base_size: 'Velikost' #ok
+base_time: 'Čas'  #ok
+base_file_type: 'Typ souboru' #ok
 
 # --- RegisterForm ---
 RegisterForm_h2: 'Registrácia'
@@ -395,7 +399,6 @@ device_list_new: 'Nové zařízení'
 device_list_zero: 'Zatím nemáte žádná zařízení.'
 device_first_login: 'První přihlášení'
 device_last_login: 'Poslední přihlášení'
-description: 'Popis'
 device_login_error_title: 'Zařízení má problém s přihlášením. Poslední neúspěšné přihlášení:'
 device_config_change_wait: 'Pro zařízení čeká změna konfigurace'
 device_list_info: 'Info'
@@ -406,7 +409,7 @@ devices_user: 'Zařízení účtu'
 devices_not_found_h1: 'Zařízení sa nenašlo!'
 devices_not_found_txt: 'Je nám líto, ale Vámi požadované zařízení se nenašlo. Nebo neexzistuje, nebo nemáte dostatečné oprávnění k prohlížení.'
 devices_not_found_link: 'Zpět na výpis zařízení'
-device_delete: 'Smazat zariadenie'
+device_delete: 'Smazat zařízení'
 device_create_h1: 'Nové zařízení'
 device_show_h3: 'Konfigurace zařízení'
 device_show_desc: 'Po stisku tlačítka se zobrazí konfigurace, kterou je potřeba nastavit do zařízení v konfiguračním portálu zařízení.</i>Po stisku tlačítka se zobrazí konfigurace, kterou je potřeba nastavit do zařízení v konfiguračním portálu zařízení.</i>Po stisku tlačítka se zobrazí konfigurace, kterou je potřeba nastavit do zařízení v konfiguračním portálu zařízení.'
@@ -442,6 +445,19 @@ device_galery_link_desc: 'Každý, kdo zná toto URL, si může data zobrazit. P
 device_files_h3: 'Soubory'
 device_files_txt1: 'U zařízení je uloženo'
 device_files_txt2: 'souborů'
+device_del_h1: 'Smazání zařízení'
+device_del_txt1: 'Skutečně chcete smazat zařízení'
+device_del_txt2: 'Tuto akci nebude možné vrátit zpět!'
+device_del_txt3: 'K senzorům tohoto zařízení jsou zaznamenána'
+device_del_txt4: 'Tato data budou smazána také!'
+device_del_d: 'detailní data'
+device_del_s: 'sumární data'
+device_del_d_m: 'Jméno senzoru'
+device_del_d_c: 'Počet záznamů'
+device_del_warn: 'Upozornění: mazání může trvat i minutu...'
+device_blobs_h1: 'Soubory'
+device_return: 'Zpět na zařízení'
+device_blobs_actual: 'Aktualizovat seznam'
 
 # Sensor
 senzors: 'Senzory'
@@ -450,7 +466,6 @@ status: 'Stav'
 sensor_list_t_type: 'Typ'
 sensor_list_t_fa: 'Faktor'
 sensor_list_t_int: 'Interval'
-sensor_list_t_desc: 'Popis'
 sensor_list_not_data: 'Senzor nedodává data. Poslední data:'
 sensor_list_data_ol: 'je hodnota nad limitem.'
 sensor_list_data_ul: 'je hodnota pod limitem.'
@@ -476,6 +491,10 @@ device_form_gr_3: 'Monitoring'
 device_form_monitoring: 'Zařadit do monitoringu funkce'
 device_form_monitoring_de: 'Pokud ze senzorů zařízení nebudou chodit data tak často, jak mají, bude zaslána notifikace.'
 device_form_not_aut: 'K tomuto zařízení nemáte práva!'
+
+device_form_del: 'Potvrdit smazání'
+device_form_del_d: 'Zaškrtnutím potvrďte, že skutečně chcete smazat zařízení a všechna data jím zaznamenaná.'
+device_form_del_ok: 'Zařízení smazáno.'
 
 # Graphs
 graphs_h1: 'Grafy'

@@ -4,13 +4,13 @@ use Nette;
 
 /**
  * Komponenta pre zobrazenie ponuky menu pre FRONT modul
- * Posledna zmena(last change): 11.05.2020
+ * Posledna zmena(last change): 01.08.2022
  *
  * @author Ing. Peter VOJTECH ml <petak23@gmail.com>
- * @copyright Copyright (c) 2012 - 2020 Ing. Peter VOJTECH ml.
+ * @copyright Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link http://petak23.echo-msz.eu
- * @version 1.0.5
+ * @version 1.0.6
  *
  */
 class Menu extends Nette\Application\UI\Control {
@@ -145,6 +145,17 @@ class Menu extends Nette\Application\UI\Control {
 
 	public function getActiveClass(): string {
 		return $this->nastav["active_menu_class"];
+	}
+
+	public function addNode(int $parentId, array $node_array): void
+	{
+		$nodes = $this->allNodes;
+		$node = new MenuNode;
+		foreach ($node_array as $k => $v) {
+			$node->$k = $v;
+		}
+		$nodes[$parentId]->add($node);
+		$this->linkNodes(null, $nodes);
 	}
 }
 
