@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace App\Model;
 
 use App\Model;
+use App\Services\Logger;
 use Nette;
 use Nette\Utils\DateTime;
 
 /**
  * Model, ktory sa stara o tabulku devices
  * 
- * Posledna zmena 11.07.2022
+ * Posledna zmena 15.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
 class PV_Devices
 {
@@ -25,15 +26,27 @@ class PV_Devices
 
   /** @var Database\Table\Selection */
   private $devices;
+  /** @var Database\Table\Selection */
+  private $sessions;
+  /** @var Database\Table\Selection */
+  private $measures;
+  /** @var Database\Table\Selection */
+  private $sumdata;
 
   /** @var Database\Table\Selection */
   private $sensors;
 
   private $pv_sensors;
 
-  public function __construct(Nette\Database\Explorer $database, Model\PV_Sensors $pv_sensors)
-  {
+  public function __construct(
+    Nette\Database\Explorer $database,
+    Model\PV_Sensors $pv_sensors,
+    Model\PV_Sessions $sessions
+  ) {
     $this->devices = $database->table("devices");
+    $this->measures = $database->table("measures");
+    $this->sumdata = $database->table("sumdata");
+    $this->sessions = $sessions;
     $this->pv_sensors = $pv_sensors;
   }
 
@@ -78,7 +91,51 @@ class PV_Devices
   {
     return $this->devices->get($deviceId);
   }
-} 
+
+  public function deleteDevice($id)
+  {
+    Logger::log('webapp', Logger::DEBUG,  "Mazu session device {$id}");
+
+    // nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
+    $this->devices->get($id)->update(['passphrase' => 'x']);
+    $this->sessions->deleteSession($id);
+    Logger::log('webapp', Logger::DEBUG,  "Mazu measures device {$id}");
+
+
+    $sens = $this->pv_sensors->getDeviceSensors($id);
+    // smazat data
+    $this->measures->where("sensor_id in ?", $sens)->delete();
+    /*$this->database->query('
+            DELETE from measures  
+            WHERE sensor_id in (select id from sensors where device_id = ?)
+        ', $id);*/
+
+    Logger::log('webapp', Logger::DEBUG,  "Mazu sumdata device {$id}");
+
+    $this->sumdata->where("sensor_id in ?", $sens)->delete();
+    /*$this->database->query('
+            DELETE from sumdata
+            WHERE sensor_id in (select id from sensors where device_id = ?)
+        ', $id);*/
+
+    Logger::log('webapp', Logger::DEBUG,  "Mazu device {$id}");
+
+    // smazat senzory a zarizeni
+    $sens->delete();
+    /*$this->database->query('
+            DELETE from sensors
+            WHERE device_id = ?
+        ', $id);*/
+
+    $this->devices->get($id)->delete();
+    /*$this->database->query('
+            DELETE from devices
+            WHERE id = ?
+        ', $id);*/
+
+    Logger::log('webapp', Logger::DEBUG,  "Smazano.");
+  }
+}
 // ------------------------------------  End class PV_Devices
 
 /** 
@@ -89,7 +146,7 @@ class VDevices
   use Nette\SmartObject;
 
   /** @var array Pole všetkých zariadení */
-  public $devices = []; 
+  public $devices = [];
 
   public function add(VDevice $device): void
   {

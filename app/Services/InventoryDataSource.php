@@ -11,7 +11,7 @@ use \App\Model\ViewItem;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 14.07.2022
+ * @last_edited petak23<petak23@gmail.com> 15.07.2022
  */
 class InventoryDataSource
 {
@@ -278,22 +278,21 @@ class InventoryDataSource
   public function getDataStatsMeasures($id)
   {
     return $this->database->fetchAll('
-            select 
-            d.*, s.name, s.desc
-            from 
-            (
-            select sensor_id, count(*) as pocet
-            from measures
-            where 
-            sensor_id in (select id from sensors where device_id = ?)
-            group by sensor_id
-            ) d
-            
-            left outer join sensors s
-            on d.sensor_id = s.id
-            
-            order by s.name
-        ', $id);
+      select d.*, s.name, s.desc
+      from (
+        select sensor_id, count(*) as pocet
+        from measures
+        where sensor_id in (select id from sensors where device_id = ?)
+        group by sensor_id
+      ) d
+        
+      left outer join sensors s on d.sensor_id = s.id
+        
+      order by s.name
+    ', $id);
+
+    $se = $this->sensors->findBy(["device_id" => $id]);
+    $po = $this->measures->findAll()->where("sensor_id in", $se);
   }
 
   /**
@@ -320,63 +319,6 @@ class InventoryDataSource
         ', $id);
   }
 
-
-  public function deleteSession($id)
-  {
-    $this->database->query('
-            DELETE from sessions
-            WHERE device_id = ?
-        ', $id);
-  }
-
-
-  public function deleteDevice($id)
-  {
-    Logger::log('webapp', Logger::DEBUG,  "Mazu session device {$id}");
-
-    // nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
-    $this->database->query("
-            update devices
-            set passphrase = 'x' 
-            WHERE id = ?
-        ", $id);
-
-    $this->database->query('
-            DELETE from sessions
-            WHERE device_id = ?
-        ', $id);
-
-    Logger::log('webapp', Logger::DEBUG,  "Mazu measures device {$id}");
-
-    // smazat data
-    $this->database->query('
-            DELETE from measures  
-            WHERE sensor_id in (select id from sensors where device_id = ?)
-        ', $id);
-
-    Logger::log('webapp', Logger::DEBUG,  "Mazu sumdata device {$id}");
-
-    $this->database->query('
-            DELETE from sumdata
-            WHERE sensor_id in (select id from sensors where device_id = ?)
-        ', $id);
-
-    Logger::log('webapp', Logger::DEBUG,  "Mazu device {$id}");
-
-    // smazat senzory a zarizeni
-    $this->database->query('
-            DELETE from sensors
-            WHERE device_id = ?
-        ', $id);
-
-    $this->database->query('
-            DELETE from devices
-            WHERE id = ?
-        ', $id);
-
-    Logger::log('webapp', Logger::DEBUG,  "Smazano.");
-  }
-
   public function getDeviceSensors($deviceId)
   {
     return $this->database->fetchAll('
@@ -389,40 +331,6 @@ class InventoryDataSource
             order by id asc
         ', $deviceId);
   }
-
-  /**
-   * Vraci ID zaznamu NEBO -1, pokud pro dane zarizeni a verzi uz existuje
-   */
-  public function otaUpdateCreate($id, $fromVersion, $fileHash)
-  {
-    $rs1 = $this->database->fetchAll('
-            select *
-            from  updates
-            where device_id = ?
-                and fromVersion = ?
-        ', $id, $fromVersion);
-    if (count($rs1) != 0) {
-      return -1;
-    }
-
-    $this->database->query('INSERT INTO updates ', [
-      'device_id' => $id,
-      'fromVersion' => $fromVersion,
-      'fileHash' => $fileHash,
-      'inserted' => new \DateTime(),
-    ]);
-
-    return $this->database->getInsertId();
-  }
-
-  public function otaDeleteUpdate($deviceId, $updateId)
-  {
-    $this->database->query('DELETE FROM updates 
-            where id = ?
-            and device_id= ?
-        ', $updateId, $deviceId);
-  }
-
 
   public function meteoGetWeekData($sensorId, $dateFrom)
   {

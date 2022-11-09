@@ -5,7 +5,7 @@ namespace App\Model;
 use Nette\Database\Table\Selection;
 
 /**
- * Model, ktory sa stara o tabulku value_types
+ * Model, ktory sa stara o tabulku sessions
  * 
  * Posledna zmena 15.07.2022
  * 
@@ -15,14 +15,14 @@ use Nette\Database\Table\Selection;
  * @link       http://petak23.echo-msz.eu
  * @version    1.0.1
  */
-class PV_Units extends Table
+class PV_Sessions extends Table
 {
 
   /** @var string */
-  protected $tableName = 'value_types';
+  protected $tableName = 'sessions';
 
-  public function getUnits(): Selection
+  public function deleteSession(int $id): void
   {
-    return $this->findAll()->order('id ASC');
+    $this->findBy(["device_id" => $id])->delete();
   }
 }

@@ -25,13 +25,13 @@ use App\Services\Logger;
 
 /**
  * Presenter pre prácu so zariadenimi
- * Posledna zmena 14.07.2022
+ * Posledna zmena 15.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2022 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 final class DevicePresenter extends BaseAdminPresenter
 {
@@ -55,6 +55,8 @@ final class DevicePresenter extends BaseAdminPresenter
   public $devices;
   /** @var Model\PV_Sensors @inject */
   public $sensors;
+  /** @var Model\PV_Sessions @inject */
+  public $sessions;
   /** @var Model\PV_Updates @inject */
   public $updates;
 
@@ -150,7 +152,7 @@ final class DevicePresenter extends BaseAdminPresenter
     $url = new Url($this->getHttpRequest()->getUrl()->getBaseUrl());
     $url->setScheme('http');
     $url1 = $url->getAbsoluteUrl() . 'ra';
-    $this->template->url = substr( $url1 , 7 );
+    $this->template->url = substr($url1, 7);
 
     /*
     $blobCount = $this->blobs->getBlobCount( $id );
@@ -305,7 +307,8 @@ final class DevicePresenter extends BaseAdminPresenter
 
     $post = $this->devices->getDevice($id);
     if (!$post) {
-      $this->error('Zařízení nebylo nalezeno');
+      $this->setView('notFound');
+      return;
     }
     $post = $post->toArray();
     $this->checkAcces($post['user_id']);
@@ -343,7 +346,8 @@ final class DevicePresenter extends BaseAdminPresenter
 
     $post = $this->devices->getDevice($id);
     if (!$post) {
-      $this->error('Zařízení nebylo nalezeno');
+      $this->setView('notFound');
+      return;
     }
     $this->checkAcces($post->user_id);
 
@@ -383,7 +387,7 @@ final class DevicePresenter extends BaseAdminPresenter
       $this->checkAcces($post->user_id);
 
       Logger::log('audit', Logger::INFO, "[{$this->getHttpRequest()->getRemoteAddress()}, {$this->getUser()->getIdentity()->username}] Mazu zarizeni {$id}");
-      $this->datasource->deleteDevice($id);
+      $this->devices->deleteDevice($id);
     }
 
     $this->flashMessage("Zařízení smazáno.", 'success');
@@ -403,7 +407,8 @@ final class DevicePresenter extends BaseAdminPresenter
 
     $post = $this->devices->getDevice($id);
     if (!$post) {
-      $this->error('Zařízení nebylo nalezeno');
+      $this->setView('notFound');
+      return;
     }
     $post = $post->toArray();
     $this->checkAcces($post['user_id']);
@@ -443,7 +448,8 @@ final class DevicePresenter extends BaseAdminPresenter
       // editace
       $device = $this->devices->getDevice($id);
       if (!$device) {
-        $this->error('Zařízení nebylo nalezeno');
+        $this->setView('notFound');
+        return;
       }
       $this->checkAcces($device->user_id);
       if (!$device['config_ver']) {
@@ -452,7 +458,7 @@ final class DevicePresenter extends BaseAdminPresenter
         $values['config_ver'] = intval($device['config_ver']) + 1;
       }
       $device->update($values);
-      $this->datasource->deleteSession($id);
+      $this->sessions->deleteSession($id);
       $this->flashMessage("Změny provedeny.", 'success');
       $this->redirect("Device:show", $id);
     } else {
@@ -473,7 +479,8 @@ final class DevicePresenter extends BaseAdminPresenter
 
     $post = $this->devices->getDevice($id);
     if (!$post) {
-      $this->error('Zařízení nebylo nalezeno');
+      $this->setView('notFound');
+      return;
     }
     $post = $post->toArray();
     $this->checkAcces($post['user_id']);
@@ -541,7 +548,8 @@ final class DevicePresenter extends BaseAdminPresenter
       // editace
       $device = $this->devices->getDevice($id);
       if (!$device) {
-        $this->error('Zařízení nebylo nalezeno');
+        $this->setView('notFound');
+        return;
       }
       $this->checkAcces($device->user_id);
 
@@ -557,7 +565,7 @@ final class DevicePresenter extends BaseAdminPresenter
       $fileHash = hash("sha256", $file->getContents(), false);
 
       // ulozit data do tabulky a soubor na disk
-      $fileId = $this->datasource->otaUpdateCreate($id, $values['fromVersion'], $fileHash);
+      $fileId = $this->updates->otaUpdateCreate($id, $values['fromVersion'], $fileHash);
       if ($fileId == -1) {
         $this->flashMessage('Pro tohle zařízení a verzi aplikace již požadavek na update existuje.', 'danger');
         $this->redirect('Device:show', $id);
@@ -573,7 +581,7 @@ final class DevicePresenter extends BaseAdminPresenter
         "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} posila aktualizaci {$fileId} na zarizeni {$id}"
       );
 
-      $this->datasource->deleteSession($id);
+      $this->sessions->deleteSession($id);
 
       $this->flashMessage("Aktualizace připravena.", 'success');
       $this->redirect("Device:show", $id);
@@ -587,11 +595,12 @@ final class DevicePresenter extends BaseAdminPresenter
   {
     $device = $this->devices->getDevice($device_id);
     if (!$device) {
-      $this->error('Zařízení nebylo nalezeno');
+      $this->setView('notFound');
+      return;
     }
     $this->checkAcces($device->user_id);
 
-    $this->datasource->otaDeleteUpdate($device_id, $update_id);
+    $this->updates->otaDeleteUpdate($device_id, $update_id);
 
     FileSystem::delete($this->getUpdateFilename($device_id, $update_id));
 
