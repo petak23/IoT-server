@@ -18,13 +18,13 @@ use App\Services;
 
 /**
  * Presenter pre prácu s užívateľom
- * Posledna zmena 15.07.2022
+ * Posledna zmena 01.08.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2022 - 2021 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.2
+ * @version    1.0.3
  */
 final class UserPresenter extends BaseAdminPresenter
 {
@@ -46,7 +46,7 @@ final class UserPresenter extends BaseAdminPresenter
 	private $datasource;
 
 	/** @var \App\Services\Config */
-	private $config;
+	//private $config;
 
 	/** @var Nette\Security\Passwords */
 	private $passwords;
@@ -163,7 +163,6 @@ final class UserPresenter extends BaseAdminPresenter
 	/** @todo zmeň datasource na user_main */
 	public function deleteFormSucceeded(Form $form, array $values): void
 	{
-		$this->checkUserRole('admin');
 		$id = $this->getParameter('id');
 
 		if ($id) {

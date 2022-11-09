@@ -7,31 +7,24 @@ namespace App\Presenters;
 use App\Forms\Device;
 use App\Model;
 use Nette;
-//use Tracy\Debugger;
-//use Nette\Utils\Random;
 use Nette\Utils\DateTime;
-//use Nette\Utils\Arrays;
-//use Nette\Utils\Html;
 use Nette\Utils\Strings;
 use Nette\Utils\FileSystem;
-//use Nette\Application\UI;
 use Nette\Application\UI\Form;
 use Nette\Http\Url;
 use Nette\Application\Responses\FileResponse;
 
 use App\Services\Logger;
-//use \App\Services\InventoryDataSource;
-//use \App\Services\Config;
 
 /**
  * Presenter pre prácu so zariadenimi
- * Posledna zmena 15.07.2022
+ * Posledna zmena 29.07.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2022 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2022 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.2
+ * @version    1.0.3
  */
 final class DevicePresenter extends BaseAdminPresenter
 {
@@ -42,11 +35,8 @@ final class DevicePresenter extends BaseAdminPresenter
   /** @persistent */
   public $viewid = "";
 
-  /** @var \App\Services\InventoryDataSource */
-  private $datasource;
-
   /** @var \App\Services\Config */
-  private $config;
+  protected $config;
 
   // Database tables
   /** @var Model\PV_Blobs @inject */
@@ -64,14 +54,47 @@ final class DevicePresenter extends BaseAdminPresenter
   /** @var Device\DeviceFormFactory @inject*/
   public $deviceForm;
 
-  public function __construct(
-    \App\Services\InventoryDataSource $datasource,
-    \App\Services\Config $config
-  ) {
-    $this->datasource = $datasource;
+  public function __construct(\App\Services\Config $config)
+  {
     $this->config = $config;
     $this->links = $config->links;
     $this->appName = $config->appName;
+  }
+
+  /**
+   * Funkcia pre nájdenie zariadenia a overenie oprávnenia
+   */
+  private function getDevice(int $id = 0, bool $to_array = false, bool $checkAcces = true): Nette\Database\Table\ActiveRow|array|null
+  {
+    $this->id_device = $id;
+    $device = $this->devices->getDevice($id);
+    if (!$device) {
+      $this->setView('notFound');
+      return null;
+    }
+    if ($checkAcces) $this->checkAcces($device->user_id);
+
+    return ($to_array) ? $device->toArray() : $device;
+  }
+
+  private function setSubmenu(int $id, string $name, int $blobCount)
+  {
+    // 2 - Položka Device:... v hlavnom menu
+    $this['menu']->addNode(
+      2,
+      [
+        'name' => "· " . $this->texty_presentera->translate('device_h1') . " {$name}",
+        'link' => $this->link("Device:show", $id),
+        'id'   => $id
+      ]
+    );
+    if ($blobCount > 0) {
+      $this['menu']->addNode(2, [
+        'name' => "· · " . $this->texty_presentera->translate('device_files_h3') . " ({$blobCount})",
+        'link' => $this->link("Device:blobs", $id),
+        'id'   => $id
+      ]);
+    }
   }
 
   /**
@@ -83,36 +106,23 @@ final class DevicePresenter extends BaseAdminPresenter
   }
 
 
-  public function renderCreate()
-  {
-  }
+  //public function renderCreate() {}
 
   public function actionEdit(int $id): void
   {
-
-    $this->template->path = '../';
-    $this->template->id = $id;
-    $this->id_device = $id;
-
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
+    $post = $this->getDevice($id, true);
     Logger::log(
       'audit',
       Logger::INFO,
       sprintf($this->texty_presentera->translate('log_device_edit'), $this->getUser()->id, $this->getUser()->getIdentity()->email, $id)
     );
 
-    $post = $post->toArray();
-    $post['passphrase'] = $this->config->decrypt($post['passphrase'], $post['name']);
-    $this->checkAcces($post['user_id']);
-
     $this->template->name = $post['name'];
+    $this->template->id = $id;
 
     $arr = Strings::split($post['name'], '~:~');
     $post['name'] = $arr[1];
+    $post['passphrase'] = $this->config->decrypt($post['passphrase'], $post['name']);
 
     $this['deviceForm']->setDefaults($post);
   }
@@ -127,44 +137,6 @@ final class DevicePresenter extends BaseAdminPresenter
   }
 
   //----------------------------------------------------------------------
-
-
-
-  public function renderConfig(int $id): void
-  {
-
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $post = $post->toArray();
-    $post['passphrase'] = $this->config->decrypt($post['passphrase'], $post['name']);
-    $this->checkAcces($post['user_id']);
-    $this->template->device = $post;
-
-    Logger::log(
-      'audit',
-      Logger::INFO,
-      sprintf($this->texty_presentera->translate('log_device_view'), $this->getUser()->id, $this->getUser()->getIdentity()->email, $id)
-    );
-
-    $url = new Url($this->getHttpRequest()->getUrl()->getBaseUrl());
-    $url->setScheme('http');
-    $url1 = $url->getAbsoluteUrl() . 'ra';
-    $this->template->url = substr($url1, 7);
-
-    /*
-    $blobCount = $this->blobs->getBlobCount( $id );
-    $submenu = array();
-    $submenu[] =   ['id' => '102', 'link' => "device/show/{$id}", 'name' => "· Zařízení {$post['name']}" ];
-    if( $blobCount>0 ) {
-        $submenu[] =   ['id' => '103', 'link' => "device/blobs/{$id}", 'name' => "· · Soubory ({$blobCount})" ];
-    }
-    $this->populateTemplate( 102, 1, $submenu );
-    $this->template->path = '../';*/
-  }
-
 
   private function secondsToTime($inputSeconds)
   {
@@ -209,12 +181,8 @@ final class DevicePresenter extends BaseAdminPresenter
   public function renderShow(int $id): void
   {
 
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $post = $post->toArray();
+    $post =  $this->getDevice($id, true, false);
+
     $post['passphrase'] = $this->config->decrypt($post['passphrase'], $post['name']);
     $this->checkAcces($post['user_id']);
     if ($post['uptime']) {
@@ -237,23 +205,12 @@ final class DevicePresenter extends BaseAdminPresenter
     $url = new Url($this->getHttpRequest()->getUrl()->getBaseUrl());
     $url->setScheme('http');
     $url1 = $url->getAbsoluteUrl() . 'ra';
+
     $this->template->url = substr($url1, 7);
-
-    $blobCount = $this->blobs->getBlobCount($id);
-
-    /*$submenu = array();
-    $submenu[] =   ['id' => '102', 'link' => "Device:show"/ *"device/show/{$id}"* /, 'params' => ['id' => $id], 'name' => "· Zařízení {$post['name']}"];
-    if ($blobCount > 0) {
-      $submenu[] =   ['id' => '103', 'link' => "Device:blobs"/ *"device/blobs/{$id}"* /, 'params' => ['id' => $id], 'name' => "· · Soubory ({$blobCount})"];
-    }
-    $this->populateTemplate(102, 1, $submenu);
-    $this->template->path = '../';*/
-
-
     $this->template->device = $post;
-    $this->template->soubory = $blobCount;
-
+    $this->template->soubory = $this->blobs->getBlobCount($id);
     $this->template->sensors = $this->sensors->getDeviceSensors($id, $post['monitoring']);
+    $this->setSubmenu($id, $post['name'], $this->template->soubory);
 
     $lastTime = $lastLoginTs;
 
@@ -265,10 +222,9 @@ final class DevicePresenter extends BaseAdminPresenter
         }
       }
     }
+
     $this->template->lastComm = $lastTime;
-
     $this->template->updates = $this->updates->getOtaUpdates($id);
-
     $this->template->jsonUrl = $this->link('//Json:data', ['token' => $post['json_token'], 'id' => $post['id']]);
     $this->template->jsonUrl2 = $this->link('//Json:meteo', ['token' => $post['json_token'], 'id' => $post['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']);
     $this->template->blobUrl = $this->link('//Gallery:show', ['token' => $post['blob_token'], 'id' => $post['id']]);
@@ -277,61 +233,31 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function renderBlobs(int $id): void
   {
-
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $post = $post->toArray();
-    $this->checkAcces($post['user_id']);
-
-    $blobs = $this->blobs->getBlobs($id);
-    $blobCount = count($blobs);
-
-    /*$submenu = array();
-    $submenu[] =   ['id' => '102', 'link' => "device/show/{$id}", 'name' => "· Zařízení {$post['name']}"];
-    $submenu[] =   ['id' => '103', 'link' => "device/blobs/{$id}", 'name' => "· · Soubory ({$blobCount})"];
-    $this->populateTemplate(103, 1, $submenu);
-    $this->template->path = '../';*/
-
-    $this->template->id = $id;
-    $this->template->device = $post;
-    $this->template->soubory = $blobCount;
-    $this->template->blobs = $blobs;
+    $this->template->device = $this->getDevice($id);
+    $this->template->blobs = $this->blobs->getBlobs($id);
+    $this->setSubmenu($id, $this->template->device['name'], $this->blobs->getBlobCount($id));
   }
 
 
   public function renderDownload(int $id, int $blobId): void
   {
-
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $post = $post->toArray();
-    $this->checkAcces($post['user_id']);
+    $this->getDevice($id, true);
 
     $blob = $this->blobs->getBlob($id, $blobId);
     if (!$blob) {
       $this->error('Soubor nenalezen nebo k němu nejsou práva.');
     }
 
-    $fileName =
-      $blob['data_time']->format('Ymd_His') .
-      "_{$id}_" .
-      Strings::webalize($blob['description'], '._') .
-      ".{$blob['extension']}";
+    $fileName = $blob->data_time->format('Ymd_His') . "_" . $id . "_" .
+      Strings::webalize($blob['description'], '._') . "." . $blob->extension;
 
-    $contentType = 'application/octet-stream';
-    if ($blob['extension'] == 'csv') {
-      $contentType = 'text/csv';
-    } else if ($blob['extension'] == 'jpg') {
+    $contentType = $blob->extension == 'csv' ? 'text/csv' : 'application/octet-stream';
+    if ($blob->extension == 'jpg') {
       $contentType = 'image/jpeg';
     }
 
     $file = __DIR__ . "/../../data/" . $blob['filename'];
+    //$file = "data/" . $blob['filename']; // Ak sa podadresár data presunie do www 
     $response = new FileResponse($file, $fileName, $contentType);
     $this->sendResponse($response);
   }
@@ -342,18 +268,9 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function actionDelete(int $id): void
   {
-    $this->template->path = '../';
-
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $this->checkAcces($post->user_id);
-
-    $this->template->device = $post;
-    $this->template->statMeasures = $this->datasource->getDataStatsMeasures($id);
-    $this->template->statSumdata = $this->datasource->getDataStatsSumdata($id);
+    $this->template->device = $this->getDevice($id);
+    $this->template->statMeasures = $this->sensors->getDataStatsMeasures($id);
+    $this->template->statSumdata = $this->sensors->getDataStatsSumdata($id);
   }
 
   protected function createComponentDeleteForm(): Form
@@ -361,11 +278,12 @@ final class DevicePresenter extends BaseAdminPresenter
     $form = new Form;
     $form->addProtection();
 
-    $form->addCheckbox('potvrdit', 'Potvrdit smazání')
-      ->setOption('description', 'Zaškrtnutím potvrďte, že skutečně chcete smazat zařízení a všechna data jím zaznamenaná.')
+    $form->addCheckbox('potvrdit', 'device_form_del')
+      ->setOption('description', 'device_form_del_d')
       ->setRequired();
 
-    $form->addSubmit('delete', 'Smazat')
+    $form->addSubmit('delete', 'device_delete')
+      ->setHtmlAttribute('class', 'btn btn-danger')
       ->setHtmlAttribute('onclick', 'if( Nette.validateForm(this.form) ) { this.form.submit(); this.disabled=true; } return false;');
 
     $form->onSuccess[] = [$this, 'deleteFormSucceeded'];
@@ -376,25 +294,16 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function deleteFormSucceeded(Form $form, array $values): void
   {
-    $id = $this->getParameter('id');
+    if ($this->id_device) {
+      //overenie opravnenia
+      $this->getDevice($this->id_device);
 
-    if ($id) {
-      // overeni prav
-      $post = $this->devices->getDevice($id);
-      if (!$post) {
-        $this->error('Zařízení nebylo nalezeno');
-      }
-      $this->checkAcces($post->user_id);
-
-      Logger::log('audit', Logger::INFO, "[{$this->getHttpRequest()->getRemoteAddress()}, {$this->getUser()->getIdentity()->username}] Mazu zarizeni {$id}");
-      $this->devices->deleteDevice($id);
+      Logger::log('audit', Logger::INFO, "[{$this->getHttpRequest()->getRemoteAddress()}, {$this->getUser()->getIdentity()->username}] Mazu zarizeni {$this->id_device}");
+      $this->devices->deleteDevice($this->id_device);
     }
 
-    $this->flashMessage("Zařízení smazáno.", 'success');
-    $this->redirect('Inventory:home');
+    $this->flashRedirect("Device:list", $this->texty_presentera->translate('device_form_del_ok'), 'success');
   }
-
-
 
   //----------------------------------------------------------------------
 
@@ -402,18 +311,11 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function actionSendconfig(int $id): void
   {
-    $this->template->path = '../';
-    $this->template->id = $id;
 
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $post = $post->toArray();
-    $this->checkAcces($post['user_id']);
+    $post = $this->getDevice($id, true);
 
     $this->template->name = $post['name'];
+    $this->template->id = $id;
 
     $arr = Strings::split($post['name'], '~:~');
     $post['name'] = $arr[1];
@@ -443,27 +345,21 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function sendconfigFormSucceeded(Form $form, array $values): void
   {
-    $id = $this->getParameter('id');
-    if ($id) {
+    if ($this->id_device) {
       // editace
-      $device = $this->devices->getDevice($id);
-      if (!$device) {
-        $this->setView('notFound');
-        return;
-      }
-      $this->checkAcces($device->user_id);
-      if (!$device['config_ver']) {
+      $device = $this->getDevice($this->id_device);
+
+      if (!$device->config_ver) {
         $values['config_ver'] = '1';
       } else {
-        $values['config_ver'] = intval($device['config_ver']) + 1;
+        $values['config_ver'] = intval($device->config_ver) + 1;
       }
       $device->update($values);
-      $this->sessions->deleteSession($id);
-      $this->flashMessage("Změny provedeny.", 'success');
-      $this->redirect("Device:show", $id);
+      $this->sessions->deleteSession($this->id_device);
+      $this->flashRedirect(["Device:show", $this->id_device], "Změny provedeny.", 'success');
     } else {
       // zalozeni - to se nema stat
-      $this->redirect("Inventory:home");
+      $this->redirect("Device:list");
     }
   }
 
@@ -474,17 +370,9 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function actionUpdate(int $id): void
   {
-    $this->template->path = '../';
+    $post = $this->getDevice($id, true);
+
     $this->template->id = $id;
-
-    $post = $this->devices->getDevice($id);
-    if (!$post) {
-      $this->setView('notFound');
-      return;
-    }
-    $post = $post->toArray();
-    $this->checkAcces($post['user_id']);
-
     $this->template->name = $post['name'];
 
     $arr = Strings::split($post['name'], '~:~');
@@ -492,7 +380,6 @@ final class DevicePresenter extends BaseAdminPresenter
 
     $warningOTA = true;
     $warningVer = true;
-    $appName = "";
 
     // rozebrat $post['app_name'] a udelat z nej post['fromVersion']
     if (substr($post['app_name'], 0, 1) == '[') {
@@ -543,21 +430,15 @@ final class DevicePresenter extends BaseAdminPresenter
 
   public function updateFormSucceeded(Form $form, array $values): void
   {
-    $id = $this->getParameter('id');
-    if ($id) {
+
+    if ($this->id_device) {
       // editace
-      $device = $this->devices->getDevice($id);
-      if (!$device) {
-        $this->setView('notFound');
-        return;
-      }
-      $this->checkAcces($device->user_id);
+      $this->getDevice($this->id_device);
 
       $file = $values['image'];
       // kontrola, jestli se nahrál dobře
       if (!$file->isOk()) {
-        $this->flashMessage('Něco selhalo.', 'danger');
-        $this->redirect('Device:show', $id);
+        $this->flashRedirect(['Device:show', $this->id_device], 'Něco selhalo.', 'danger');
         return;
       }
 
@@ -565,40 +446,33 @@ final class DevicePresenter extends BaseAdminPresenter
       $fileHash = hash("sha256", $file->getContents(), false);
 
       // ulozit data do tabulky a soubor na disk
-      $fileId = $this->updates->otaUpdateCreate($id, $values['fromVersion'], $fileHash);
+      $fileId = $this->updates->otaUpdateCreate($this->id_device, $values['fromVersion'], $fileHash);
       if ($fileId == -1) {
-        $this->flashMessage('Pro tohle zařízení a verzi aplikace již požadavek na update existuje.', 'danger');
-        $this->redirect('Device:show', $id);
+        $this->flashRedirect(['Device:show', $this->id_device], 'Pro tohle zařízení a verzi aplikace již požadavek na update existuje.', 'danger');
         return;
       }
 
       // přesunutí souboru z temp složky někam, kam nahráváš soubory
-      $file->move($this->getUpdateFilename($id, $fileId));
+      $file->move($this->getUpdateFilename($this->id_device, $fileId));
 
       Logger::log(
         'webapp',
         Logger::INFO,
-        "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} posila aktualizaci {$fileId} na zarizeni {$id}"
+        "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} posila aktualizaci {$fileId} na zarizeni {$this->id_device}"
       );
 
-      $this->sessions->deleteSession($id);
+      $this->sessions->deleteSession($this->id_device);
 
-      $this->flashMessage("Aktualizace připravena.", 'success');
-      $this->redirect("Device:show", $id);
+      $this->flashRedirect(['Device:show', $this->id_device], "Aktualizace připravena.", 'success');
     } else {
       // to se nema stat
-      $this->redirect("Inventory:home");
+      $this->redirect("Device:list");
     }
   }
 
   public function renderDeleteupdate(int $device_id, int $update_id): void
   {
-    $device = $this->devices->getDevice($device_id);
-    if (!$device) {
-      $this->setView('notFound');
-      return;
-    }
-    $this->checkAcces($device->user_id);
+    $this->getDevice($device_id);
 
     $this->updates->otaDeleteUpdate($device_id, $update_id);
 
@@ -610,7 +484,6 @@ final class DevicePresenter extends BaseAdminPresenter
       "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} maze aktualizaci {$update_id} na zarizeni {$device_id}"
     );
 
-    $this->flashMessage("Aktualizace smazána.", 'success');
-    $this->redirect("Device:show", $device_id);
+    $this->flashRedirect(['Device:show', $this->id_device], "Aktualizace smazána.", 'success');
   }
 }

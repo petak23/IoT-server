@@ -12,7 +12,7 @@ use Nette\Http\Url;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 11.07.2022
+ * @last_edited petak23<petak23@gmail.com> 01.08.2022
  */
 final class InventoryPresenter extends BaseAdminPresenter
 {
@@ -28,9 +28,9 @@ final class InventoryPresenter extends BaseAdminPresenter
   /** @var Model\PV_Lang @inject */
   public $lang;
 
-  public function __construct(Services\Config $config) {
-    $this->links = $config->links;
-    $this->appName = $config->appName;
+  public function __construct($parameters) {
+    $this->links = $parameters['links'];
+		$this->appName = $parameters['title'];
   }
 
   public function injectPasswords(Nette\Security\Passwords $passwords)
@@ -106,11 +106,7 @@ final class InventoryPresenter extends BaseAdminPresenter
   }
 
 
-  public function actionPassword(): void
-  {
-    //$this->checkUserRole( 'user' );
-    //$this->populateTemplate( 3 );
-  }
+  public function actionPassword(): void {}
 
   protected function createComponentPasswordForm(): Form
   {

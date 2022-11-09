@@ -20,7 +20,7 @@ use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 
 
-final class RaPresenter extends MainBasePresenter
+final class RaPresenter extends BasePresenter
 {
     use Nette\SmartObject;
 

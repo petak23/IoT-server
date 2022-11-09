@@ -11,7 +11,7 @@ use \App\Model\ViewItem;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 15.07.2022
+ * @last_edited petak23<petak23@gmail.com> 18.07.2022
  */
 class InventoryDataSource
 {
@@ -268,54 +268,6 @@ class InventoryDataSource
   {
     $this->database->query('
             delete from user_main where id = ? 
-        ', $id);
-  }
-
-
-  /**
-   * sensor_id	pocet	name	desc
-   */
-  public function getDataStatsMeasures($id)
-  {
-    return $this->database->fetchAll('
-      select d.*, s.name, s.desc
-      from (
-        select sensor_id, count(*) as pocet
-        from measures
-        where sensor_id in (select id from sensors where device_id = ?)
-        group by sensor_id
-      ) d
-        
-      left outer join sensors s on d.sensor_id = s.id
-        
-      order by s.name
-    ', $id);
-
-    $se = $this->sensors->findBy(["device_id" => $id]);
-    $po = $this->measures->findAll()->where("sensor_id in", $se);
-  }
-
-  /**
-   * sensor_id	pocet	name	desc
-   */
-  public function getDataStatsSumdata($id)
-  {
-    return $this->database->fetchAll('
-            select 
-            d.*, s.name, s.desc
-            from 
-            (
-            select sensor_id, count(*) as pocet
-            from sumdata
-            where 
-            sensor_id in (select id from sensors where device_id = ?)
-            group by sensor_id
-            ) d
-            
-            left outer join sensors s
-            on d.sensor_id = s.id
-            
-            order by s.name
         ', $id);
   }
 

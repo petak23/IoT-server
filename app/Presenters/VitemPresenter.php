@@ -5,20 +5,31 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use Nette;
-use Tracy\Debugger;
+/*use Tracy\Debugger;
 use Nette\Utils\DateTime;
 use Nette\Utils\Arrays;
 use Nette\Utils\Html;
 use Nette\Utils\Strings;
-use Nette\Application\UI;
+use Nette\Application\UI;*/
 use Nette\Application\UI\Form;
 
-use \App\Model\View;
-use \App\Model\ViewItem;
+//use \App\Model\View;
+//use \App\Model\ViewItem;
 use \App\Model\Color;
 use App\Services\Logger;
 
-use \App\Services\InventoryDataSource;
+//use \App\Services\InventoryDataSource;
+
+/**
+ * Presenter pre prácu s datovými radami
+ * Posledna zmena 01.08.2022
+ * 
+ * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
+ * @copyright  Copyright (c) 2022 - 2022 Ing. Peter VOJTECH ml.
+ * @license
+ * @link       http://petak23.echo-msz.eu
+ * @version    1.0.1
+ */
 
 final class VitemPresenter extends BaseAdminPresenter
 {
@@ -116,9 +127,6 @@ final class VitemPresenter extends BaseAdminPresenter
 
     public function renderCreate(): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '';
         $this->template->viewId = $this->viewid;
 
         // Debugger::log( "renderVitemcreate $viewid" );
@@ -127,7 +135,7 @@ final class VitemPresenter extends BaseAdminPresenter
         $this->datasource->getViews(  $this->getUser()->id );
         if( ! isset($this->datasource->views[$this->viewid]) ) {
             Logger::log( 'audit', Logger::ERROR ,
-                "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} zkusil pristoupit k cizimu viewitem {$id}" );
+                "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} zkusil pristoupit k cizimu viewitem {$this->viewid}" );
 
             $this->error('View nebylo nalezeno');
         }
@@ -135,9 +143,6 @@ final class VitemPresenter extends BaseAdminPresenter
 
     public function actionEdit( int $id ): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '../';
         $this->template->viewId = $this->viewid;
 
         $vievItem = $this->datasource->getViewItem( $id );
@@ -189,9 +194,6 @@ final class VitemPresenter extends BaseAdminPresenter
 
     public function actionDelete( int $id ): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '../';
         $this->template->viewId = $this->viewid;
 
         $vievItem = $this->datasource->getViewItem( $id );

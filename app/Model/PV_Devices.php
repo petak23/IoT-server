@@ -99,33 +99,37 @@ class PV_Devices
     // nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
     $this->devices->get($id)->update(['passphrase' => 'x']);
     $this->sessions->deleteSession($id);
-    Logger::log('webapp', Logger::DEBUG,  "Mazu measures device {$id}");
-
 
     $sens = $this->pv_sensors->getDeviceSensors($id);
+
     // smazat data
-    $this->measures->where("sensor_id in ?", $sens)->delete();
-    /*$this->database->query('
-            DELETE from measures  
-            WHERE sensor_id in (select id from sensors where device_id = ?)
-        ', $id);*/
+    if ($sens->count()) {
+      Logger::log('webapp', Logger::DEBUG,  "Delete measures device {$id}");
+      $this->measures->where("sensor_id", $sens)->delete();
+      /*$this->database->query('
+              DELETE from measures  
+              WHERE sensor_id in (select id from sensors where device_id = ?)
+          ', $id);*/
 
-    Logger::log('webapp', Logger::DEBUG,  "Mazu sumdata device {$id}");
+      Logger::log('webapp', Logger::DEBUG,  "Delete sumdata device {$id}");
 
-    $this->sumdata->where("sensor_id in ?", $sens)->delete();
-    /*$this->database->query('
-            DELETE from sumdata
-            WHERE sensor_id in (select id from sensors where device_id = ?)
-        ', $id);*/
+      $this->sumdata->where("sensor_id in ?", $sens)->delete();
+      /*$this->database->query('
+              DELETE from sumdata
+              WHERE sensor_id in (select id from sensors where device_id = ?)
+          ', $id);*/
 
-    Logger::log('webapp', Logger::DEBUG,  "Mazu device {$id}");
+      Logger::log('webapp', Logger::DEBUG,  "Delete device {$id}");
 
-    // smazat senzory a zarizeni
-    $sens->delete();
-    /*$this->database->query('
-            DELETE from sensors
-            WHERE device_id = ?
-        ', $id);*/
+      // smazat senzory a zarizeni
+      $sens->delete();
+      /*$this->database->query('
+              DELETE from sensors
+              WHERE device_id = ?
+          ', $id);*/
+    }
+
+
 
     $this->devices->get($id)->delete();
     /*$this->database->query('
@@ -133,7 +137,7 @@ class PV_Devices
             WHERE id = ?
         ', $id);*/
 
-    Logger::log('webapp', Logger::DEBUG,  "Smazano.");
+    Logger::log('webapp', Logger::DEBUG,  "Delete OK.");
   }
 }
 // ------------------------------------  End class PV_Devices

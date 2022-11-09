@@ -19,7 +19,7 @@ use App\Services;
 
 /**
  * Registrácia užívateľa
- * Last change 14.07.2022
+ * Last change 02.08.2022
  * 
  * @github     Forked from petrbrouzda/RatatoskrIoT
  * 
@@ -27,9 +27,9 @@ use App\Services;
  * @copyright  Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
-class EnrollPresenter extends MainBasePresenter
+class EnrollPresenter extends BasePresenter
 {
 
   /** @var Model\PV_User_main @inject */

@@ -1,96 +1,110 @@
 {layout '../@layoutAdmin.latte'}
 
-{define content}
+{block content}
 
-<div class="pb-3 pt-3 px-2">
-<h1>Smazání zařízení</h1>
-</div>
+<div class="col-12">
+  <div class="pb-3 pt-3 px-2">
+    <h1>{_'device_del_h1'}</h1>
+  </div>
+  <div class="px-2 pb-2 text-danger">
+    {_'device_del_txt1'} '{$device->name}' ({$device->desc})? {_'device_del_txt2'}
+  </div>
+  <div class="row">
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-body">
+          {foreach $statMeasures as $stat}
+            {first}
+              <div class="px-2 pb-2 card-text">
+              {_'device_del_txt3'} <b>{_'device_del_d'}</b>. <span class="text-danger">{_'device_del_txt4'}</span>
 
-<div class="px-2 pb-2 text-danger">
-    Skutečně chcete smazat zařízení '{$device->name}' ({$device->desc})? Tuto akci nebude možné vrátit zpět!
-</div>
-
-{foreach $statMeasures as $stat}
-    {first}
-        <div class="px-2 pb-2">
-        K senzorům tohoto zařízení jsou zaznamenána <b>detailní data</b>. <span class="text-danger">Tato data budou smazána také!</span>
-
-        <div class="row pl-4">
-            <div class="col-6 col-md-2">
-                <b>Jméno senzoru</b>
+              <div class="row pl-4">
+                <div class="col-6 col-md-3">
+                  <b>{_'device_del_d_m'}</b>
+                </div>
+                <div class="col-6 col-md-5">
+                  <b>{_'base_description'}</b>
+                </div>
+                <div class="col-6 col-md-4">
+                  <b>{_'device_del_d_c'}</b>
+                </div>
+              </div>  
+            {/first}
+              
+            <div n:class="row, pl-4, $iterator->odd ? bg-light">
+              <div class="col-6 col-md-3">
+                {$stat->name}
+              </div>
+              <div class="col-6 col-md-5">
+                {$stat->desc}
+              </div>
+              <div class="col-6 col-md-4">
+                {$stat->pocet|number:0,',',' '}
+              </div>
             </div>
-            <div class="col-6 col-md-3">
-                <b>Popis</b>
-            </div>
-            <div class="col-6 col-md-2">
-                <b>Počet záznamů</b>
-            </div>
-        </div>  
-    {/first}
-    
-    <div class="row  pl-4 {if $iterator->odd}bg-light{/if}">
-        <div class="col-6 col-md-2">
-            {$stat->name}
+              
+            {last}
+              </div>
+            {/last}
+          {/foreach}
         </div>
-        <div class="col-6 col-md-3">
-            {$stat->desc}
-        </div>
-        <div class="col-6 col-md-2">
-            {$stat->pocet |number:0:',':' '}
-        </div>
+      </div>
     </div>
-    
-    {last}
-        </div>
-    {/last}
-{/foreach}
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-body">
+          {foreach $statSumdata as $stat}
+            {first}
+              <div class="px-2 pb-2">
+              {_'device_del_txt3'} <b>{_'device_del_s'}</b>. <span class="text-danger">{_'device_del_txt4'}</span>
 
-{foreach $statSumdata as $stat}
-    {first}
-        <div class="px-2 pb-2">
-        K senzorům tohoto zařízení jsou zaznamenána <b>sumární data</b>. <span class="text-danger">Tato data budou smazána také!</span>
-
-        <div class="row pl-4">
-            <div class="col-6 col-md-2">
-                <b>Jméno senzoru</b>
-            </div>
-            <div class="col-6 col-md-3">
-                <b>Popis</b>
-            </div>
-            <div class="col-6 col-md-2">
-                <b>Počet záznamů</b>
-            </div>
-        </div>  
-    {/first}
-    
-    <div class="row  pl-4 {if $iterator->odd}bg-light{/if}">
-        <div class="col-6 col-md-2">
-            {$stat->name}
+              <div class="row pl-4">
+                <div class="col-6 col-md-3">
+                  <b>{_'device_del_d_m'}</b>
+                </div>
+                <div class="col-6 col-md-5">
+                  <b>{_'base_description'}</b>
+                </div>
+                <div class="col-6 col-md-4">
+                  <b>{_'device_del_d_c'}</b>
+                </div>
+              </div>  
+            {/first}
+              
+              <div n:class="row, pl-4, $iterator->odd ? bg-light">
+                <div class="col-6 col-md-3">
+                  {$stat->name}
+                </div>
+                <div class="col-6 col-md-5">
+                  {$stat->desc}
+                </div>
+                <div class="col-6 col-md-4">
+                  {$stat->pocet|number:0,',',' '}
+                </div>
+              </div>
+              
+              {last}
+                  </div>
+              {/last}
+          {/foreach}
         </div>
-        <div class="col-6 col-md-3">
-            {$stat->desc}
-        </div>
-        <div class="col-6 col-md-2">
-            {$stat->pocet |number:0:',':' '}
-        </div>
+      </div>
     </div>
-    
-    {last}
+
+    <div class="col-12 mt-3">  
+      <div class="card border-danger mb-3">
+        <div class="card-body text-danger">
+          {control deleteForm}
         </div>
-    {/last}
-{/foreach}
+      </div>
 
-<div class="px-2 pb-2">
-    {control deleteForm}
+      <div class="px-2 pb-2">
+        <a n:href="Device:edit $device->id" class="btn btn-outline-primary btn-sm" role="button">{_'base_not_save'}</a>
+      </div>
+
+      <div class="alert alert-warning">
+        {_'device_del_warn'} 
+      </div>
+    </div>
+  </div>
 </div>
-
-<div class="px-2 pb-2">
-    <a n:href="Device:edit $device->id" class="btn btn-outline-primary btn-sm" role="button">Zpět beze změn</a>
-</div>
-
-<div class="px-2 pb-2">
-Upozornění: mazání může trvat i minutu... 
-</div>
-
-
-{/define}

@@ -18,21 +18,25 @@
         <div class="col-4 col-md-2 ">{_'devices_h1'}</div>
         <div class="col-4  col-md-2">{_'device_first_login'}</div>
         <div class="col-4  col-md-2">{_'device_last_login'}</div>
-        <div class="col-12 col-md-1 ">{_'description'}</div>
+        <div class="col-12 col-md-1 ">{_'base_description'}</div>
       </div>
     {/first}
 
     <div class="row my-2 px-2 bg-primary text-white">
       <div class="col-4 col-md-2 "><b><a n:href="Device:show $device->attrs->id" class="text-white">{$device->attrs->name}</a></b>
-        {if ($device->problem_mark)} 
-          <a href="#" 
+        {*if ($device->problem_mark)*} 
+          {*<a href="#" 
             data-toggle="tooltip" 
             data-placement="top" 
             title="{_'device_login_error_title'} {$device->attrs->last_bad_login}."
           >
             <i class="text-warning fas fa-exclamation-triangle"></i>
-          </a>
-        {/if}        
+          </a>*}
+          <button n:if="$device->problem_mark"
+            type="button" class="btn btn-link" data-toggle="tooltip" data-placement="bottom" title="{_'device_login_error_title'} {$device->attrs->last_bad_login}.">
+            <i class="text-warning fas fa-exclamation-triangle"></i>
+          </button>
+        {*/if*}
         {if $device->attrs->config_data }
           <a href="#" data-toggle="tooltip" data-placement="top" title="{_'device_config_change_wait'}" 
           ><i class="text-warning fas fa-share-square"></i></a>
@@ -60,7 +64,7 @@
             <div class="col-1">{_'sensor_list_t_type'}</div>
             <div class="col-6 col-md-1">{_'sensor_list_t_fa'}</div>
             <div class="col-6 col-md-2">{_'sensor_list_t_int'}</div>
-            <div class="col-12 col-md-2">{_'sensor_list_t_desc'}</div>
+            <div class="col-12 col-md-2">{_'base_description'}</div>
           </div>
       {/first}
         <div n:class="row,  $iterator->odd ? bg-light">
@@ -87,7 +91,7 @@
             {/if}
           </div>
           <div class="col-1">
-            <a href="#" data-toggle="tooltip" data-placement="top" title="{$sensor->device_classes->desc}">#{$sensor->id_device_classes}</a>
+            <a href="#" data-toggle="tooltip" data-placement="top" title="{$sensor->device_classes->desc}">#{$sensor->id_device_classes}</a>            
           </div>
           <div class="col-6 col-md-1">
             {if ($sensor->preprocess_data==1)}

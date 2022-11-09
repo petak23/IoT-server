@@ -2,7 +2,10 @@ services:
 
 	# Presenters
 	- App\Presenters\HomepagePresenter(%parameters%)
+	- App\Presenters\InventoryPresenter(%parameters%)
+	- App\Presenters\SensorPresenter(%parameters%)
 	- App\Presenters\SignPresenter(%parameters%)
+	- App\Presenters\UnitsPresenter(%parameters%)
 	- App\Presenters\UserPresenter(%parameters%)
 	- App\Presenters\UserAclPresenter(%parameters%)
 

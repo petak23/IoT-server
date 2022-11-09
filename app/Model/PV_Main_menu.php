@@ -10,13 +10,13 @@ use Nette;
 /**
  * Model starajuci sa o tabulku main_menu
  * 
- * Posledna zmena 12.07.2021
+ * Posledna zmena 01.08.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
 class PV_Main_menu extends Table {
   /** @var string */
@@ -33,7 +33,7 @@ class PV_Main_menu extends Table {
   /** 
    * Vypis menu 
    * @return array */
-	public function getMenu(): array {	
+	public function getMenu(string $language): array {	
     $mm = clone $this;
     $mm_out = $mm->findAll()->order('id ASC');
     return count($mm_out) ? $this->_getMenu($mm_out) : [];

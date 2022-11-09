@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use Nette;
-use Tracy\Debugger;
-use Nette\Utils\DateTime;
-use Nette\Utils\Arrays;
-use Nette\Utils\Html;
+//use Tracy\Debugger;
+//use Nette\Utils\DateTime;
+//use Nette\Utils\Arrays;
+//use Nette\Utils\Html;
 use Nette\Utils\Random;
-use Nette\Utils\Strings;
-use Nette\Application\UI;
+//use Nette\Utils\Strings;
+//use Nette\Application\UI;
 use Nette\Application\UI\Form;
 use Nette\Http\Url;
 
-use \App\Model\View;
-use \App\Model\ViewItem;
+//use \App\Model\View;
+//use \App\Model\ViewItem;
 use App\Services\Logger;
 
-use \App\Services\InventoryDataSource;
+//use \App\Services\InventoryDataSource;
 
 final class ViewPresenter extends BaseAdminPresenter
 {
@@ -43,10 +43,6 @@ final class ViewPresenter extends BaseAdminPresenter
     
     private function doViewsHome( $detailed )
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 2 );
-        $this->template->path = '';
-
         $this->datasource->getViews( $this->getUser()->id );
         $this->template->views = $this->datasource->views;
         $this->template->tokens = $this->datasource->tokens;
@@ -72,23 +68,23 @@ final class ViewPresenter extends BaseAdminPresenter
 
         $form->addText('name', 'Jméno grafu:')
         ->setOption('description', 'Bude zobrazeno jako nadpis nad grafem a jako jméno volby v levém menu.'  )
-            ->setAttribute('size', 50)
+            ->setHtmlAttribute('size', 50)
             ->setRequired();
 
         $form->addText('app_name', 'Jméno aplikace:')
             ->setOption('description', 'Bude zobrazeno v šedém pruhu nahoře.'  )
-            ->setAttribute('size', 50)
+            ->setHtmlAttribute('size', 50)
             ->setRequired();
     
         $form->addTextArea('vdesc', 'Popis:')
-            ->setAttribute('rows', 8)
-            ->setAttribute('cols', 80)
+            ->setHtmlAttribute('rows', 8)
+            ->setHtmlAttribute('cols', 80)
             ->setRequired();
 
         $form->addText('token', 'Zabezpečovací token:')
             ->setOption('description', 'Stane se součástí URL. Zadejte dlouhý náhodný text. Všechny grafy se stejným tokenem budou vidět v jednom bloku a budou mít společné levé menu.'  )
             ->addRule(Form::PATTERN, 'Jen písmena, čísla, pomlčka', '([0-9A-Za-z\-]+)')
-            ->setAttribute('size', 50)
+            ->setHtmlAttribute('size', 50)
             ->setDefaultValue( Random::generate(40) )
             ->setRequired();
 
@@ -124,19 +120,10 @@ final class ViewPresenter extends BaseAdminPresenter
         return $form;
     }
 
-    public function renderCreate(): void
-    {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '';
-    }
+    public function renderCreate(): void {}
 
     public function actionEdit(int $id): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '../';
-
         $this->datasource->getViews( $this->getUser()->id );
         $this->template->view = $this->datasource->views[$id];
 
@@ -190,10 +177,6 @@ final class ViewPresenter extends BaseAdminPresenter
 
     public function actionDelete( int $id ): void
     {
-        $this->checkUserRole( 'user' );
-        $this->populateTemplate( 0 );
-        $this->template->path = '../';
-
         $this->datasource->getViews( $this->getUser()->id );
         $this->template->view = $this->datasource->views[$id];
     }

@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use Nette;
-use App\Model;
 use App\Services\Logger;
 
 /**
- * Last change 08.07.2022
+ * Last change 01.08.2022
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 class BaseAdminPresenter extends BasePresenter
 {
@@ -38,18 +37,6 @@ class BaseAdminPresenter extends BasePresenter
   public $appName;
   public $links;
 
-  /**
-   * @deprecated 
-   */
-  public function populateTemplate($activeItem, $submenuAfterItem = FALSE, $submenu = NULL)
-  {
-    $this->template->appName = $this->appName;
-    $this->template->links = $this->links;
-    $this->template->path = "";
-
-    $this->populateMenu($activeItem, $submenuAfterItem, $submenu);
-  }
-
   public function beforeRender()
   {
     parent::beforeRender();
@@ -59,6 +46,5 @@ class BaseAdminPresenter extends BasePresenter
     }
     $this->template->appName = $this->appName;
     $this->template->links = $this->links;
-    $this->template->path = "";
   }
 }

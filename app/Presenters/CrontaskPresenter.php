@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use Nette;
-use Tracy\Debugger;
+//use Tracy\Debugger;
 use Nette\Utils\DateTime;
 use Nette\Utils\FileSystem;
 use Nette\Utils\Finder;
@@ -13,7 +13,7 @@ use Nette\Utils\Image;
 
 use App\Services\Logger;
 
-final class CrontaskPresenter extends MainBasePresenter
+final class CrontaskPresenter extends BasePresenter
 {
     use Nette\SmartObject;
 
