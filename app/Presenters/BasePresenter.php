@@ -49,10 +49,10 @@ class BasePresenter extends Nette\Application\UI\Presenter
 
   // Database tables	
   /** @var Model\PV_Main_menu @inject */
-	public $main_menu;
+  public $main_menu;
   /** @var Model\PV_User_main @inject */
   public $user_main;
-    
+
 
   protected function startup()
   {
@@ -114,22 +114,26 @@ class BasePresenter extends Nette\Application\UI\Presenter
   /** 
    * Komponenta pre vykreslenie menu
    * @return Menu\Menu */
-  public function createComponentMenu(): Menu\Menu {
+  public function createComponentMenu(): Menu\Menu
+  {
     $menu = new Menu\Menu;
     $hl_m = $this->main_menu->getMenu($this->language);
     if (count($hl_m)) {
       $servise = $this;
-      $menu->fromTable($hl_m, function($node, $row) use($servise) {
-      $poll = ["id", "name", "view_name"];
-        foreach ($poll as $v) { $node->$v = $row['node']->$v; }
-        $node->link = is_array($row['node']->link) ? $servise->link($row['node']->link[0], ["id"=>$row['node']->id]) 
-                                                    : $servise->link($row['node']->link);
+      $menu->fromTable($hl_m, function ($node, $row) use ($servise) {
+        $poll = ["id", "name", "view_name"];
+        foreach ($poll as $v) {
+          $node->$v = $row['node']->$v;
+        }
+        $node->link = is_array($row['node']->link) ? $servise->link($row['node']->link[0], ["id" => $row['node']->id])
+          : /*$servise->link((count(explode(":", $row['node']->link)) == 2 ? ":" . $row['node']->link : $row['node']->link))*/
+          $servise->link(":" . $row['node']->link);
         return $row['nadradena'] ? $row['nadradena'] : null;
       });
     }
     $menu->selectByUrl($this->link('this'));
     return $menu;
-  } 
+  }
 
   public function actionOut(): void
   {

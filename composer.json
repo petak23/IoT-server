@@ -1,6 +1,6 @@
 {
 	"name": "petak23/iot-server",
-	"description": "IoT aplikace na ESP32/ESP8266 a serverová aplikace k tomu",
+	"description": "IoT aplikácia na ESP32/ESP8266 a serverová aplikácia k tomu",
 	"keywords": ["nette", "IoT-server"],
 	"type": "project",
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
@@ -30,7 +30,6 @@
 		"nette/utils": "^3.2",
 		"latte/latte": "^2.10",
 		"tracy/tracy": "^2.9",
-		"texy/texy": "^3.1",
 		"dg/adminer-custom": "^1.24",
 		"contributte/webpack": "^2.1"
 	},

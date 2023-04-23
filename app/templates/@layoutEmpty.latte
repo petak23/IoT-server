@@ -1,54 +1,55 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="robots" content="noindex, nofollow">
-  <title>{ifset title}{include title|stripHtml} | {/ifset}IoT-server</title>
-  <link href="{$basePath}/css/styles.css" rel="stylesheet" />
-  <link href="{$basePath}/css/signin.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="robots" content="noindex, nofollow">
+	<title>{ifset title}{include title|stripHtml} | {/ifset}IoT-server</title>
+	<link href="{$basePath}/css/styles.css" rel="stylesheet" />
+	<link href="{$basePath}/css/signin.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="container"> {* center-content *}
-  <div n:foreach="$flashes as $flash" class="alert flash alert-{$flash->type} {$flash->type} text-center"><b>{$flash->message}</b></div>
-  {include content}
-  </div>
-  <footer class="mt-auto py-3">
-    <div class="container-fluid">
-      <div class="d-flex align-items-center justify-content-between small">
-        <div>&copy; RatatoskrIoT & petak23</div>
-        <div n:inner-foreach="$links as $link">
-          {if (strlen($link['link'])>0) }
-            <a href="{$link['link']}">{$link['name']}</a>
-          {else}
-            {$link['name']}
-          {/if}
-          {sep}&nbsp;&nbsp;|&nbsp;&nbsp;{/sep}
-        </div>
-      </div>
-    </div>
-  </footer>
+	<div class="container"> {* center-content *}
+	<div n:foreach="$flashes as $flash" class="alert flash alert-{$flash->type} {$flash->type} text-center"><b>{$flash->message}</b></div>
+	{include content}
+	</div>
+	<footer class="mt-auto py-3">
+		<div class="container-fluid">
+			<div class="d-flex align-items-center justify-content-between small">
+				<div>&copy; RatatoskrIoT & petak23</div>
+				<div n:inner-foreach="$links as $link">
+					{if (strlen($link['link'])>0) }
+						<a href="{$link['link']}">{$link['name']}</a>
+					{else}
+						{$link['name']}
+					{/if}
+					{sep}&nbsp;&nbsp;|&nbsp;&nbsp;{/sep}
+				</div>
+			</div>
+		</div>
+	</footer>
 {block scripts}
-  <script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  <script src="{$basePath}/js/scripts.js"></script>
-  <script type="text/javascript">
-  $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-  })
-  </script>
+	<script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	<script src="{$basePath}/js/scripts.js"></script>
+	<script type="text/javascript">
+	$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+	})
+	</script>
 
-  {*<script type="text/javascript">
-  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-  </script>
-  <script type="text/javascript">
-  try {
-  var pageTracker = _gat._getTracker("UA-289403-4");
-  pageTracker._trackPageview();
-  } catch(err) {}</script>*}
+	{*<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	try {
+	var pageTracker = _gat._getTracker("UA-289403-4");
+	pageTracker._trackPageview();
+	} catch(err) {}</script>*}
 {/block}
 
 </body></html>

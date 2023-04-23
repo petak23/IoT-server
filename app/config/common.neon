@@ -58,9 +58,11 @@ http:
 		X-XSS-Protection: '1; mode=block'
 
 includes:
+  - config.neon
   - services.neon
   - components.neon
-
+  - ../AdminModule/config/config.neon
+	
 extensions:
   webpack: Contributte\Webpack\DI\WebpackExtension(%debugMode%, %consoleMode%)
 

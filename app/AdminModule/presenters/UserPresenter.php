@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presenters;
+namespace App\AdminModule\Presenters;
 
 use Nette;
 
@@ -18,15 +18,15 @@ use App\Services;
 
 /**
  * Presenter pre prácu s užívateľom
- * Posledna zmena 01.08.2022
+ * Posledna zmena 20.04.2023
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2022 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2022 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
-final class UserPresenter extends BaseAdminPresenter
+final class UserPresenter extends BaseAdminAPresenter
 {
 	use Nette\SmartObject;
 
@@ -59,8 +59,8 @@ final class UserPresenter extends BaseAdminPresenter
 		Nette\Security\Passwords $passwords
 	) {
 		$this->datasource = $datasource;
-		$this->links = $parameters['links'];
-		$this->appName = $parameters['title'];
+		//$this->links = $parameters['links'];
+		//$this->appName = $parameters['title'];
 		$this->passwords = $passwords;
 	}
 

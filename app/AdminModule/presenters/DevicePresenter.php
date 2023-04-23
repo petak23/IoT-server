@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presenters;
+namespace App\AdminModule\Presenters;
 
 use App\Forms\Device;
 use App\Model;
@@ -18,15 +18,15 @@ use App\Services\Logger;
 
 /**
  * Presenter pre prácu so zariadenimi
- * Posledna zmena 29.07.2022
+ * Posledna zmena 20.04.2023
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2022 - 2022 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2022 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
-final class DevicePresenter extends BaseAdminPresenter
+final class DevicePresenter extends BaseAdminAPresenter
 {
   use Nette\SmartObject;
 
@@ -54,11 +54,9 @@ final class DevicePresenter extends BaseAdminPresenter
   /** @var Device\DeviceFormFactory @inject*/
   public $deviceForm;
 
-  public function __construct(\App\Services\Config $config)
+  public function __construct(array $parameters = [], \App\Services\Config $config)
   {
     $this->config = $config;
-    $this->links = $config->links;
-    $this->appName = $config->appName;
   }
 
   /**

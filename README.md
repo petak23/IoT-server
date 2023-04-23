@@ -2,6 +2,12 @@
 
 Serverová aplikácia, ktorá vznikla ako fork zo serverovej aplikácie na [github-e RatatoskrIoT](https://github.com/petrbrouzda/RatatoskrIoT)
 
+---
+
+Obsah ôvodného README.md:
+
+---
+
 ## RatatoskrIoT: Serverová aplikace pro IoT
 
 Informace, motivace a použití jsou popsány zde: [https://pebrou.wordpress.com/2021/01/07/kostra-hotove-iot-aplikace-pro-esp32-esp8266-a-k-tomu-nejaky-server-1-n/]
@@ -45,6 +51,10 @@ Aplikace obsahuje následující kód třetích stran ve formě zdrojových kód
 - zdroj: [https://packagist.org/packages/dg/adminer-custom]
 - licence: ---
 - použito bez úprav
+
+---
+
+Koniec pôvodného README.md
 
 ---
 

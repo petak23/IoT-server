@@ -1,45 +1,46 @@
 <?php
+
 namespace PeterVojtech\UserAcl;
 
 use App\Model;
 use Nette;
-//use Ublaboo\DataGrid\DataGrid;
-//use Ublaboo\DataGrid\Column\Action\Confirmation;
 
 /**
  * Komponenta pre editáciu ACL
- * Posledna zmena(last change): 20.08.2021
+ * Posledna zmena(last change): 20.04.2023
  * 
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com> 
- * @copyright Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright Copyright (c) 2012 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link http://petak23.echo-msz.eu
- * @version 1.0.2
+ * @version 1.0.3
  */
-class AdminUserAcl extends Nette\Application\UI\Control {
+class AdminUserAcl extends Nette\Application\UI\Control
+{
 
   /** @var Model\PV_User_permission */
-	public $user_permission;
+  public $user_permission;
 
   /** @var Model\PV_User_roles */
-	public $user_roles;
+  public $user_roles;
 
   /** @var Model\PV_User_resource */
   public $user_resource;
 
   /** @var Nette\Database\Table\Selection */
   protected $articles;
-  
+
   /** @var array */
   private $paramsFromConfig;
 
   /** &var EditRoleFormFactory */
   //public $editRoleForm;
-  
-  public function __construct(Model\PV_User_permission $user_permission,
-                              Model\PV_User_roles $user_roles,
-                              Model\PV_User_resource $user_resource,
-                              //EditRoleFormFactory $editRoleFormFactory,
+
+  public function __construct(
+    Model\PV_User_permission $user_permission,
+    Model\PV_User_roles $user_roles,
+    Model\PV_User_resource $user_resource,
+    //EditRoleFormFactory $editRoleFormFactory,
   ) {
     $this->user_permission = $user_permission;
     $this->user_roles = $user_roles;
@@ -51,16 +52,18 @@ class AdminUserAcl extends Nette\Application\UI\Control {
    * Parametre z komponenty.neon
    * @param array $params
    * @return AdminAktualneOznamyControl */
-  public function fromConfig(array $params) {
+  public function fromConfig(array $params)
+  {
     $this->paramsFromConfig = $params;
     return $this;
   }
-  
+
   /** 
    * Render
    * @param array $p Parametre: template - pouzita sablona
    * @see Nette\Application\Control#render() */
-  public function render($p = []) {
+  public function render($p = [])
+  {
     $this->template->setFile(__DIR__ . "/AdminUserAcl_default.latte");
     $this->template->user_permission = $this->user_permission->findAll();
     $this->template->user_roles = $this->user_roles->findAll();
@@ -110,10 +113,9 @@ class AdminUserAcl extends Nette\Application\UI\Control {
     //        );
     return $grid;
 	}*/
-
 }
 
-interface IAdminUserAcl {
-  /** @return AdminUserAcl */
-  function create();
+interface IAdminUserAcl
+{
+  function create(): AdminUserAcl;
 }

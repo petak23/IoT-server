@@ -19,7 +19,8 @@ use Nette\Application\Routers\RouteList;
  * @version    1.0.1
  */
 
-/*final */class RouterFactory {
+/*final */ class RouterFactory
+{
 	//use Nette\StaticClass;
 
 	public static function createRouter(): RouteList
@@ -32,12 +33,16 @@ use Nette\Application\Routers\RouteList;
 		$router->addRoute('chart/sensorchart/show/<id>/', 'Chart:sensorchart');
 		$router->addRoute('chart/<action>/<token>/<id>/', 'Chart:coverage');
 		$router->addRoute('json/<action>/<token>/<id>/', 'Json:data');
-		$router->addRoute('gallery/<token>/<id>/', 'Gallery:show');		
-		$router->addRoute('gallery/<token>/<id>/<blobid>/', 'Gallery:blob');		
+		$router->addRoute('gallery/<token>/<id>/', 'Gallery:show');
+		$router->addRoute('gallery/<token>/<id>/<blobid>/', 'Gallery:blob');
 		$router->addRoute('monitor/show/<token>/<id>/', 'Monitor:show');
-    $router->addRoute('device/<action>[/<id>]', 'Device:show');
-		$router->addRoute('useracl[/<action>[/<id>]]', 'UserAcl:default');
-		$router->addRoute('units[/<action>[/<id>]]', 'Units:default');
+
+		$router->withModule('Admin')
+			->addRoute('device/<action>[/<id>]', 'Device:show')
+			->addRoute('units[/<action>[/<id>]]', 'Units:default')
+			->addRoute('user[/<action>[/<id>]]', 'User:default')
+			->addRoute('useracl[/<action>[/<id>]]', 'UserAcl:default');
+
 		$router->addRoute('<presenter>/<action>[/<id>]', 'Homepage:default');
 		return $router;
 	}

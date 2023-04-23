@@ -37,8 +37,6 @@ module.exports = {
   context: path.join(ROOT_PATH, "app/assets"),
   entry: {
     front: path.join(ROOT_PATH, "app/assets/js/main.js"),
-    //admin: path.join(ROOT_PATH, "app/assets/admin/js/main.js")
-    //texyla: [path.join(ROOT_PATH, "www/texyla/css/main.css"), path.join(ROOT_PATH, "www/texyla/texyla-init.js")]
   },
   output: {
     path: path.join(ROOT_PATH, 'www/dist'),

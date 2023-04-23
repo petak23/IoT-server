@@ -14,7 +14,7 @@
 	<body class="sb-nav-fixed">
 		<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 			<button class="btn btn-link btn-sm ml-2 mr-2" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
-			<a class="navbar-brand" n:href="Inventory:user">{$appName}</a>
+			<a class="navbar-brand" n:href=":Inventory:user">{$appName}</a>
 			<ul class="navbar-nav ml-auto mr-0 mr-md-3">
 				<li class="nav-item dropdown">
 					<a class="btn btn-dark dropdown-toggle" href="#" 
@@ -30,7 +30,7 @@
 						<li><span class="dropdown-item-text"><small>{_'main_li_role'} {$user_main->user_role->name}</small></span></li>
 						<li><span class="dropdown-item-text"><small>{_'main_li_prefix'} {$user_main->prefix}</small></span></li>
 						<li><hr class="dropdown-divider"></li>
-						<li><a class="dropdown-item" n:href="Sign:out" title="{_'main_li_log_out'}">{_'main_li_log_out'}</a></li>
+						<li><a class="dropdown-item" n:href=":Sign:out" title="{_'main_li_log_out'}">{_'main_li_log_out'}</a></li>
 					</ul>
 				</li>
 			</ul>
