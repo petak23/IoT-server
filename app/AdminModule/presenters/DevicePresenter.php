@@ -56,6 +56,10 @@ final class DevicePresenter extends BaseAdminAPresenter
 
   public function __construct(array $parameters = [], \App\Services\Config $config)
   {
+    // Nastavenie z config-u
+    $this->nastavenie = $parameters;
+    $this->links = $parameters['links'];
+    $this->appName = $parameters['title'];
     $this->config = $config;
   }
 
@@ -223,9 +227,9 @@ final class DevicePresenter extends BaseAdminAPresenter
 
     $this->template->lastComm = $lastTime;
     $this->template->updates = $this->updates->getOtaUpdates($id);
-    $this->template->jsonUrl = $this->link('//Json:data', ['token' => $post['json_token'], 'id' => $post['id']]);
-    $this->template->jsonUrl2 = $this->link('//Json:meteo', ['token' => $post['json_token'], 'id' => $post['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']);
-    $this->template->blobUrl = $this->link('//Gallery:show', ['token' => $post['blob_token'], 'id' => $post['id']]);
+    $this->template->jsonUrl = $this->link('//:Json:data', ['token' => $post['json_token'], 'id' => $post['id']]);
+    $this->template->jsonUrl2 = $this->link('//:Json:meteo', ['token' => $post['json_token'], 'id' => $post['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']);
+    $this->template->blobUrl = $this->link('//:Gallery:show', ['token' => $post['blob_token'], 'id' => $post['id']]);
   }
 
 

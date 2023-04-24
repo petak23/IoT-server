@@ -9,13 +9,13 @@ use App;
 use App\Services\Logger;
 
 /**
- * Last change 21.04.2023
+ * Last change 24.04.2023
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
 class BaseAdminAPresenter extends App\Presenters\BasePresenter
 {

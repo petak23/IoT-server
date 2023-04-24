@@ -219,9 +219,9 @@
           <i>{$sensor->desc}</i>
         </div>
         <div class="col-12 col-md-4">
-          <a n:href="Chart:sensorstat $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_stat'}">
+          <a n:href=":Chart:sensorstat $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_stat'}">
             <i class="fa-solid fa-chart-simple"></i></a>
-          <a n:href="Chart:sensor $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_chart'}">
+          <a n:href=":Chart:sensor $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_chart'}">
             <i class="fa-solid fa-chart-line"></i></a>
           <a n:href="Sensor:show $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_info'}">
             <i class="fa-solid fa-circle-info"></i></a>

@@ -29,7 +29,7 @@ class BaseAdminPresenter extends BasePresenter
         "Uzivatel #{$this->getUser()->id} {$this->getUser()->getIdentity()->username} zkusil editovat {$type} patrici uzivateli #{$deviceUserId}"
       );
       $this->getUser()->logout(true);
-      $this->flashRedirect(self::DEFAULT_SIGN_IN_PAGE, "K tomuto {$type} nemáte práva!", "danger");
+      //$this->flashRedirect(self::DEFAULT_SIGN_IN_PAGE, "K tomuto {$type} nemáte práva!", "danger");
     }
   }
 

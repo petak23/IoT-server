@@ -27,7 +27,7 @@ class BasePresenter extends Nette\Application\UI\Presenter
 
   use Nette\SmartObject;
 
-  const DEFAULT_SIGN_IN_PAGE = 'Sign:in';
+  const DEFAULT_SIGN_IN_PAGE = ':Sign:in';
 
   /** @var Language_support\LanguageMain @inject */
   public $texty_presentera;
@@ -60,6 +60,7 @@ class BasePresenter extends Nette\Application\UI\Presenter
 
     // Nacitanie uzivatela
     $user = $this->getUser();
+    //dumpe($user->isLoggedIn());
 
     $httpR = $this->httpRequest->getUrl();
     $this->site_name = $httpR->host . $httpR->scriptPath; // Nazov stranky v tvare www.nieco.sk
@@ -67,6 +68,7 @@ class BasePresenter extends Nette\Application\UI\Presenter
     //dumpe($user->isLoggedIn());
     // Kontrola prihlasenia
     if ($user->isLoggedIn()) { //Prihlaseny uzivatel
+      //dumpe($user->isAllowed($this->name, $this->action));
       if (!$user->isAllowed($this->name, $this->action)) { //Kontrola ACL
         //dumpe($this->name, $this->action);
         Logger::log(
@@ -85,7 +87,9 @@ class BasePresenter extends Nette\Application\UI\Presenter
       }
       //Nastavenie jazyka podla užívateľa 
       $this->language = $this->user_main->getUser($user->id)->lang->acronym;
+      //dumpe($this->language);
     } else { //Neprihlaseny uzivatel
+      //dumpe($this->name);
       if (!$user->isAllowed($this->name, $this->action)) { //Kontrola ACL
         if ($user->getLogoutReason() === Nette\Security\UserStorage::LOGOUT_INACTIVITY) {
           Logger::log(
@@ -109,6 +113,7 @@ class BasePresenter extends Nette\Application\UI\Presenter
     }
     //Nastavenie textov podla jazyka 
     $this->texty_presentera->setLanguage($this->language);
+    //dumpe($this->texty_presentera);
   }
 
   /** 

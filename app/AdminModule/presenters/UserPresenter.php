@@ -59,8 +59,8 @@ final class UserPresenter extends BaseAdminAPresenter
 		Nette\Security\Passwords $passwords
 	) {
 		$this->datasource = $datasource;
-		//$this->links = $parameters['links'];
-		//$this->appName = $parameters['title'];
+		$this->links = $parameters['links'];
+		$this->appName = $parameters['title'];
 		$this->passwords = $passwords;
 	}
 
