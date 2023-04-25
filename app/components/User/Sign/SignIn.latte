@@ -43,7 +43,13 @@
 
   <div class="row">
     <div class="col-6">
-      <a class="btn btn-secondary btn-sm" href="{plink Enroll:Step1}">{_'SignInForm_register'}</a>
+      <a 
+        n:if="$reg_enabled"
+        class="btn btn-secondary btn-sm" 
+        href="{plink Enroll:Step1}"
+      >
+        {_'SignInForm_register'}
+      </a>
     </div>
     <div class="col-6 text-right">
       <a class="btn btn-secondary btn-sm" href="{plink Sign:ForgottenPassword}">{_'SignInForm_forgottenPassword'}</a>

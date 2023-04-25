@@ -28,23 +28,24 @@ class Config
 
 
     public $fontRegular;
-    public $fontBold; 
+    public $fontBold;
     public $dataRetentionDays;
     public $minYear;
+    public $reg_enabled;
 
     private $masterPassword;
-    
-	public function __construct(
-            $ips,
-            $masterPassword,
-            $links,
-            $appName, 
-            $fontRegular, 
-            $fontBold, 
-            $dataRetentionDays, 
-            $minYear
-            )
-	{
+
+    public function __construct(
+        $ips,
+        $masterPassword,
+        $links,
+        $appName,
+        $fontRegular,
+        $fontBold,
+        $dataRetentionDays,
+        $minYear,
+        $reg_enabled
+    ) {
         $this->cronAllowedIPs = $ips;
         $this->masterPassword = $masterPassword;
         $this->links = $links;
@@ -53,7 +54,8 @@ class Config
         $this->fontBold = $fontBold;
         $this->dataRetentionDays = $dataRetentionDays;
         $this->minYear = $minYear;
-	}
+        $this->reg_enabled = $reg_enabled;
+    }
 
 
     private function getMasterKey()
@@ -61,31 +63,27 @@ class Config
         return hash("sha256", $this->masterPassword . 'RatatoskrIoT', true);
     }
 
-    public function encrypt( $data, $fieldName )
+    public function encrypt($data, $fieldName)
     {
-        $aesIV = substr( hash("sha256", $fieldName, true), 0, 16 );
+        $aesIV = substr(hash("sha256", $fieldName, true), 0, 16);
         $aesKey = $this->getMasterKey();
-        $encrypted = openssl_encrypt( $data, 'AES-256-CBC', $aesKey, OPENSSL_RAW_DATA , $aesIV );   
-        if( $encrypted === FALSE ) {
-            Logger::log( 'webapp', Logger::ERROR, "nelze zasifrovat" );
+        $encrypted = openssl_encrypt($data, 'AES-256-CBC', $aesKey, OPENSSL_RAW_DATA, $aesIV);
+        if ($encrypted === FALSE) {
+            Logger::log('webapp', Logger::ERROR, "nelze zasifrovat");
         }
         return bin2hex($encrypted);
     }
 
-    public function decrypt( $data, $fieldName )
+    public function decrypt($data, $fieldName)
     {
-        $aesIV = substr( hash("sha256", $fieldName, true), 0, 16 );
+        $aesIV = substr(hash("sha256", $fieldName, true), 0, 16);
         $aesKey = $this->getMasterKey();
-        
-        $decrypted = openssl_decrypt( hex2bin($data), 'AES-256-CBC', $aesKey, OPENSSL_RAW_DATA, $aesIV );
-        if( $decrypted == FALSE ) {
-            Logger::log( 'webapp', Logger::ERROR, "nelze desifrovat" );
+
+        $decrypted = openssl_decrypt(hex2bin($data), 'AES-256-CBC', $aesKey, OPENSSL_RAW_DATA, $aesIV);
+        if ($decrypted == FALSE) {
+            Logger::log('webapp', Logger::ERROR, "nelze desifrovat");
             return "";
         }
         return $decrypted;
     }
 }
-
-
-
-

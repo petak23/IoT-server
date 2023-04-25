@@ -9,6 +9,7 @@ parameters:
       name: 'Formulár pre prihlásenie'
       unique: false
       fa_icon: 'log-in'
+      reg_enabled: %reg_enabled%
 #...
 
 services:

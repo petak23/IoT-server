@@ -7,9 +7,6 @@ namespace App\Presenters;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Security\Passwords;
-use Nette\Mail\Mailer;
-use Nette\Mail\Message;
-use Nette\Http\Url;
 
 use App\Exceptions;
 use App\Forms;
@@ -19,191 +16,202 @@ use App\Services;
 
 /**
  * Registrácia užívateľa
- * Last change 02.08.2022
+ * Last change 25.04.2023
  * 
  * @github     Forked from petrbrouzda/RatatoskrIoT
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2021 - 2022 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2021 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.4
+ * @version    1.0.5
  */
 class EnrollPresenter extends BasePresenter
 {
 
-  /** @var Model\PV_User_main @inject */
-  public $pv_user;
+	/** @var Model\PV_User_main @inject */
+	public $pv_user;
 
-  /** @var Passwords */
-  private $passwords;
+	/** @var Passwords */
+	private $passwords;
 
-  private $mailService;
+	private $mailService;
 
-  /** @persistent */
-  public $email = "";
+	/** @persistent */
+	public $email = "";
 
-  public $links;
+	public $links;
 
-  // -- Forms
-  /** @var Forms\User\RegisterFormFactory @inject*/
-  public $enrollForm;
-  /** @var Forms\User\Enroll2FormFactory @inject*/
-  public $enroll2Form;
+	private $reg_enabled;
+
+	// -- Forms
+	/** @var Forms\User\RegisterFormFactory @inject*/
+	public $enrollForm;
+	/** @var Forms\User\Enroll2FormFactory @inject*/
+	public $enroll2Form;
 
 
-  public function __construct(
-    Services\MailService $mailsv,
-    Passwords $passwords,
-    Services\Config $config
-  ) {
-    $this->passwords = $passwords;
-    $this->mailService = $mailsv;
-    $this->links = $config->links;
-  }
+	public function __construct(
+		Services\MailService $mailsv,
+		Passwords $passwords,
+		Services\Config $config
+	) {
+		$this->passwords = $passwords;
+		$this->mailService = $mailsv;
+		$this->links = $config->links;
+		$this->reg_enabled = $config->reg_enabled;
+	}
 
-  public function beforeRender(): void
-  {
-    parent::beforeRender();
-    $this->template->links = $this->links;
-  }
+	protected function startup()
+	{
+		parent::startup();
+		if (!$this->reg_enabled) {
+			$this->flashRedirect(self::DEFAULT_SIGN_IN_PAGE, 'Nemáte dostatočné oprávnenie na danú operáciu!', 'danger');
+		}
+	}
 
-  protected function createComponentEnrollForm(): Form
-  {
-    $form = $this->enrollForm->create($this->link("Sign:ForgottenPassword"), $this->language);
-    $form->onSuccess[] =  [$this, 'enrollFormSucceeded'];
-    return $form;
-  }
+	public function beforeRender(): void
+	{
+		parent::beforeRender();
+		$this->template->links = $this->links;
+	}
 
-  public function enrollFormSucceeded(Form $form, Nette\Utils\ArrayHash $values): void
-  {
-    $hash = $this->passwords->hash($values->password);
+	protected function createComponentEnrollForm(): Form
+	{
+		$form = $this->enrollForm->create($this->link("Sign:ForgottenPassword"), $this->language);
+		$form->onSuccess[] =  [$this, 'enrollFormSucceeded'];
+		return $form;
+	}
 
-    // Vytvorenie prefix-u
-    $arr = preg_split('/[_.@\\-\\+]/', $values->email, 0, PREG_SPLIT_NO_EMPTY);
-    $prefixBase = '';
-    $prefix = '';
-    foreach ($arr as $str) {
-      $prefixBase .= substr($str, 0, 1);
-      if (strlen($prefixBase) == 2) break;
-    }
-    for ($i = 0;; $i++) {
-      $prefix = $prefixBase . ($i > 0 ? $i : '');
-      if (count($this->pv_user->getPrefix($prefix)) == 0) {
-        break;
-      }
-    }
-    $prefix = strtolower($prefix);
+	public function enrollFormSucceeded(Form $form, Nette\Utils\ArrayHash $values): void
+	{
+		$hash = $this->passwords->hash($values->password);
 
-    $code = Nette\Utils\Random::generate(4, '0-9');
+		// Vytvorenie prefix-u
+		$arr = preg_split('/[_.@\\-\\+]/', $values->email, 0, PREG_SPLIT_NO_EMPTY);
+		$prefixBase = '';
+		$prefix = '';
+		foreach ($arr as $str) {
+			$prefixBase .= substr($str, 0, 1);
+			if (strlen($prefixBase) == 2) break;
+		}
+		for ($i = 0;; $i++) {
+			$prefix = $prefixBase . ($i > 0 ? $i : '');
+			if (count($this->pv_user->getPrefix($prefix)) == 0) {
+				break;
+			}
+		}
+		$prefix = strtolower($prefix);
 
-    try {
-      $this->pv_user->createEnrollUser($values, $hash, $prefix, $code);
-    } catch (Exceptions\UserDuplicateEmailException $e) {
-      $this->flashRedirect("Enroll:step1", $this->texty_presentera->translate("RegisterForm_email_duble2"), "warning");
-    }
+		$code = Nette\Utils\Random::generate(4, '0-9');
 
-    Logger::log(
-      'audit',
-      Logger::INFO,
-      "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: zalozeny {$values->email} prefix=[{$prefix}] [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
-    );
+		try {
+			$this->pv_user->createEnrollUser($values, $hash, $prefix, $code);
+		} catch (Exceptions\UserDuplicateEmailException $e) {
+			$this->flashRedirect("Enroll:step1", $this->texty_presentera->translate("RegisterForm_email_duble2"), "warning");
+		}
 
-    $mailUrl = $this->link("//Enroll:step2", ['email' => $values->email, 'code' => $code]); // Lomítka na zač. znamená absolútna adresa
+		Logger::log(
+			'audit',
+			Logger::INFO,
+			"[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: zalozeny {$values->email} prefix=[{$prefix}] [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
+		);
 
-    $this->mailService->sendMail(
-      $values->email,
-      $this->texty_presentera->translate("Enroll2Form_mail_subject"),
-      sprintf($this->texty_presentera->translate("Enroll2Form_mail_inner"), $code, $mailUrl)
-    );
+		$mailUrl = $this->link("//Enroll:step2", ['email' => $values->email, 'code' => $code]); // Lomítka na zač. znamená absolútna adresa
 
-    $this->flashRedirect(["Enroll:step2", $values->email], sprintf($this->texty_presentera->translate("Enroll2Form_mail_send"), $values->email), "success");
-  }
+		$this->mailService->sendMail(
+			$values->email,
+			$this->texty_presentera->translate("Enroll2Form_mail_subject"),
+			sprintf($this->texty_presentera->translate("Enroll2Form_mail_inner"), $code, $mailUrl)
+		);
 
-  public function actionStep2($email, $code = NULL)
-  {
-    $this->email = $email;
+		$this->flashRedirect(["Enroll:step2", $values->email], sprintf($this->texty_presentera->translate("Enroll2Form_mail_send"), $values->email), "success");
+	}
 
-    // pokud jsou vyplneny oba parametry, rovnou na overovani
-    if ($code) {
-      $this->validujKod($email, $code);
-    }
-    $this->template->email = $email;
-  }
+	public function actionStep2($email, $code = NULL)
+	{
+		$this->email = $email;
 
-  protected function createComponentStep2Form(): Form
-  {
-    $form = $this->enroll2Form->create($this->language);
-    $form->onSuccess[] =  [$this, 'step2FormSucceeded'];
-    return $form;
-  }
+		// pokud jsou vyplneny oba parametry, rovnou na overovani
+		if ($code) {
+			$this->validujKod($email, $code);
+		}
+		$this->template->email = $email;
+	}
 
-  public function step2FormSucceeded(Form $form, Nette\Utils\ArrayHash $values): void
-  {
-    $this->validujKod($this->email, $values->code);
-  }
+	protected function createComponentStep2Form(): Form
+	{
+		$form = $this->enroll2Form->create($this->language);
+		$form->onSuccess[] =  [$this, 'step2FormSucceeded'];
+		return $form;
+	}
 
-  private function validujKod($email, $code)
-  {
-    $userdata = $this->pv_user->getUserBy(['email' => $email]);
+	public function step2FormSucceeded(Form $form, Nette\Utils\ArrayHash $values): void
+	{
+		$this->validujKod($this->email, $values->code);
+	}
 
-    if (!$userdata) {
-      Logger::log(
-        'audit',
-        Logger::ERROR,
-        "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: nenajdeny $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
-      );
+	private function validujKod($email, $code)
+	{
+		$userdata = $this->pv_user->getUserBy(['email' => $email]);
 
-      $this->flashRedirect("Enroll:step2", sprintf($this->texty_presentera->translate("Enroll2Form_validate_not_found"), $email), "danger");
-    }
+		if (!$userdata) {
+			Logger::log(
+				'audit',
+				Logger::ERROR,
+				"[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: nenajdeny $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
+			);
 
-    if ($userdata->id_user_state != 1) {
-      Logger::log(
-        'audit',
-        Logger::ERROR,
-        "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: chybny stav {$userdata->id_user_state} pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
-      );
+			$this->flashRedirect("Enroll:step2", sprintf($this->texty_presentera->translate("Enroll2Form_validate_not_found"), $email), "danger");
+		}
 
-      $this->flashRedirect(["Sign:in", $email], sprintf($this->texty_presentera->translate("Enroll2Form_validate_ok_code"), $email), "success");
-    }
+		if ($userdata->id_user_state != 1) {
+			Logger::log(
+				'audit',
+				Logger::ERROR,
+				"[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: chybny stav {$userdata->id_user_state} pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
+			);
 
-    if ($userdata->self_enroll_code !== $code) {
+			$this->flashRedirect(["Sign:in", $email], sprintf($this->texty_presentera->translate("Enroll2Form_validate_ok_code"), $email), "success");
+		}
 
-      if ($userdata->self_enroll_error_count >= 3) {
-        // smazat ucet
-        Logger::log(
-          'audit',
-          Logger::ERROR,
-          "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: MAZEM UCET, chybny kod pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
-        );
+		if ($userdata->self_enroll_code !== $code) {
 
-        $this->pv_user->deleteUserByEmailEnroll($email);
-        $this->flashRedirect("Sign:in", $this->texty_presentera->translate("Enroll2Form_validate_er_delete"), "danger");
-      } else {
-        // navysit pocet chyb
-        Logger::log(
-          'audit',
-          Logger::ERROR,
-          "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: chybny kod pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
-        );
+			if ($userdata->self_enroll_error_count >= 3) {
+				// smazat ucet
+				Logger::log(
+					'audit',
+					Logger::ERROR,
+					"[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: MAZEM UCET, chybny kod pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
+				);
 
-        $this->pv_user->updateUserEnrollState($email, 1, 1 + $userdata->self_enroll_error_count, 2);
-        $this->flashRedirect(["Enroll:step2", $email], $this->texty_presentera->translate("Enroll2Form_validate_er_code"), "warning");
-      }
-    }
-    // aktivovat
-    Logger::log(
-      'audit',
-      Logger::INFO,
-      "[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: AKTIVACIA $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
-    );
+				$this->pv_user->deleteUserByEmailEnroll($email);
+				$this->flashRedirect("Sign:in", $this->texty_presentera->translate("Enroll2Form_validate_er_delete"), "danger");
+			} else {
+				// navysit pocet chyb
+				Logger::log(
+					'audit',
+					Logger::ERROR,
+					"[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: chybny kod pre $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
+				);
 
-    $this->pv_user->updateUserEnrollState($email, 10, 0, 3);
-    $this->mailService->sendMailAdmin(
-      'Nový užívateľ',
-      "<p>Užívateľ <b>{$email}</b> urobil self-enroll. </p>"
-    );
+				$this->pv_user->updateUserEnrollState($email, 1, 1 + $userdata->self_enroll_error_count, 2);
+				$this->flashRedirect(["Enroll:step2", $email], $this->texty_presentera->translate("Enroll2Form_validate_er_code"), "warning");
+			}
+		}
+		// aktivovat
+		Logger::log(
+			'audit',
+			Logger::INFO,
+			"[{$this->getHttpRequest()->getRemoteAddress()}] Enroll: AKTIVACIA $email [{$this->getHttpRequest()->getHeader('User-Agent')} / {$this->getHttpRequest()->getHeader('Accept-Language')}]"
+		);
 
-    $this->flashRedirect(["Sign:in", $email], $this->texty_presentera->translate("Enroll2Form_validate_ok"), "success");
-  }
+		$this->pv_user->updateUserEnrollState($email, 10, 0, 3);
+		$this->mailService->sendMailAdmin(
+			'Nový užívateľ',
+			"<p>Užívateľ <b>{$email}</b> urobil self-enroll. </p>"
+		);
+
+		$this->flashRedirect(["Sign:in", $email], $this->texty_presentera->translate("Enroll2Form_validate_ok"), "success");
+	}
 }

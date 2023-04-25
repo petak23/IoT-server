@@ -59,7 +59,7 @@ class SignInControl extends Nette\Application\UI\Control
 		$form->onSuccess[] = function ($form) use ($pthis) {
 			$pthis->restoreRequest($pthis->backlink); // https://pla.nette.org/cs/jak-po-odeslani-formulare-zobrazit-stejnou-stranku
 			$this->flashMessage($this->texts->translate('SignInForm_login_ok'), 'success');
-			$pthis->flashRedirect('Inventory:user', $this->texts->translate('SignInForm_login_ok'), 'success');
+			$pthis->flashRedirect(':Admin:Inventory:user', $this->texts->translate('SignInForm_login_ok'), 'success');
 		};
 
 		return $form;
@@ -73,6 +73,7 @@ class SignInControl extends Nette\Application\UI\Control
 	{
 		$this->template->setFile(__DIR__ . "/SignIn.latte");
 		$this->template->setTranslator($this->texts);
+		$this->template->reg_enabled = $this->paramsFromConfig["reg_enabled"];
 		$this->template->render();
 	}
 }

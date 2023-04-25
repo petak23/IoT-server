@@ -6,6 +6,7 @@
 #
 services:
 	- App\AdminModule\Presenters\DevicePresenter(%parameters%)
+	- App\AdminModule\Presenters\InventoryPresenter(%parameters%)
 	- App\AdminModule\Presenters\SensorPresenter(%parameters%)
 	- App\AdminModule\Presenters\UnitsPresenter(%parameters%)
 	- App\AdminModule\Presenters\UserAclPresenter(%parameters%)

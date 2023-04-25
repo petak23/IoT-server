@@ -44,10 +44,10 @@
     </div>
   </div>
 
-  <div class="row px-2 bg-light">
+  {*<div class="row px-2 bg-light">
     <div class="col-12 col-md-3">Přihlašovací jméno:</div>
     <div class="col-12 col-md-9"><b>{$userData->username}</b></div>
-  </div>
+  </div>*}
 
   <div class="row px-2 ">
     <div class="col-12 col-md-3">Prefix:</div>
@@ -104,7 +104,7 @@
     {/first}
       <div class="row my-2 px-2 bg-primary text-white">
           <div class="col-4 col-md-2 "><b>{$device->attrs['name']}</b>
-              {if ($device->attrs['problem_mark'])} 
+              {if ($device->problem_mark)} 
                   <a href="#" data-toggle="tooltip" data-placement="top" title="{_'device_login_error_title'} {$device->attrs['last_bad_login']}."
                   ><i class="text-warning fas fa-exclamation-triangle"></i></a>
               {/if}        
@@ -121,8 +121,7 @@
           </div>
       </div>
           
-      {foreach $device->sensors as $sensor_main }
-        {var $sensor = $sensor_main['sensor']}
+      {foreach $device->sensors as $sensor }
           {first}
             <div class="row pl-4 pr-1 py-2"><div class="col-12">
               <div class="row text-secondary">
@@ -138,12 +137,12 @@
               <div n:class="row,  $iterator->odd ? bg-light">
                 <div class="col-6 col-md-2 font-weight-bold">
                   <a n:href="Sensor:show $sensor->id" >{$sensor->name}</a>
-                  <a n:if="$sensor_main['warningIcon']>0" href="#" 
+                  <a n:if="$sensor->warning_icon>0" href="#" 
                     data-toggle="tooltip" data-placement="top" title="{_'sensor_list_not_data'} {$sensor->last_data_time}.">
-                    <i n:class="($sensor_main['warningIcon']==1) ? text-danger : text-warning, fas, fa-exclamation-triangle"></i>
+                    <i n:class="($sensor->warning_icon==1) ? text-danger : text-warning, fas, fa-exclamation-triangle"></i>
                   </a>
                 </div>
-                <div class="col-5 col-md-2">{dump $sensor}
+                <div class="col-5 col-md-2">
                   {if ($sensor->last_out_value!==NULL)}
                     {$sensor->last_out_value} {$sensor->value_types->unit}
                     <a n:if="$sensor->warn_max_fired" href="#" 

@@ -1,0 +1,134 @@
+{block content}
+<div class="col-12">
+	<div class="pb-3 pt-3 px-2">
+	<h1>{_'inv_user_h1'}</h1>
+	</div>
+
+	{if ($userData->prev_login_time)}
+	<div class="row px-2 bg-light">
+		<div class="col-12 col-md-3">{_'inv_prev_login'}</div>
+		<div class="col-12 col-md-9">
+					<b>{$userData->prev_login_time}</b>
+					z IP adresy 
+					{if ($prev_login_name)}
+						{$userData->prev_login_ip} (<b>{$prev_login_name}</b>)
+					{else}
+						<b>{$userData->prev_login_ip}</b>
+					{/if}
+					<br><small>{$userData->prev_login_browser}</small></div>
+	</div>
+	{/if}
+
+	{if ($userData['last_error_time']) }
+	<div class="row px-2">
+		<div class="col-12 col-md-3">{_'inv_last_error_login'}</div>
+		<div class="col-12 col-md-9 text-danger">
+					<b>{$userData->last_error_time}</b>
+					z IP adresy 
+					{if ($last_error_name)}
+						{$userData->last_error_ip} (<b>{$last_error_name}</b>)
+					{else}
+						<b>{$userData->last_error_ip} </b>
+					{/if}
+					<br><small>{$userData->last_error_browser}</small></div>
+	</div>
+	{/if}
+
+	<div class="row px-2 pt-2 pb-2">
+		<div class="col-12">
+			<h3 class="d-flex justify-content-between">
+				{_'inv_options_h3'}
+				<span>
+					<a class="btn btn-outline-primary btn-sm" role="button" n:href="Inventory:edit">
+						{_'base_change_settings'}
+					</a>
+					<a class="btn btn-outline-primary btn-sm" role="button" n:href="Inventory:password">
+						{_'default_pass_change'}
+					</a>
+				</span>
+			</h3>
+		</div>
+	</div>
+
+	{*<div class="row px-2 bg-light">
+		<div class="col-12 col-md-3">{_'inv_username'}</div>
+		<div class="col-12 col-md-9"><b>{$userData['username']}</b>
+			<br><small>{_'inv_username_comm'}</small>
+		</div>
+	</div>*}
+
+	<div class="row px-2 bg-light">
+		<div class="col-12 col-md-3">{_'inv_email'}</div>
+		<div class="col-12 col-md-9"><b>{$userData->email}</b>
+			<br><small>{_'inv_email_comm'}</small>
+		</div>
+	</div>
+	<div class="row px-2">
+		<div class="col-12 col-md-3">{_'inv_userlang'}</div>
+		<div class="col-12 col-md-9"><b>{$userData->lang->name}</b>
+			<br><small>{_'inv_userlang_comm'}</small>
+		</div>
+	</div>
+
+	<div class="row px-2  bg-light">
+		<div class="col-12 col-md-3">{_'inv_monitoring_token'}</div>
+		<div class="col-12 col-md-9"><b>{$userData->monitoring_token}</b></div>
+	</div>
+
+	{if ($userData['monitoring_token'])}
+	<div class="px-2 pb-2 pt-4">
+		<h3>{_'inv_monitoring_token_h3'}</h3>
+		{_'inv_monitoring_token_t1'} <b><a href="{$monitoringUrl}">{$monitoringUrl}</a></b>
+		<br><small>{_'inv_monitoring_token_t2'|noescape}</small>
+	</div>
+	{/if}
+
+
+	<div class="row px-2 pt-4 pb-2">
+		<div class="col-12">
+			<h3>{_'inv_retenction_h3'}</h3>
+			{_'inv_retenction_t1'}
+		</div>
+	</div>
+
+	<div class="row px-2 bg-light">
+		<div class="col-12 col-md-9">{_'inv_retenction_d1'}</div>
+		<div class="col-12 col-md-3">
+			{if ($userData->measures_retention)!=0 }
+				<b>{$userData->measures_retention} {_'inv_retenction_day'}</b>
+			{else}
+				{_'inv_retenction_nr'}
+			{/if}
+		</div>
+	</div>
+
+	<div class="row px-2">
+		<div class="col-12 col-md-9">{_'inv_retenction_sum'}</div>
+		<div class="col-12 col-md-3">
+			{if ($userData->sumdata_retention)!=0 }
+				<b>{$userData->sumdata_retention} {_'inv_retenction_day'}</b>
+			{else}
+				{_'inv_retenction_nr'}
+			{/if}
+		</div>
+	</div>
+
+	<div class="row px-2 bg-light">
+		<div class="col-12 col-md-9">{_'inv_retenction_fil'}</div>
+		<div class="col-12 col-md-3">
+			{if ($userData->blob_retention)!=0 }
+				<b>{$userData->blob_retention} {_'inv_retenction_day'}</b>
+			{else}
+				{_'inv_retenction_nr'}
+			{/if}
+		</div>
+	</div>
+
+
+	<div class="row px-2 pt-3 pb-2">
+		<div class="col-12">
+			<a n:href="Device:list" class="btn btn-outline-primary btn-sm" role="button">{_'devices_h1'}</a>
+			<a n:href=":View:views" class="btn btn-outline-primary btn-sm" role="button">{_'graphs_h1'}</a>
+		</div>
+	</div>
+</div>

@@ -2,7 +2,6 @@ services:
 
 	# Presenters
 	- App\Presenters\HomepagePresenter(%parameters%)
-	- App\Presenters\InventoryPresenter(%parameters%)
 	- App\Presenters\SignPresenter(%parameters%)
 
   # Models

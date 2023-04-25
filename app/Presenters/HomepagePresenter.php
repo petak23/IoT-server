@@ -10,7 +10,7 @@ final class HomepagePresenter extends BasePresenter
   {
     parent::startup();
     if ($this->getUser()->isLoggedIn()) {
-      $this->redirect("Inventory:user");
+      $this->redirect("Admin:Inventory:user");
     } else {
       $this->redirect(self::DEFAULT_SIGN_IN_PAGE);
     }

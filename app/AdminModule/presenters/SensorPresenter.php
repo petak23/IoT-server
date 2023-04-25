@@ -11,13 +11,13 @@ use Nette\Application\UI\Form;
 
 /**
  * Presenter pre prácu so senzormi
- * Posledna zmena 24.04.2023
+ * Posledna zmena 25.04.2023
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2022 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.2
+ * @version    1.0.3
  */
 
 final class SensorPresenter extends BaseAdminAPresenter
@@ -217,7 +217,6 @@ final class SensorPresenter extends BaseAdminAPresenter
 			);
 			$this->error('Senzor nebyl nalezeno');
 		}
-		//dumpe($post->/*device->*/toArray());
 		$this->checkAcces($post->device->user_id, 'senzor');
 
 		$this->template->name = "{$post->device->name}:{$post->name}";
