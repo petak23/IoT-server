@@ -54,7 +54,7 @@ final class DevicePresenter extends BasePresenter
 	/** @var Device\DeviceFormFactory @inject*/
 	public $deviceForm;
 
-	public function __construct(array $parameters = [], \App\Services\Config $config)
+	public function __construct(array $parameters, \App\Services\Config $config)
 	{
 		// Nastavenie z config-u
 		$this->nastavenie = $parameters;
@@ -118,6 +118,7 @@ final class DevicePresenter extends BasePresenter
 			Logger::INFO,
 			sprintf($this->texty_presentera->translate('log_device_edit'), $this->getUser()->id, $this->getUser()->getIdentity()->email, $id)
 		);
+		if ($post == null) return;
 
 		$this->template->name = $post['name'];
 		$this->template->id = $id;
@@ -185,6 +186,8 @@ final class DevicePresenter extends BasePresenter
 
 		$post =  $this->getDevice($id, true, false);
 
+		if ($post == null) return;
+
 		$post['passphrase'] = $this->config->decrypt($post['passphrase'], $post['name']);
 		$this->checkAcces($post['user_id']);
 		if ($post['uptime']) {
@@ -243,7 +246,9 @@ final class DevicePresenter extends BasePresenter
 
 	public function renderDownload(int $id, int $blobId): void
 	{
-		$this->getDevice($id, true);
+		$post = $this->getDevice($id, true);
+
+		if ($post == null) return;
 
 		$blob = $this->blobs->getBlob($id, $blobId);
 		if (!$blob) {
@@ -298,7 +303,9 @@ final class DevicePresenter extends BasePresenter
 	{
 		if ($this->id_device) {
 			//overenie opravnenia
-			$this->getDevice($this->id_device);
+			$post = $this->getDevice($this->id_device);
+
+			if ($post == null) return;
 
 			Logger::log('audit', Logger::INFO, "[{$this->getHttpRequest()->getRemoteAddress()}, {$this->getUser()->getIdentity()->username}] Mazu zarizeni {$this->id_device}");
 			$this->devices->deleteDevice($this->id_device);
@@ -315,6 +322,8 @@ final class DevicePresenter extends BasePresenter
 	{
 
 		$post = $this->getDevice($id, true);
+
+		if ($post == null) return;
 
 		$this->template->name = $post['name'];
 		$this->template->id = $id;
@@ -351,6 +360,8 @@ final class DevicePresenter extends BasePresenter
 			// editace
 			$device = $this->getDevice($this->id_device);
 
+			if ($device == null) return;
+
 			if (!$device->config_ver) {
 				$values['config_ver'] = '1';
 			} else {
@@ -373,6 +384,8 @@ final class DevicePresenter extends BasePresenter
 	public function actionUpdate(int $id): void
 	{
 		$post = $this->getDevice($id, true);
+
+		if ($post == null) return;
 
 		$this->template->id = $id;
 		$this->template->name = $post['name'];
@@ -435,7 +448,9 @@ final class DevicePresenter extends BasePresenter
 
 		if ($this->id_device) {
 			// editace
-			$this->getDevice($this->id_device);
+			$post = $this->getDevice($this->id_device);
+
+			if ($post == null) return;
 
 			$file = $values['image'];
 			// kontrola, jestli se nahrál dobře
@@ -474,7 +489,9 @@ final class DevicePresenter extends BasePresenter
 
 	public function renderDeleteupdate(int $device_id, int $update_id): void
 	{
-		$this->getDevice($device_id);
+		$post = $this->getDevice($device_id);
+
+		if ($post == null) return;
 
 		$this->updates->otaDeleteUpdate($device_id, $update_id);
 

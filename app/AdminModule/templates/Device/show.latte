@@ -1,266 +1,266 @@
 {block content}
 <div class="col-12">
-  <div class="pb-3 pt-3 px-2">
-    <h1>{_'device_h1'} {$device['name']}</h1>
-  </div>
-  <div class="row px-2">
-    <div class="col-12">
-      <h3>{_'device_show_h3'}</h3>
-      <i>{_'device_show_desc'}</i>
-    </div>
-  </div>
-    <div class="row px-2  pt-3">
-      <div class="col-12">
-        <button class="btn btn-primary" type="button" 
-                data-toggle="collapse" data-target="#collapseConfigInfo"
-                aria-expanded="false" aria-controls="collapseConfigInfo">
-          {_'device_show_config'}
-        </button>
-      </div>
-    </div>
+	<div class="pb-3 pt-3 px-2">
+		<h1>{_'device_h1'} {$device['name']}</h1>
+	</div>
+	<div class="row px-2">
+		<div class="col-12">
+			<h3>{_'device_show_h3'}</h3>
+			<i>{_'device_show_desc'}</i>
+		</div>
+	</div>
+		<div class="row px-2  pt-3">
+			<div class="col-12">
+				<button class="btn btn-primary" type="button" 
+								data-toggle="collapse" data-target="#collapseConfigInfo"
+								aria-expanded="false" aria-controls="collapseConfigInfo">
+					{_'device_show_config'}
+				</button>
+			</div>
+		</div>
 
-    <div class="collapse" id="collapseConfigInfo">
-      <div class="card border-warning card-body">
-        <div class="row px-2">
-          <div class="col-12">
-            <i>{_'device_show_config_info'}</i>
-          </div>
-        </div>
+		<div class="collapse" id="collapseConfigInfo">
+			<div class="card border-warning card-body">
+				<div class="row px-2">
+					<div class="col-12">
+						<i>{_'device_show_config_info'}</i>
+					</div>
+				</div>
 
-        <div class="row px-2 bg-light">
-          <div class="col-12 col-md-2">RA URL:</div>
-          <div class="col-12 col-md-10"><b>{$url}</b></div>
-        </div>
-        <div class="row px-2 ">
-          <div class="col-12 col-md-2">RA device name:</div>
-          <div class="col-12 col-md-10"><b>{$device['name']}</b></div>
-        </div>
-        <div class="row px-2 bg-light">
-          <div class="col-12 col-md-2">RA passphrase:</div>
-          <div class="col-12 col-md-10"><b>{$device['passphrase']}</b></div>
-        </div>
-      </div>
-    </div>
+				<div class="row px-2 bg-light">
+					<div class="col-12 col-md-2">RA URL:</div>
+					<div class="col-12 col-md-10"><b>{$url}</b></div>
+				</div>
+				<div class="row px-2 ">
+					<div class="col-12 col-md-2">RA device name:</div>
+					<div class="col-12 col-md-10"><b>{$device['name']}</b></div>
+				</div>
+				<div class="row px-2 bg-light">
+					<div class="col-12 col-md-2">RA passphrase:</div>
+					<div class="col-12 col-md-10"><b>{$device['passphrase']}</b></div>
+				</div>
+			</div>
+		</div>
 
-    <div class="row px-2 pt-3">
-      <div class="col-12">
-        <h3>{_'device_show_info'}</h3>
-      </div>
-    </div>
-    <div class="row px-2 bg-light">
-      <div class="col-12 col-md-2">{_'base_description'}:</div>
-      <div class="col-12 col-md-10">{$device['desc']}</div>
-    </div>
-    <div class="row px-2">
-      <div class="col-12 col-md-2">{_'device_show_app_name'}:</div>
-      <div class="col-12 col-md-10"><b>{$device['app_name']}</b></div>
-    </div>
-    <div class="row px-2 bg-light">
-      <div class="col-12 col-md-2">{_'device_first_login'}:</div>
-        <div class="col-12 col-md-10">
-          {if ($device['first_login']==NULL) }
-            <i>{_'device_show_not_log_in'}</i>
-          {else}
-            {$device['first_login']}
-          {/if}
-        </div>
-    </div>
-    <div class="row px-2">
-      <div class="col-12 col-md-2">{_'device_last_login'}:</div>
-    {if ($device['problem_mark'])} 
-      <div class="col-12 col-md-10 text-danger"><b>
-        <i class="text-danger fas fa-exclamation-triangle"></i>
-        {_'device_login_error_title'}
-        {$device['last_bad_login']}.
-      </b></div>
-    {else}
-      <div class="col-12 col-md-10"><b>{$device['last_login']}</b></div>
-    {/if}   
-    </div>
+		<div class="row px-2 pt-3">
+			<div class="col-12">
+				<h3>{_'device_show_info'}</h3>
+			</div>
+		</div>
+		<div class="row px-2 bg-light">
+			<div class="col-12 col-md-2">{_'base_description'}:</div>
+			<div class="col-12 col-md-10">{$device['desc']}</div>
+		</div>
+		<div class="row px-2">
+			<div class="col-12 col-md-2">{_'device_show_app_name'}:</div>
+			<div class="col-12 col-md-10"><b>{$device['app_name']}</b></div>
+		</div>
+		<div class="row px-2 bg-light">
+			<div class="col-12 col-md-2">{_'device_first_login'}:</div>
+				<div class="col-12 col-md-10">
+					{if ($device['first_login']==NULL) }
+						<i>{_'device_show_not_log_in'}</i>
+					{else}
+						{$device['first_login']}
+					{/if}
+				</div>
+		</div>
+		<div class="row px-2">
+			<div class="col-12 col-md-2">{_'device_last_login'}:</div>
+		{if ($device['problem_mark'])} 
+			<div class="col-12 col-md-10 text-danger"><b>
+				<i class="text-danger fas fa-exclamation-triangle"></i>
+				{_'device_login_error_title'}
+				{$device['last_bad_login']}.
+			</b></div>
+		{else}
+			<div class="col-12 col-md-10"><b>{$device['last_login']}</b></div>
+		{/if}   
+		</div>
 
-    <div class="row px-2  bg-light">
-      <div class="col-12 col-md-2">{_'device_show_last_comm'}:</div>
-      <div class="col-12 col-md-10"><b>{$lastComm|date:'Y-m-d H:i:s'}</b></div>
-    </div>
+		<div class="row px-2  bg-light">
+			<div class="col-12 col-md-2">{_'device_show_last_comm'}:</div>
+			<div class="col-12 col-md-10"><b>{$lastComm|date:'Y-m-d H:i:s'}</b></div>
+		</div>
 
-    <div n:if="$device['uptime']" class="row px-2 ">
-      <div class="col-12 col-md-2">Uptime:</div>
-      <div class="col-12 col-md-10"><b>{$uptime}</b> ({_'device_show_by_last_comm'})</div>
-    </div>
+		<div n:if="$device['uptime']" class="row px-2 ">
+			<div class="col-12 col-md-2">Uptime:</div>
+			<div class="col-12 col-md-10"><b>{$uptime}</b> ({_'device_show_by_last_comm'})</div>
+		</div>
 
-    <div n:if="$device['rssi']" class="row px-2  bg-light">
-      <div class="col-12 col-md-2">{_'device_show_wifi_sig'}:</div>
-      <div class="col-12 col-md-10"><b>{$device['rssi']} dBm</b> ({_'device_show_by_last_login'})
-        {if $device['rssi'] > -50 }
-          - {_'device_show_wifi_verygood'}
-        {elseif $device['rssi'] > -60 }
-          - {_'device_show_wifi_good'}
-        {elseif $device['rssi'] > -70 }
-          <i class="text-warning fas fa-exclamation-triangle"></i> {_'device_show_wifi_notgood'}
-        {else}
-          <i class="text-danger fas fa-exclamation-triangle"></i> {_'device_show_wifi_bad'}
-        {/if}
-      </div>
-    </div>
+		<div n:if="$device['rssi']" class="row px-2  bg-light">
+			<div class="col-12 col-md-2">{_'device_show_wifi_sig'}:</div>
+			<div class="col-12 col-md-10"><b>{$device['rssi']} dBm</b> ({_'device_show_by_last_login'})
+				{if $device['rssi'] > -50 }
+					- {_'device_show_wifi_verygood'}
+				{elseif $device['rssi'] > -60 }
+					- {_'device_show_wifi_good'}
+				{elseif $device['rssi'] > -70 }
+					<i class="text-warning fas fa-exclamation-triangle"></i> {_'device_show_wifi_notgood'}
+				{else}
+					<i class="text-danger fas fa-exclamation-triangle"></i> {_'device_show_wifi_bad'}
+				{/if}
+			</div>
+		</div>
 
-    <div class="row px-2  ">
-      <div class="col-12 col-md-2">{_'device_form_json_token'}:</div>
-      <div class="col-12 col-md-10">{$device['json_token']}</div>
-    </div>
+		<div class="row px-2  ">
+			<div class="col-12 col-md-2">{_'device_form_json_token'}:</div>
+			<div class="col-12 col-md-10">{$device['json_token']}</div>
+		</div>
 
-    <div class="row px-2 bg-light">
-      <div class="col-12 col-md-2">{_'device_form_blob_token'}:</div>
-      <div class="col-12 col-md-10">{$device['blob_token']}</div>
-    </div>
+		<div class="row px-2 bg-light">
+			<div class="col-12 col-md-2">{_'device_form_blob_token'}:</div>
+			<div class="col-12 col-md-10">{$device['blob_token']}</div>
+		</div>
 
-    <div class="row px-2  "">
-      <div class="col-12 col-md-2">{_'device_show_monitoring_contr'}:</div>
-      <div class="col-12 col-md-10">{_('base_'.($device['monitoring']==1 ? 'yes' : 'no'))}</div>
-    </div>
+		<div class="row px-2  "">
+			<div class="col-12 col-md-2">{_'device_show_monitoring_contr'}:</div>
+			<div class="col-12 col-md-10">{_('base_'.($device['monitoring']==1 ? 'yes' : 'no'))}</div>
+		</div>
 
-    <div class="row px-2 pt-3">
-      <div class="col-12">
-        <a n:href="Device:edit $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_edit'}</a>
-        <a n:href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_send_conf'}</a>
-        <a n:href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_send_ota'}</a>
-      </div>
-    </div>
+		<div class="row px-2 pt-3">
+			<div class="col-12">
+				<a n:href="Device:edit $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_edit'}</a>
+				<a n:href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_send_conf'}</a>
+				<a n:href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">{_'device_show_send_ota'}</a>
+			</div>
+		</div>
 
-    {foreach $updates as $update}
-      {first}
-        <div class="px-2 pb-0 pt-4">
-          <h3>{_'device_show_ota_h3'}</h3>
-        </div>
-        <div class="row pl-4 pr-1 py-0"><div class="col-12">
-          <div class="row text-secondary">
-            <div class="col   col-md-1">ID</div>
-            <div class="col-6 col-md-3">{_'device_show_ota_from'}</div>
-            <div class="col-6 col-md-3">{_'device_show_ota_upl'}</div>
-            <div class="col-6 col-md-3">{_'device_show_ota_down'}</div>
-            <div class="col   col-md-1">&nbsp;</div>
-          </div>
-      {/first}
-        <div class="row {if $iterator->odd}bg-light{/if}">
-          <div class="col   col-md-1">{$update['id']}</div>
-          <div class="col-6 col-md-3">{$update['fromVersion']}</div>
-          <div class="col-6 col-md-3">{$update['inserted']}</div>
-          <div class="col-6 col-md-3">{$update['downloaded']}</div>
-          <div class="col   col-md-1"><a n:href="Device:deleteupdate $device['id'], $update['id']">{_'base_del'}</a></div>
-        </div>
-      {last}
-        </div></div>
-      {/last}
-    {/foreach}
+		{foreach $updates as $update}
+			{first}
+				<div class="px-2 pb-0 pt-4">
+					<h3>{_'device_show_ota_h3'}</h3>
+				</div>
+				<div class="row pl-4 pr-1 py-0"><div class="col-12">
+					<div class="row text-secondary">
+						<div class="col   col-md-1">ID</div>
+						<div class="col-6 col-md-3">{_'device_show_ota_from'}</div>
+						<div class="col-6 col-md-3">{_'device_show_ota_upl'}</div>
+						<div class="col-6 col-md-3">{_'device_show_ota_down'}</div>
+						<div class="col   col-md-1">&nbsp;</div>
+					</div>
+			{/first}
+				<div class="row {if $iterator->odd}bg-light{/if}">
+					<div class="col   col-md-1">{$update['id']}</div>
+					<div class="col-6 col-md-3">{$update['fromVersion']}</div>
+					<div class="col-6 col-md-3">{$update['inserted']}</div>
+					<div class="col-6 col-md-3">{$update['downloaded']}</div>
+					<div class="col   col-md-1"><a n:href="Device:deleteupdate $device['id'], $update['id']">{_'base_del'}</a></div>
+				</div>
+			{last}
+				</div></div>
+			{/last}
+		{/foreach}
 
-    {if $device['config_data']}
-      <div class="px-2 pb-0 pt-4">
-        <h3>{_'device_config_change'}</h3>
-        <i class="far fa-share-square text-danger"></i>&nbsp;{_'device_config_change_wait'}:
-        <div class="px-4 py-0">
-          <i><pre>{$device['config_data']}</pre></i>
-        </div>
-      </div>
-    {/if}
+		{if $device['config_data']}
+			<div class="px-2 pb-0 pt-4">
+				<h3>{_'device_config_change'}</h3>
+				<i class="far fa-share-square text-danger"></i>&nbsp;{_'device_config_change_wait'}:
+				<div class="px-4 py-0">
+					<i><pre>{$device['config_data']}</pre></i>
+				</div>
+			</div>
+		{/if}
 
-    {foreach $sensors as $sensor}
-      {first}
-        <div class="px-2 pb-0 pt-4">
-          <h3>{_'senzors'}</h3>
-        </div>
-        <div class="row pl-4 pr-1 py-0"><div class="col-12">
-          <div class="row text-secondary">
-            <div class="col-6 col-md-2">{_'sensor'}</div>
-            <div class="col-6 col-md-2">
-              {_'status'}
-              <a href="#" data-toggle="tooltip" 
-                data-placement="top" title="{_'sensor_list_warn_imp'}"
-              ><i class="fas fa-question-circle"></i></a>
-            </div>
-            <div class="col-12 col-md-4">{_'base_description'}</div>
-          </div>
-      {/first}
+		{foreach $sensors as $sensor}
+			{first}
+				<div class="px-2 pb-0 pt-4">
+					<h3>{_'senzors'}</h3>
+				</div>
+				<div class="row pl-4 pr-1 py-0"><div class="col-12">
+					<div class="row text-secondary">
+						<div class="col-6 col-md-2">{_'sensor'}</div>
+						<div class="col-6 col-md-2">
+							{_'status'}
+							<a href="#" data-toggle="tooltip" 
+								data-placement="top" title="{_'sensor_list_warn_imp'}"
+							><i class="fas fa-question-circle"></i></a>
+						</div>
+						<div class="col-12 col-md-4">{_'base_description'}</div>
+					</div>
+			{/first}
 
-      <div n:class="row, $iterator->odd ? bg-light">
-        <div class="col-6 col-md-2"><b>
-          <a n:href="Sensor:show $sensor->id" >{$sensor->name}</a>
-          <a n:if="($sensor->warning_icon>0)" href="#" 
-            data-toggle="tooltip" data-placement="top"
-            title="{_'sensor_list_not_data'}: {$sensor->last_data_time}.">
-            <i n:class="($sensor->warning_icon == 1) ? text-danger : text-warning, fas, fa-exclamation-triangle"></i>
-          </a>
-        </b></div>
-        <div class="col-6 col-md-2">
-          {if ($sensor->last_out_value!==NULL)}
-            {$sensor->last_out_value} {$sensor->value_types->unit}
+			<div n:class="row, $iterator->odd ? bg-light">
+				<div class="col-6 col-md-2"><b>
+					<a n:href="Sensor:show $sensor->id" >{$sensor->name}</a>
+					<a n:if="($sensor->warning_icon>0)" href="#" 
+						data-toggle="tooltip" data-placement="top"
+						title="{_'sensor_list_not_data'}: {$sensor->last_data_time}.">
+						<i n:class="($sensor->warning_icon == 1) ? text-danger : text-warning, fas, fa-exclamation-triangle"></i>
+					</a>
+				</b></div>
+				<div class="col-6 col-md-2">
+					{if ($sensor->last_out_value!==NULL)}
+						{$sensor->last_out_value} {$sensor->value_types->unit}
 
-            {if ($sensor->warn_max_fired)} 
-              <a href="#" data-toggle="tooltip" data-placement="top" 
-                title="{_'base_from'} {$sensor->warn_max_fired} {_'sensor_list_data_ol'}"
-              ><i class="text-danger fas fa-arrow-circle-up"></i></a>
-            {/if}
-            {if ($sensor->warn_min_fired)} 
-              <a href="#" data-toggle="tooltip" data-placement="top"
-                title="{_'base_from'} {$sensor->warn_min_fired} {_'sensor_list_data_ul'}"
-              ><i class="text-danger fas fa-arrow-circle-down"></i></a>
-            {/if}
-          {else}  
-            - [{$sensor->value_types->unit}]
-          {/if}  
-        </div>
-        <div class="col-12 col-md-4">
-          <a n:if="$sensor->warn_max" href="#" data-toggle="tooltip"
-            data-placement="top" title="{_'sensor_list_warn_up'}">
-            <i class="fas fa-sort-amount-up"></i>
-          </a>
-          <a n:if="$sensor->warn_min" href="#" data-toggle="tooltip" 
-            data-placement="top" title="{_'sensor_list_warn_dwn'}">
-            <i class="fas fa-sort-amount-down"></i>
-          </a>
-          <i>{$sensor->desc}</i>
-        </div>
-        <div class="col-12 col-md-4">
-          <a n:href=":Chart:sensorstat $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_stat'}">
-            <i class="fa-solid fa-chart-simple"></i></a>
-          <a n:href=":Chart:sensor $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_chart'}">
-            <i class="fa-solid fa-chart-line"></i></a>
-          <a n:href="Sensor:show $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_info'}">
-            <i class="fa-solid fa-circle-info"></i></a>
-          <a n:href="Sensor:edit $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_edit'}">
-            <i class="fa-solid fa-pen-to-square"></i></a>
-        </div>
-      </div>
+						{if ($sensor->warn_max_fired)} 
+							<a href="#" data-toggle="tooltip" data-placement="top" 
+								title="{_'base_from'} {$sensor->warn_max_fired} {_'sensor_list_data_ol'}"
+							><i class="text-danger fas fa-arrow-circle-up"></i></a>
+						{/if}
+						{if ($sensor->warn_min_fired)} 
+							<a href="#" data-toggle="tooltip" data-placement="top"
+								title="{_'base_from'} {$sensor->warn_min_fired} {_'sensor_list_data_ul'}"
+							><i class="text-danger fas fa-arrow-circle-down"></i></a>
+						{/if}
+					{else}  
+						- [{$sensor->value_types->unit}]
+					{/if}  
+				</div>
+				<div class="col-12 col-md-4">
+					<a n:if="$sensor->warn_max" href="#" data-toggle="tooltip"
+						data-placement="top" title="{_'sensor_list_warn_up'}">
+						<i class="fas fa-sort-amount-up"></i>
+					</a>
+					<a n:if="$sensor->warn_min" href="#" data-toggle="tooltip" 
+						data-placement="top" title="{_'sensor_list_warn_dwn'}">
+						<i class="fas fa-sort-amount-down"></i>
+					</a>
+					<i>{$sensor->desc}</i>
+				</div>
+				<div class="col-12 col-md-4">
+					<a n:href=":Chart:sensorstat $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_stat'}">
+						<i class="fa-solid fa-chart-simple"></i></a>
+					<a n:href=":Chart:sensor $sensor->id, current: 1" class="btn btn-sm btn-link" role="button" title="{_'device_list_chart'}">
+						<i class="fa-solid fa-chart-line"></i></a>
+					<a n:href="Sensor:show $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_info'}">
+						<i class="fa-solid fa-circle-info"></i></a>
+					<a n:href="Sensor:edit $sensor->id" class="btn btn-sm btn-link" role="button" title="{_'device_list_edit'}">
+						<i class="fa-solid fa-pen-to-square"></i></a>
+				</div>
+			</div>
 
-      {last}
-        </div></div>
-      {/last}
-    {/foreach}
+			{last}
+				</div></div>
+			{/last}
+		{/foreach}
 
-    <div n:if="$device['json_token']" class="px-2 pb-2 pt-4">
-      <h3>{_'device_show_data'}</h3>
-      {_'device_json_data'}: 
-      <br><small><a href="{$jsonUrl}" target="_blank">{$jsonUrl}</a></small>
-      <br>{_'device_mateo_data'}:
-      <br><small><a href="{$jsonUrl2}" target="_blank">{$jsonUrl2}</a></small>
-      <br><small>{_'device_data_link_desc'|noescape}</small>
-    </div>
+		<div n:if="$device['json_token']" class="px-2 pb-2 pt-4">
+			<h3>{_'device_show_data'}</h3>
+			{_'device_json_data'}: 
+			<br><small><a href="{$jsonUrl}" target="_blank">{$jsonUrl}</a></small>
+			<br>{_'device_mateo_data'}:
+			<br><small><a href="{$jsonUrl2}" target="_blank">{$jsonUrl2}</a></small>
+			<br><small>{_'device_data_link_desc'|noescape}</small>
+		</div>
 
-    <div n:if="$device['blob_token']" class="px-2 pb-2 pt-4">
-      <h3>{_'device_galery'}</h3>
-      {_'device_galery_link'}: 
-      <br /><small><a href="{$blobUrl}" target="_blank">{$blobUrl}</a></small>
-      <br /><small>{_'device_galery_link_desc'|noescape}</small>
-    </div>
+		<div n:if="$device['blob_token']" class="px-2 pb-2 pt-4">
+			<h3>{_'device_galery'}</h3>
+			{_'device_galery_link'}: 
+			<br /><small><a href="{$blobUrl}" target="_blank">{$blobUrl}</a></small>
+			<br /><small>{_'device_galery_link_desc'|noescape}</small>
+		</div>
 
-    <div n:if="$soubory>0" class="row px-2 pt-3">
-      <div class="col-12">
-        <h3>{_'device_files_h3'}</h3>
-        {_'device_files_txt1'} <a n:href="Device:blobs $device['id']"><b>{$soubory}</b> {_'device_files_txt2'}</a>.
-      </div>
-    </div>
+		<div n:if="$soubory>0" class="row px-2 pt-3">
+			<div class="col-12">
+				<h3>{_'device_files_h3'}</h3>
+				{_'device_files_txt1'} <a n:href="Device:blobs $device['id']"><b>{$soubory}</b> {_'device_files_txt2'}</a>.
+			</div>
+		</div>
 
-    <div class="row px-2 py-3">
-      <div class="col-12">
-        <a n:href="Device:list" class="btn btn-primary btn-sm" role="button">{_'base_return'}</a>
-      </div>
-    </div>
+		<div class="row px-2 py-3">
+			<div class="col-12">
+				<a n:href="Device:list" class="btn btn-primary btn-sm" role="button">{_'base_return'}</a>
+			</div>
+		</div>
 </div>
