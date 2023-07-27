@@ -11,7 +11,7 @@ use \App\Model\ViewItem;
 
 
 /**
- * @last_edited petak23<petak23@gmail.com> 18.07.2022
+ * @last_edited petak23<petak23@gmail.com> 09.06.2023
  */
 class InventoryDataSource
 {
@@ -261,13 +261,6 @@ class InventoryDataSource
 
     $this->database->query('
             delete from views where user_id = ? 
-        ', $id);
-  }
-
-  public function deleteUser($id)
-  {
-    $this->database->query('
-            delete from user_main where id = ? 
         ', $id);
   }
 

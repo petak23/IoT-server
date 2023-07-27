@@ -11,15 +11,15 @@ use Nette\Http\Url;
 
 /**
  * 
- * Posledna zmena 25.04.2023
+ * Posledna zmena 09.06.2023
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2022 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.2
+ * @version    1.0.3
  */
-final class InventoryPresenter extends BaseAdminAPresenter
+final class InventoryPresenter extends BasePresenter
 {
 	use Nette\SmartObject;
 

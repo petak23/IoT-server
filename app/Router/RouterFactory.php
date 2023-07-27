@@ -26,6 +26,16 @@ use Nette\Application\Routers\RouteList;
 	public static function createRouter(): RouteList
 	{
 		$router = new RouteList;
+
+		$router->withModule('Admin')
+			->addRoute('device/<action>[/<id>]', 'Device:show')
+			->addRoute('inventory/<action>[/<id>]', 'Inventory:user')
+			->addRoute('sensor[/<action>[/<id>]]', 'Sensor:show')
+			->addRoute('units[/<action>[/<id>]]', 'Units:default')
+			->addRoute('users', 'User:default')
+			->addRoute('user[/<action>[/<id>]]', 'User:default')
+			->addRoute('useracl[/<action>[/<id>]]', 'UserAcl:default');
+
 		$router->addRoute('sign/reset/<id>/<new_password_key>/', 'Sign:resetPassword');
 		$router->addRoute('chart/view/<token>/<id>/', 'Chart:view');
 		$router->addRoute('chart/sensor/show/<id>/', 'Chart:sensor');
@@ -36,15 +46,6 @@ use Nette\Application\Routers\RouteList;
 		$router->addRoute('gallery/<token>/<id>/', 'Gallery:show');
 		$router->addRoute('gallery/<token>/<id>/<blobid>/', 'Gallery:blob');
 		$router->addRoute('monitor/show/<token>/<id>/', 'Monitor:show');
-
-		$router->withModule('Admin')
-			->addRoute('device/<action>[/<id>]', 'Device:show')
-			->addRoute('inventory/<action>[/<id>]', 'Inventory:user')
-			->addRoute('sensor[/<action>[/<id>]]', 'Sensor:show')
-			->addRoute('units[/<action>[/<id>]]', 'Units:default')
-			->addRoute('user[/<action>[/<id>]]', 'User:default')
-			->addRoute('useracl[/<action>[/<id>]]', 'UserAcl:default');
-
 		$router->addRoute('<presenter>/<action>[/<id>]', 'Homepage:default');
 		return $router;
 	}

@@ -11,16 +11,16 @@ use Nette\Application\UI\Form;
 
 /**
  * Presenter pre prácu so senzormi
- * Posledna zmena 25.04.2023
+ * Posledna zmena 09.06.2023
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2022 - 2023 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.3
+ * @version    1.0.4
  */
 
-final class SensorPresenter extends BaseAdminAPresenter
+final class SensorPresenter extends BasePresenter
 {
 	use Nette\SmartObject;
 

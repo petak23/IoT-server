@@ -29,7 +29,7 @@
 
         <div class="row px-2 bg-light">
           <div class="col-12 col-md-2">RA URL:</div>
-          <div class="col-12 col-md-10"><b>{$url}</b>{$basePath}</div>
+          <div class="col-12 col-md-10"><b>{$url}</b></div>
         </div>
         <div class="row px-2 ">
           <div class="col-12 col-md-2">RA device name:</div>
@@ -238,16 +238,16 @@
     <div n:if="$device['json_token']" class="px-2 pb-2 pt-4">
       <h3>{_'device_show_data'}</h3>
       {_'device_json_data'}: 
-      <br><small><a href="{$jsonUrl}">{$jsonUrl}</a></small>
+      <br><small><a href="{$jsonUrl}" target="_blank">{$jsonUrl}</a></small>
       <br>{_'device_mateo_data'}:
-      <br><small><a href="{$jsonUrl2}">{$jsonUrl2}</a></small>
+      <br><small><a href="{$jsonUrl2}" target="_blank">{$jsonUrl2}</a></small>
       <br><small>{_'device_data_link_desc'|noescape}</small>
     </div>
 
     <div n:if="$device['blob_token']" class="px-2 pb-2 pt-4">
       <h3>{_'device_galery'}</h3>
       {_'device_galery_link'}: 
-      <br /><small><a href="{$blobUrl}">{$blobUrl}</a></small>
+      <br /><small><a href="{$blobUrl}" target="_blank">{$blobUrl}</a></small>
       <br /><small>{_'device_galery_link_desc'|noescape}</small>
     </div>
 

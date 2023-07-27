@@ -26,7 +26,7 @@ use App\Services;
  * @link       http://petak23.echo-msz.eu
  * @version    1.0.4
  */
-final class UserPresenter extends BaseAdminAPresenter
+final class UserPresenter extends BasePresenter
 {
 	use Nette\SmartObject;
 
@@ -71,18 +71,14 @@ final class UserPresenter extends BaseAdminAPresenter
 		$this->template->info_text[1] = sprintf("Užívateľ s id=%s sa v databáze nenašiel! Pravdepodobne ste zadali nesprávne id užívateľa.", $this->user_show);
 	}
 
-	/*
-	id	username	phash	role	email	prefix	id_user_state	bad_pwds_count	locked_out_until	
-	measures_retention	sumdata_retention	blob_retention	self_enroll	self_enroll_code	self_enroll_error_count
-			cur_login_time	cur_login_ip	cur_login_browser	prev_login_time	prev_login_ip	prev_login_browser
-				last_error_time	last_error_ip	last_error_browser	monitoring_token	desc
-	*/
-	public function renderList(): void
+	/** Zobrazí zoznam užívateľov */
+	public function renderDefault(): void
 	{
 		$this->template->users = $this->user_main->getUsers();
 	}
 
-	public function actionShow(int $id)
+	/** Zobrazí konkrétneho užívateľa */
+	public function actionShow(int $id): void
 	{
 		$this->user_show = $this->user_main->getUser($id);
 		if ($this->user_show == null) {
@@ -122,7 +118,7 @@ final class UserPresenter extends BaseAdminAPresenter
 		$form = $this->editUserForm->create($this->getHttpRequest()->getRemoteAddress());
 		$form->onSuccess[] = function ($form) {
 			$id = $form->getValues()->id;
-			$this->flashOut(!count($form->errors), $id ? ['User:show', $id] : "User:list", 'Údaje boli uložené!', 'Došlo k chybe a údaje sa neuložili. Skúste neskôr znovu...');
+			$this->flashOut(!count($form->errors), $id ? ['User:show', $id] : "User:", 'Údaje boli uložené!', 'Došlo k chybe a údaje sa neuložili. Skúste neskôr znovu...');
 		};
 		return $this->makeBootstrap4($form);
 	}
@@ -163,7 +159,7 @@ final class UserPresenter extends BaseAdminAPresenter
 	/** @todo zmeň datasource na user_main */
 	public function deleteFormSucceeded(Form $form, array $values): void
 	{
-		$id = $this->getParameter('id');
+		$id = (int)$this->getParameter('id');
 
 		if ($id) {
 			// overeni prav
@@ -180,10 +176,10 @@ final class UserPresenter extends BaseAdminAPresenter
 
 				$this->devices->deleteDevice($device->attrs['id']);
 			}
-			$this->datasource->deleteUser($id);
+			$this->user_main->deleteUser($id);
 		}
 
 		$this->flashMessage("Uživatel smazán.", 'success');
-		$this->redirect('User:list');
+		$this->redirect('User:');
 	}
 }
