@@ -1,0 +1,29 @@
+#
+# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
+#
+# If you don    t protect this directory from direct web access, anybody will be able to see your passwords.
+# http://nette.org/security-warning
+#
+services:
+	- App\ApiModule\Presenters\DevicesPresenter(%parameters%)
+	- App\ApiModule\Presenters\HomepagePresenter(%parameters%)
+#  - App\ApiModule\Presenters\MenuPresenter(%parameters%)
+#  - App\ApiModule\Presenters\ProductsPresenter(%parameters%, %wwwDir%)
+#  - App\ApiModule\Presenters\TexylaPresenter(%parameters%)
+	- App\ApiModule\Presenters\UnitsPresenter(%parameters%)
+	- App\ApiModule\Presenters\UsersPresenter(%parameters%)
+
+# Models
+	- App\ApiModule\Model\Devices
+	- App\ApiModule\Model\Measures
+	- App\ApiModule\Model\Sensors
+	- App\ApiModule\Model\Sessions
+	- App\ApiModule\Model\Units
+	- App\ApiModule\Model\User_main
+	- App\ApiModule\Model\User_permission
+	- App\ApiModule\Model\User_resource
+	- App\ApiModule\Model\User_roles
+
+	- App\ApiModule\Model\AuthorizatorFactory::create(@Nette\Database\Explorer)
+
+	- App\Services\ApiConfig( %links%, %title%, %dataRetentionDays%,  %minYear%)

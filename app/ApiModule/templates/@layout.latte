@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex, nofollow">
+		<title>{ifset title}{include title|stripHtml} | {/ifset}{$appName}</title>
+		<link href="{$basePath}/css/styles.css" rel="stylesheet" />
+		<link href="{$basePath}/css/mystyles.css" rel="stylesheet" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+		{*control favicon*}
+	</head>
+	<body class="sb-nav-fixed">
+		<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+			<button class="btn btn-link btn-sm ml-2 mr-2" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+			<a class="navbar-brand" href="#">{$appName}</a>
+		</nav>
+		<div id="layoutSidenav">
+			<div id="layoutSidenav_nav">
+				<nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+					<div class="sb-sidenav-menu">
+						<div class="nav">
+							<div class="sb-sidenav-menu-heading">Menu</div>
+								<a n:class="nav-link, pt-0, pb-1" n:href=":Inventory:user">Späť na hlavnú stránku</a>
+							<div>&nbsp;</div>
+						</div>
+					</div>
+				</nav>
+			</div>
+			<div id="layoutSidenav_content">
+				<main>
+					<div  class="container-fluid px-0 mx-0 px-md-2 px-lg-4">
+						{include content}
+					</div>
+				</main>
+				<footer class="py-4 bg-light mt-auto">
+					<div class="container-fluid">
+						<div class="d-flex align-items-center justify-content-between small">
+							<div class="text-muted">{$appName} | 
+								PHP {=PHP_VERSION}&nbsp;|&nbsp;
+								{ifset $_SERVER['SERVER_SOFTWARE']}Server {$_SERVER['SERVER_SOFTWARE']}{/ifset}
+							</div>
+							<div n:inner-foreach="$links as $link">
+								{if (strlen($link['link'])>0) }
+									<a href="{$link['link']}" target="_blank">{$link['name']}</a>
+								{else}
+									{$link['name']}
+								{/if}
+								{sep}&middot;{/sep}
+							</div>
+						</div>
+					</div>
+				</footer>
+			</div>
+		</div>
+	</body>
+</html>
