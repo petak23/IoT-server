@@ -11,6 +11,8 @@ session:
 	expiration: 14 days
 	cookieSamesite: Strict
 	cacheLimiter: public
+	autoStart: true
+	debugger: true
 
 services:
 	- App\Services\MailService(%from%, %admin% )

@@ -27,7 +27,7 @@ class BasePresenter extends Nette\Application\UI\Presenter
 
 	use Nette\SmartObject;
 
-	const DEFAULT_SIGN_IN_PAGE = ""; //':Sign:in';
+	const DEFAULT_SIGN_IN_PAGE = /*""; */ ':Sign:in';
 
 	/** @var Language_support\LanguageMain @inject */
 	public $texty_presentera;
@@ -82,7 +82,7 @@ class BasePresenter extends Nette\Application\UI\Presenter
 		if ($user->isLoggedIn()) { //Prihlaseny uzivatel
 			//dumpe($user->isAllowed($this->name, $this->action));
 			if (!$user->isAllowed($this->name, $this->action)) { //Kontrola ACL
-				//dumpe($this->name, $this->action);
+				dumpe($this->name, $this->action);
 				Logger::log(
 					'audit',
 					Logger::ERROR,
@@ -102,8 +102,9 @@ class BasePresenter extends Nette\Application\UI\Presenter
 			$this->language = $this->user_main->getUser($user->id)->lang->acronym;
 			//dumpe($this->language);
 		} else { //Neprihlaseny uzivatel
-			//dumpe($this->name);
 			if (!$user->isAllowed($this->name, $this->action)) { //Kontrola ACL
+				//dumpe($user->isAllowed($this->name, $this->action), $this->name, $this->action);
+				//dumpe($user->getLogoutReason());
 				if ($user->getLogoutReason() === Nette\Security\UserStorage::LOGOUT_INACTIVITY) {
 					Logger::log(
 						'webapp',
