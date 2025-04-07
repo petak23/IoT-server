@@ -5,7 +5,7 @@ namespace App\ApiModule\Presenters;
 use App\ApiModule\Model;
 
 /**
- * Prezenter pre pristup k api jednotiek.
+ * Prezenter pre prístup k api jednotiek.
  * Posledna zmena(last change): 13.09.2023
  *
  * Modul: API
