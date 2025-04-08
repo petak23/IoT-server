@@ -21,6 +21,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const {VueLoaderPlugin} = require("vue-loader");
+//const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
@@ -34,8 +35,8 @@ module.exports = {
 	mode: devMode ? "development" : "production",
 	context: path.join(ROOT_PATH, "app/assets"),
 	entry: {
-		front: path.join(ROOT_PATH, "app/assets/front/js/main.js"),
-		admin: path.join(ROOT_PATH, "app/assets/admin/js/main.js")
+		front: path.join(ROOT_PATH, "app/FrontModule/assets/main.js"),
+		//admin: path.join(ROOT_PATH, "app/assets/admin/js/main.js")
 	},
 	output: {
 		path: path.join(ROOT_PATH, 'www/dist'),
@@ -222,18 +223,18 @@ module.exports = {
 							implementation: require('sass'), // Používať `dart-sass`
 							sourceMap: false, // Môžeš zapnúť pre debugovanie
 							additionalData: `
-								@use "@/front/css/scss/variables.scss" as *; 
+								@use "@/css/scss/variables.scss" as *; 
 							`,// Globálne premenné
 						},
 					},
 				],
-			},			
+			},
 		]
 	}, 
 	resolve: {
 		alias: {
 				'vue$': 'vue/dist/vue.runtime.esm-bundler.js',//https://stackoverflow.com/questions/65254050/after-upgrading-to-vue-3-and-updating-vue-instantiation-to-createapp-webpack-b
-				'@': path.resolve(ROOT_PATH, 'app/assets'),
+				'@': path.resolve(ROOT_PATH, 'app/FrontModule/assets'),
 		},
 		extensions: ['.js', '.vue']
 	},

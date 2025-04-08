@@ -2,8 +2,11 @@
 
 namespace App\ApiModule\Presenters;
 
-use App\ApiModule\Model;
+//use App\ApiModule\Model;
 use App\Services\Logger;
+use Nette\Http;
+use Nette\Utils\Strings;
+use Tracy\Debugger;
 
 /**
  * Prezenter pre komunikáciu api s perifériami.
@@ -63,12 +66,12 @@ class CommPresenter extends BasePresenter
 					$logger->write( Logger::INFO, "data+ {$postSize}b {$remoteIp}");
 					//D $logger->write( Logger::INFO, "[" . $httpRequest->getRawBody() ."]" );
 
-					$radky = explode ( "\n" , $httpRequest->getRawBody(), 3 );
-					if( count($radky)<2 ) {
+					$msg_parts = explode ( "\n" , $httpRequest->getRawBody(), 3 );
+					if( count($msg_parts)<2 ) {
 							throw new \Exception("Bad request (1).");                
 					}
-					$session = Strings::trim($radky[0]);
-					$data = Strings::trim($radky[1]);
+					$session = Strings::trim($msg_parts[0]);
+					$data = Strings::trim($msg_parts[1]);
 					
 					if( Strings::length( $session ) == 0  ) {
 							throw new \Exception("Empty session ID.");
@@ -98,7 +101,7 @@ class CommPresenter extends BasePresenter
 					$logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
 					
 					$httpResponse = $this->getHttpResponse();
-					$httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+					$httpResponse->setCode(Http\Response::S403_FORBIDDEN );
 					$httpResponse->setContentType('text/plain', 'UTF-8');
 					$response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
 					$this->sendResponse($response);
@@ -111,7 +114,89 @@ class CommPresenter extends BasePresenter
 					$logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
 					
 					$httpResponse = $this->getHttpResponse();
-					$httpResponse->setCode(Nette\Http\Response::S400_BAD_REQUEST );
+					$httpResponse->setCode(Http\Response::S400_BAD_REQUEST );
+					$httpResponse->setContentType('text/plain', 'UTF-8');
+					$response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
+					$this->sendResponse($response);
+					$this->terminate();
+			}
+	}
+
+	/**
+	 * Formát data správy:
+	 *      <session_id>;<SHA256 z payloadu>;<dĺžka dát>;<data>
+	 *      
+	 * Result:
+	 *      200 - OK
+	 *      403 - re-login, session invalid
+	 *      400 - other error
+	*/
+	public function actionData_v0()
+	{
+			Debugger::enable( Debugger::PRODUCTION );
+			$logger = new Logger( 'pv-conn' );
+
+			try {
+					
+					$httpRequest = $this->getHttpRequest();
+
+					$remoteIp = $httpRequest->getRemoteAddress(); 
+					$logger->setContext("D");
+
+					$postSize = strlen( $httpRequest->getRawBody() );
+					$logger->write( Logger::INFO, "data+ {$postSize}b {$remoteIp}");
+					//D $logger->write( Logger::INFO, "[" . $httpRequest->getRawBody() ."]" );
+
+					$msg_parts = explode ( ";" , $httpRequest->getRawBody(), 4 );
+					if( count($msg_parts)<4 ) {
+							throw new \Exception("Bad request (1). Message is too short!");                
+					}
+					$session = Strings::trim($msg_parts[0]);
+					$data = Strings::trim($msg_parts[1]);
+					
+					if( Strings::length( $session ) == 0  ) {
+							throw new \Exception("Empty session ID.");
+					} 
+					
+					$sessionData = explode( ":", $session, 3 );
+					if( count($sessionData)<2 ) {
+							throw new \Exception("Bad request (3).");                
+					}
+					$logger->write( Logger::INFO, "Session_id:{$sessionData[0]}"); 
+					$sessionDevice = $this->datasource->checkSession( $sessionData[0], $sessionData[1] );
+					$logger->setContext("D;D:{$sessionDevice->deviceId}");
+
+					//D $logger->write( Logger::INFO,  $sessionDevice );
+					
+					$msgTotal = //$this->decryptDataBlock( $data, $sessionDevice->sessionKey, $logger );
+					//old - <CRC32 z dešifrovaného payloadu><dĺžka dát 2 byte><data><random padding>
+					//new - <SHA256 z payloadu>;<dĺžka dát>;<data>
+					//D/ $logger->write( Logger::INFO,  '  celok: ' . bin2hex($msgTotal) );
+					$this->msgProcessor->process( $sessionDevice, $msgTotal, $remoteIp, $logger );  
+
+					$logger->write( Logger::INFO, "OK");
+
+					$this->template->result = "OK";
+					
+			} catch (\App\Exceptions\NoSessionException $e) { 
+
+					$logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
+					
+					$httpResponse = $this->getHttpResponse();
+					$httpResponse->setCode(Http\Response::S403_FORBIDDEN );
+					$httpResponse->setContentType('text/plain', 'UTF-8');
+					$response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
+					$this->sendResponse($response);
+					$this->terminate();
+
+			} catch (\Exception $e) {
+			
+					//TODO: zapísať chybu do tabuľky chýb
+			
+					$logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
+					
+					$httpResponse = $this->getHttpResponse();
+					$httpResponse->setCode(Http\Response::S400_BAD_REQUEST );
 					$httpResponse->setContentType('text/plain', 'UTF-8');
 					$response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
 					$this->sendResponse($response);

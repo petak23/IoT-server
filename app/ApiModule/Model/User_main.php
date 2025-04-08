@@ -8,7 +8,7 @@ use App\Exceptions;
 
 use Nette;
 use Nette\Database;
-use Nette\Http\Url;
+//use Nette\Http\Url;
 use Nette\Security\User;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Random;
@@ -17,13 +17,13 @@ use Nette\Utils\Random;
 /**
  * Model, ktory sa stara o tabulku user_main
  * 
- * Posledna zmena 15.11.2023
+ * Posledna zmena 07.04.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2023 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.9
+ * @version    1.1.0
  */
 class User_main extends Table
 {
@@ -152,7 +152,7 @@ class User_main extends Table
 
 	/**
 	 * Založenie užívateľa pri registrácii
-	 * @return ActiveRow
+	 * @return Database\Table\ActiveRow
 	 * @throws Exceptions\UserDuplicateEmailException */
 	public function createEnrollUser(ArrayHash $values, string $hash, string $prefix, string $code): Database\Table\ActiveRow
 	{

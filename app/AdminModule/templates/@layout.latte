@@ -38,7 +38,15 @@
 		<div id="layoutSidenav">
 			<div id="layoutSidenav_nav">
 				<nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
-					{control menu templateType=>'RA_Fixed', nadpis=>'Menu'}
+					<div class="sb-sidenav-menu">
+						{control menu templateType=>'RA_Fixed', nadpis=>'Menu'}			
+						<div class="nav" n:if="$user->isInRole('admin')">
+							<div class="sb-sidenav-menu-heading">Api menu a pokusná časť</div>
+								<a class="nav-link pt-0 pb-1" n:href=":Api:Homepage:">API</a>
+								<a class="nav-link pt-0 pb-1" n:href=":Front:Homepage:">Pokusné Vue rozhranie</a>
+							<div>&nbsp;</div>
+						</div>
+					</div>
 				</nav>
 			</div>
 			<div id="layoutSidenav_content">

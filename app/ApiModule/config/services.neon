@@ -5,6 +5,7 @@
 # http://nette.org/security-warning
 #
 services:
+	- App\ApiModule\Presenters\CommPresenter(%parameters%)
 	- App\ApiModule\Presenters\DevicesPresenter(%parameters%)
 	- App\ApiModule\Presenters\HomepagePresenter(%parameters%)
 #  - App\ApiModule\Presenters\MenuPresenter(%parameters%)
@@ -24,6 +25,6 @@ services:
 	- App\ApiModule\Model\User_resource
 	- App\ApiModule\Model\User_roles
 
-	- App\ApiModule\Model\AuthorizatorFactory::create(@Nette\Database\Explorer)
+#	- App\ApiModule\Model\AuthorizatorFactory::create(@Nette\Database\Explorer)
 
 	- App\Services\ApiConfig( %links%, %title%, %dataRetentionDays%,  %minYear%)

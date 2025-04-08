@@ -1,28 +1,26 @@
 {define menu, $node, $hideName, $showAll, $path}
-  {if $node}
-    {if !isset($hideName) || !$hideName}
-      <li>
-        <a href="{$node->link}" title="{$node->name}" class="nav-link pt-0 pb-1 {$node->getItemClass()}">
-          <span n:if="isset($node->node_class)" class="{$node->node_class}"> </span>
-          {$node->name}
-          <small n:if="isset($node->tooltip)">{$node->tooltip}</small>
-        </a>
-      </li>
-    {else}
-      {var $hideName = false}
-    {/if}
-    {if $node->nodes && ($showAll || in_array($node, $path) || $node->isRootNode)}
-      <ul>
-        {foreach $node->nodes as $subNode}
-          {include menu, $subNode, $hideName, $showAll, $path}
-        {/foreach}
-      </ul>
-    {/if}
-  {/if}
+	{if $node}
+		{if !isset($hideName) || !$hideName}
+			<li>
+				<a href="{$node->link}" title="{$node->name}" class="nav-link pt-0 pb-1 {$node->getItemClass()}">
+					<span n:if="isset($node->node_class)" class="{$node->node_class}"> </span>
+					{$node->name}
+					<small n:if="isset($node->tooltip)">{$node->tooltip}</small>
+				</a>
+			</li>
+		{else}
+			{var $hideName = false}
+		{/if}
+		{if $node->nodes && ($showAll || in_array($node, $path) || $node->isRootNode)}
+			<ul>
+				{foreach $node->nodes as $subNode}
+					{include menu, $subNode, $hideName, $showAll, $path}
+				{/foreach}
+			</ul>
+		{/if}
+	{/if}
 {/define}
-<div class="sb-sidenav-menu" n:if="isset($startNode) && count($startNode->nodes)">
-  <div class="nav">
-    <div n:if="$nastav['nadpis']" class="sb-sidenav-menu-heading">{$nastav['nadpis']}</div>
-    {include menu, $startNode, true, true, []}
-  </div>
+<div class="nav">
+	<div n:if="$nastav['nadpis']" class="sb-sidenav-menu-heading">{$nastav['nadpis']}</div>
+	{include menu, $startNode, true, true, []}
 </div>

@@ -6,12 +6,12 @@
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
 		{
-			"name": "Peter Vojtech",
-			"homepage": "http://petak23.echo-msz.eu"
+			"name": "Petr Brouzda",
+			"homepage": "https://pebrou.wordpress.com"
 		},
 		{
-			"name": "Nette Community",
-			"homepage": "https://nette.org/contributors"
+			"name": "Peter Vojtech",
+			"homepage": "http://petak23.echo-msz.eu"
 		}
 	],
 	"require": {
@@ -30,6 +30,7 @@
 		"nette/utils": "^3.2",
 		"latte/latte": "^2.10",
 		"tracy/tracy": "^2.9",
+		"mdanter/ecc": "^1.0",
 		"dg/adminer-custom": "^1.24",
 		"contributte/webpack": "^2.1"
 	},

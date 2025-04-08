@@ -10,13 +10,13 @@ use Nette\Application\Routers\RouteList;
 
 /**
  * Router
- * Posledna zmena 17.11.2021
+ * Posledna zmena 08.04.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2021 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 
 /*final */ class RouterFactory
@@ -26,6 +26,19 @@ use Nette\Application\Routers\RouteList;
 	public static function createRouter(): RouteList
 	{
 		$router = new RouteList;
+		$router->withModule('Api')
+			->addRoute('api/device/<id>[/<action>]', 'Devices:device')
+			->addRoute('api/sensor/last/<id>', 'Devices:measureslast')
+			->addRoute('api/devices[/<action>[/<id>]]', 'Devices:default')
+			//->addRoute('inventory/<action>[/<id>]', 'Inventory:user')
+			//->addRoute('sensor[/<action>[/<id>]]', 'Sensor:show')
+			->addRoute('api/units[/<action>[/<id>]]', 'Units:default')
+			->addRoute('api/user[/<id>[/<action>]]', 'Users:user')
+			->addRoute('api/users[/<action>[/<id>]]', 'Users:default')
+			//->addRoute('api/users[/<action>[/<id>]]', 'Users:default')
+			->addRoute('api[/<presenter>[/<action>[/<id>]]]', 'Homepage:default');
+		$router->withModule('Front')
+			->addRoute('front[/<path>[/<id>]]', 'Homepage:default');
 
 		$router->withModule('Admin')
 			->addRoute('device/<action>[/<id>]', 'Device:show')

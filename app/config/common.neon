@@ -2,6 +2,19 @@ parameters:
 	font: 'LiberationMono-Regular.ttf'
 	fontBold: 'LiberationMono-Bold.ttf'
 
+
+	language_support:
+		# Jazykové mutácie stránky. Použi nastavenie allowed_langs alebo langs_db_table. 
+		# V prípade použitia oboch má prednosť langs_db_table
+		allowed_langs: # Povolené jazykové mutácie
+			1: sk
+			2: cz
+		# Názov DB tabuľky, v ktorej je zoznam povolených jazykových mutácií
+		#	Musi obsahovat polia: 'id' a 'acronym'(skratka)
+		#langs_db_table: 'lang' # null # 
+
+#	ua_code: UA_123456
+
 application:
 	errorPresenter: Error
 	mapping:
@@ -22,6 +35,8 @@ services:
 	- App\Services\MsgProcessor
 	- App\Services\Config( %cronAllowed%, %masterPassword%, %links%, %title%, %font%, %fontBold%, %dataRetentionDays%,  %minYear%, %reg_enabled%)
 	- App\Services\InventoryDataSource
+	- PeterVojtech\MainLayout\Favicon\IFaviconControl
+#	- PeterVojtech\MainLayout\GoogleAnalytics\GoogleAnalyticsControl( %ua_code% )
 	security.passwords: Nette\Security\Passwords(::PASSWORD_BCRYPT, [cost: 11])		# zde se nastavuji pozadovane parametry hesla https://doc.nette.org/cs/3.0/passwords
 	router: App\Router\RouterFactory::createRouter
 	authenticator: App\Services\Authenticator
@@ -60,21 +75,23 @@ http:
 		X-XSS-Protection: '1; mode=block'
 
 includes:
-  - config.neon
-  - services.neon
-  - components.neon
-  - ../AdminModule/config/config.neon
+	- config.neon
+	- services.neon
+	- components.neon
+	- ../AdminModule/config/config.neon
+	- ../ApiModule/config/config.neon
+	- ../FrontModule/config/config.neon
 	
 extensions:
-  webpack: Contributte\Webpack\DI\WebpackExtension(%debugMode%, %consoleMode%)
+	webpack: Contributte\Webpack\DI\WebpackExtension(%debugMode%, %consoleMode%)
 
 webpack:
-  build:
-    directory: %wwwDir%/dist
-    publicPath: dist/
-  #devServer: # Tato cast je presunuta do local.neon
-  #  enabled: false
-  #  url: 'http://http://iot.echo-msz.eu/www/dist'
-  manifest:  # Cez tento subor je prepojenie na filename: '[name].[contenthash:8].[ext]' vo webpack-u
-    name: webpack-assets.json  # ./www/dist/webpack-assets.json
-    mapper: Contributte\Webpack\Manifest\Mapper\AssetsWebpackPluginMapper
+	build:
+		directory: %wwwDir%/dist
+		publicPath: dist/
+	#devServer: # Tato cast je presunuta do local.neon
+	#  enabled: false
+	#  url: 'http://http://iot.echo-msz.eu/www/dist'
+	manifest:  # Cez tento subor je prepojenie na filename: '[name].[contenthash:8].[ext]' vo webpack-u
+		name: manifest.json  # ./www/dist/manifest.json
+#		mapper: Contributte\Webpack\Manifest\Mapper\AssetsWebpackPluginMapper
