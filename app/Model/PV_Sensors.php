@@ -131,4 +131,18 @@ class PV_Sensors extends Table
 
 		$this->database->query('UPDATE sensors SET ', $outvalues, ' WHERE id = ?', $id);
 	}
+
+	/**
+	 * Vrati sensor pro dany kanal.
+	 * id, preprocess_data, preprocess_factor, id_device_classes, data_session, imp_count
+	 */
+	public function getSensorByChannel(int $deviceId, int $channel): ActiveRow|null
+	{
+		return $this->findOneBy(['device_id'=>$deviceId, 'channel_id'=>$channel]);
+		/*return $this->database->fetch('
+			SELECT id, preprocess_data, preprocess_factor, id_device_classes, imp_count, data_session
+			FROM sensors 
+			WHERE device_id = ? AND channel_id = ?
+		', $deviceId, $channel);*/
+	}
 }

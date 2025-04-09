@@ -3,6 +3,7 @@
 namespace App\ApiModule\Presenters;
 
 //use App\ApiModule\Model;
+use App\Services;
 use App\Services\Logger;
 use Nette\Http;
 use Nette\Utils\Strings;
@@ -23,15 +24,16 @@ use Tracy\Debugger;
 class CommPresenter extends BasePresenter
 {
 
-	// -- DB
-	/* * @var Model\Units @inject * /
-	public $units;
-
-	public function actionData(): void
+	/*public function actionData(): void
 	{
 		$this->sendJson($this->units->getUnits());
 	}*/
 
+	/** @var Services\MsgProcessor @inject */
+	private $msgProcessor;
+
+	/** @var Services\RaDataSource @inject */
+	private $datasource;
 
 	/**
 	 * Formát data správy:
@@ -168,11 +170,11 @@ class CommPresenter extends BasePresenter
 
 					//D $logger->write( Logger::INFO,  $sessionDevice );
 					
-					$msgTotal = //$this->decryptDataBlock( $data, $sessionDevice->sessionKey, $logger );
+					//$msgTotal = $this->decryptDataBlock( $data, $sessionDevice->sessionKey, $logger );
 					//old - <CRC32 z dešifrovaného payloadu><dĺžka dát 2 byte><data><random padding>
 					//new - <SHA256 z payloadu>;<dĺžka dát>;<data>
 					//D/ $logger->write( Logger::INFO,  '  celok: ' . bin2hex($msgTotal) );
-					$this->msgProcessor->process( $sessionDevice, $msgTotal, $remoteIp, $logger );  
+					$this->msgProcessor->process_v0( $sessionDevice, $data, $remoteIp, $logger );  
 
 					$logger->write( Logger::INFO, "OK");
 

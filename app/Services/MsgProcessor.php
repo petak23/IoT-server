@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Model;
 use Nette;
 use Tracy\Debugger;
 use Nette\Utils\DateTime;
@@ -15,6 +16,10 @@ use App\Services\Logger;
 class MsgProcessor
 {
 	use Nette\SmartObject;
+
+	// -- DB
+	/** @var Model\PV_Sensors @inject */
+	public $pv_senors;
 
 	/** @var \App\Services\RaDataSource */
 	public $datasource;
@@ -66,7 +71,8 @@ class MsgProcessor
 	 */
 	public function processData($sessionDevice, $msg, $remoteIp, int $i, $channel, $timeDiff, Logger $logger)
 	{
-		$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
+		//$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
+		$sensor = $this->pv_senors->getSensorByChannel($sessionDevice->deviceId, $channel);
 		if ($sensor == NULL) {
 			throw new \Exception("Ch {$channel} not found for dev {$sessionDevice->deviceId}.");
 		}
@@ -76,7 +82,7 @@ class MsgProcessor
 		if ($sensor['id_device_classes'] != 3) {
 			// senzor DEVCLASS_CONTINUOUS_MINMAXAVG a DEVCLASS_CONTINUOUS
 			// s datami nič nerobíme
-			$value_out = filter_var($data, FILTER_VALIDATE_FLOAT);
+			$value_out = filter_var($data, FILTER_VALIDATE_FLOAT); // Zmeň data na float
 			$logger->write(Logger::INFO,  "data: ch:{$channel} s:{$sensor['id']} '{$data}' C-> {$value_out} @ -{$timeDiff} s");
 			$dataSession = '';
 			$impCount = 0;
@@ -125,6 +131,53 @@ class MsgProcessor
 	public function process($sessionDevice, $msgTotal, $remoteIp, Logger $logger)
 	{
 		$logData = bin2hex($msgTotal);
+		//D/ $logger->write( Logger::INFO, "msg {$logData}");
+
+		// payload send timestamp
+		$sendTime = (ord($msgTotal[0]) << 16) | (ord($msgTotal[1]) << 8) | ord($msgTotal[2]);
+		$logger->write(Logger::DEBUG, "uptime:{$sendTime}");
+		$this->datasource->setUptime($sessionDevice->deviceId, $sendTime);
+
+		// telemetry payload header
+		$j = 3;
+
+		while (true) {
+
+			//---- iterace dalsi zpravy v datovem bloku
+			$msgLen = @ord($msgTotal[$j]);
+			//D/ $logger->write( Logger::INFO, "  pos={$j}, len={$msgLen}");
+			if ($msgLen == 0) {
+				break;
+			}
+			$msg = substr($msgTotal, $j + 1, $msgLen);
+			$j += 1 + $msgLen;
+
+			//---- zpracovani jedne zpravy
+			$i = 0;
+			$channel = ord($msg[$i++]);
+			$msgTime = (ord($msg[$i]) << 16) | (ord($msg[$i + 1]) << 8) | ord($msg[$i + 2]);
+			$i += 3;
+
+			$timeDiff = $sendTime - $msgTime;
+			//D/ $logger->write( Logger::INFO,  "msg ch:{$channel} time:-{$timeDiff}" );
+
+			if ($channel == 0) {
+				//D $logger->write( Logger::INFO,  "channel definition" );
+				$this->processChannelDefinition($sessionDevice, $msg, $remoteIp, $i, $logger);
+			} else {
+				//D $logger->write( Logger::INFO,  "data" );
+				$this->processData($sessionDevice, $msg, $remoteIp, $i, $channel, $timeDiff, $logger);
+			}
+		}
+	}
+
+	/**
+	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
+	 * <SHA256 z payloadu>;<dĺžka dát>;<data>
+	 */
+	public function process_v0($sessionDevice, $msgTotal, $remoteIp, Logger $logger)
+	{
+		//$logData = bin2hex($msgTotal);
 		//D/ $logger->write( Logger::INFO, "msg {$logData}");
 
 		// payload send timestamp
