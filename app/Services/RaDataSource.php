@@ -18,6 +18,8 @@ class RaDataSource
 	// -- DB
 	/** @var Model\PV_Sessions @inject */
 	public $pv_sessions;
+	/** @var Model\PV_Devices @inject */
+	public $pv_devices;
 
 	/** @var Nette\Database\Context */
 	private $database;
@@ -135,15 +137,17 @@ class RaDataSource
 	public function badLogin($deviceId)
 	{
 		$this->database->query('UPDATE devices SET', [
-			'last_bad_login' => new \Nette\Utils\DateTime
+			'last_bad_login' => new DateTime
 		], 'WHERE id = ?', $deviceId);
 	}
 
 	public function setUptime($deviceId, $uptime)
 	{
-		$this->database->query('UPDATE devices SET', [
+		$this->pv_devices->find($deviceId)->update(['uptime' => $uptime]);
+
+		/*$this->database->query('UPDATE devices SET', [
 			'uptime' => $uptime
-		], 'WHERE id = ?', $deviceId);
+		], 'WHERE id = ?', $deviceId);*/
 	}
 
 	public function deleteConfigRequest($deviceId)
@@ -188,6 +192,7 @@ class RaDataSource
 	 * Check session validity. 
 	 * Throws NoSessionException when session is not valid.
 	 * Returns SessionDevice.
+	 * @TODO - presun do modelu pv_session 
 	 */
 	public function checkSession(int $sessionId, string $sessionHash): Model\SessionDevice
 	{

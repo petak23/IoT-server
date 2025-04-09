@@ -196,7 +196,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+            $httpResponse->setCode(Nette\Http\Response::S403_Forbidden );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$errMsg}");
             $this->sendResponse($response);
@@ -337,7 +337,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+            $httpResponse->setCode(Nette\Http\Response::S403_Forbidden );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -493,7 +493,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+            $httpResponse->setCode(Nette\Http\Response::S403_Forbidden );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -506,7 +506,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S400_BAD_REQUEST );
+            $httpResponse->setCode(Nette\Http\Response::S400_BadRequest );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -583,7 +583,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+            $httpResponse->setCode(Nette\Http\Response::S403_Forbidden );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -596,7 +596,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S400_BAD_REQUEST );
+            $httpResponse->setCode(Nette\Http\Response::S400_BadRequest );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -732,7 +732,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+            $httpResponse->setCode(Nette\Http\Response::S403_Forbidden );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -745,7 +745,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S400_BAD_REQUEST );
+            $httpResponse->setCode(Nette\Http\Response::S400_BadRequest );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -816,7 +816,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S403_FORBIDDEN );
+            $httpResponse->setCode(Nette\Http\Response::S403_Forbidden );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);
@@ -829,7 +829,7 @@ final class RaPresenter extends BasePresenter
             $logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
             
             $httpResponse = $this->getHttpResponse();
-            $httpResponse->setCode(Nette\Http\Response::S400_BAD_REQUEST );
+            $httpResponse->setCode(Nette\Http\Response::S400_BadRequest );
             $httpResponse->setContentType('text/plain', 'UTF-8');
             $response = new \Nette\Application\Responses\TextResponse("ERR {$e->getMessage()}");
             $this->sendResponse($response);

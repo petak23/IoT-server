@@ -128,7 +128,7 @@ class MsgProcessor
 	/**
 	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
 	 */
-	public function process($sessionDevice, $msgTotal, $remoteIp, Logger $logger)
+	public function process($sessionDevice, string $msgTotal, ?string $remoteIp, Logger $logger)
 	{
 		$logData = bin2hex($msgTotal);
 		//D/ $logger->write( Logger::INFO, "msg {$logData}");
@@ -173,17 +173,18 @@ class MsgProcessor
 
 	/**
 	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
-	 * <SHA256 z payloadu>;<dĺžka dát>;<data>
+	 * @var array $msgTotal = [<SHA256 z payloadu>, <dátum a čas odoslania>, <dĺžka dát> ,<data>]
 	 */
-	public function process_v0($sessionDevice, $msgTotal, $remoteIp, Logger $logger)
+	public function process_v0(Model\SessionDevice $sessionDevice, string $msgTotal, string $remoteIp, Logger $logger)
 	{
 		//$logData = bin2hex($msgTotal);
 		//D/ $logger->write( Logger::INFO, "msg {$logData}");
 
+
 		// payload send timestamp
-		$sendTime = (ord($msgTotal[0]) << 16) | (ord($msgTotal[1]) << 8) | ord($msgTotal[2]);
-		$logger->write(Logger::DEBUG, "uptime:{$sendTime}");
-		$this->datasource->setUptime($sessionDevice->deviceId, $sendTime);
+		//$sendTime = (ord($msgTotal[0]) << 16) | (ord($msgTotal[1]) << 8) | ord($msgTotal[2]);
+		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[1]}");
+		$this->datasource->setUptime($sessionDevice->deviceId, $msgTotal[1]);
 
 		// telemetry payload header
 		$j = 3;
