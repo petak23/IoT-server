@@ -128,7 +128,7 @@ class CommPresenter extends BasePresenter
 	 * Formát data správy:
 	 *      <session_id>;<SHA256 z payloadu>;<dátum a čas odoslania>;<dĺžka dát>;<data>
 	 * Formát dát:
-	 * 			<označenie senzora>:<hodnota>     
+	 * 			<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>... - ak je viac posielaných hodnôt, tak sú oddelené ";"  
 	 * Result:
 	 *      200 - OK
 	 *      403 - re-login, session invalid

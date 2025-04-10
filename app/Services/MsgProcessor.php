@@ -34,13 +34,13 @@ class MsgProcessor
 	b0 - deviceClass
 	b1 - valueType
 	b2 b3 b4 msgRate
-	b5 - deviceName len
-	b6... - device name - NO \0 at end
+	b5 - deviceName len - !!! správne má byť sensorName len
+	b6... - device name - NO \0 at end - !!! správne má byť sensor name
 	*/
 	/**
 	 * Spracovanie definície kanálu
 	 */
-	public function processChannelDefinition($sessionDevice, $msg, $remoteIp, $i, Logger $logger)
+	public function processChannelDefinition(Model\SessionDevice $sessionDevice, $msg, $remoteIp, $i, Logger $logger)
 	{
 		$devClass = ord($msg[$i++]);
 		$valueType = ord($msg[$i++]);
@@ -69,7 +69,7 @@ class MsgProcessor
 	/**
 	 * Spracovanie jednej dátovej správy zo zariadenia
 	 */
-	public function processData($sessionDevice, $msg, $remoteIp, int $i, $channel, $timeDiff, Logger $logger)
+	public function processData(Model\SessionDevice $sessionDevice, $msg, ?string $remoteIp, int $i, int $channel, $timeDiff, Logger $logger)
 	{
 		//$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
 		$sensor = $this->pv_senors->getSensorByChannel($sessionDevice->deviceId, $channel);
@@ -128,7 +128,7 @@ class MsgProcessor
 	/**
 	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
 	 */
-	public function process($sessionDevice, string $msgTotal, ?string $remoteIp, Logger $logger)
+	public function process(Model\SessionDevice $sessionDevice, string $msgTotal, ?string $remoteIp, Logger $logger)
 	{
 		$logData = bin2hex($msgTotal);
 		//D/ $logger->write( Logger::INFO, "msg {$logData}");
@@ -174,6 +174,8 @@ class MsgProcessor
 	/**
 	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
 	 * @var array $msgTotal = [<SHA256 z payloadu>, <dátum a čas odoslania>, <dĺžka dát> ,<data>]
+	 * Formát dát:
+	 * 	<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>... - ak je viac posielaných hodnôt, tak sú oddelené ";"
 	 */
 	public function process_v0(Model\SessionDevice $sessionDevice, string $msgTotal, string $remoteIp, Logger $logger)
 	{
@@ -186,10 +188,27 @@ class MsgProcessor
 		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[1]}");
 		$this->datasource->setUptime($sessionDevice->deviceId, $msgTotal[1]);
 
+		
+		$dataFromSensors = explode(";", $msgTotal[3]); //Rozložím data na pole stringov ["<označenie senzora>:<hodnota>", "<označenie senzora>:<hodnota>", ...]
+		
+		foreach ($dataFromSensors as $ds) {																	// Spracujem deta z jednotlivých senzorov
+			list($sensor_name, $value) = explode(":", $ds); 									// Rozložíme "<označenie senzora>:<hodnota>"
+			$channel = $this->pv_senors->findOneBy(['name' => $sensor_name]); 	// Nájdenie príslušného senzora
+
+			if ($channel == null) {
+				//D $logger->write( Logger::INFO,  "channel definition" );
+				$this->processChannelDefinition($sessionDevice, $msg, $remoteIp, $i, $logger);
+			} else {
+				//D $logger->write( Logger::INFO,  "data" );
+				$this->processData($sessionDevice, $msg, $remoteIp, $i, $channel->id, $timeDiff, $logger);
+			}
+		}
+		/*
 		// telemetry payload header
 		$j = 3;
 
 		while (true) {
+
 
 			//---- iterace dalsi zpravy v datovem bloku
 			$msgLen = @ord($msgTotal[$j]);
@@ -216,6 +235,6 @@ class MsgProcessor
 				//D $logger->write( Logger::INFO,  "data" );
 				$this->processData($sessionDevice, $msg, $remoteIp, $i, $channel, $timeDiff, $logger);
 			}
-		}
+		}*/
 	}
 }
