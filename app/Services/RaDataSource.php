@@ -309,7 +309,7 @@ class RaDataSource
 			'out_value' => $value_out
 		]);
 
-		$values = array();
+		$values = [];
 		$values['last_data_time'] = $msgTime;
 		if ($sensor['device_class'] != 3) {
 			$values['last_out_value'] = $value_out;

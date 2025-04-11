@@ -7,15 +7,15 @@ use Nette\Database\Table\Selection;
 use Nette\Utils\DateTime;
 
 /**
- * Model, ktory sa stara o tabulku sensors
+ * Model, ktorý sa stará o tabuľku sensors
  * 
- * Posledna zmena 14.07.2022
+ * Posledna zmena 11.04.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2022 - 2022 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2022 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.0
+ * @version    1.0.1
  */
 class PV_Sensors extends Table
 {
@@ -133,16 +133,10 @@ class PV_Sensors extends Table
 	}
 
 	/**
-	 * Vrati sensor pro dany kanal.
-	 * id, preprocess_data, preprocess_factor, id_device_classes, data_session, imp_count
+	 * Vráti sensor pre daný kanál.
 	 */
 	public function getSensorByChannel(int $deviceId, int $channel): ActiveRow|null
 	{
 		return $this->findOneBy(['device_id'=>$deviceId, 'channel_id'=>$channel]);
-		/*return $this->database->fetch('
-			SELECT id, preprocess_data, preprocess_factor, id_device_classes, imp_count, data_session
-			FROM sensors 
-			WHERE device_id = ? AND channel_id = ?
-		', $deviceId, $channel);*/
 	}
 }

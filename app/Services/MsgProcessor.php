@@ -20,6 +20,8 @@ class MsgProcessor
 	// -- DB
 	/** @var Model\PV_Sensors @inject */
 	public $pv_senors;
+	/** @var Model\PV_Devices @inject */
+	public $pv_devices;
 
 	/** @var \App\Services\RaDataSource */
 	public $datasource;
@@ -117,7 +119,7 @@ class MsgProcessor
 
 		$sVal = $value_out;
 		if ($sensor->preprocess_data == 1) {
-			// prepocitavať data!
+			// prepočítavať data!
 			$value_out *= $sensor->preprocess_factor;
 		}
 
@@ -143,7 +145,7 @@ class MsgProcessor
 
 		while (true) {
 
-			//---- iterace dalsi zpravy v datovem bloku
+			//---- iterace dalsi správy v dátovom bloku
 			$msgLen = @ord($msgTotal[$j]);
 			//D/ $logger->write( Logger::INFO, "  pos={$j}, len={$msgLen}");
 			if ($msgLen == 0) {
@@ -152,7 +154,7 @@ class MsgProcessor
 			$msg = substr($msgTotal, $j + 1, $msgLen);
 			$j += 1 + $msgLen;
 
-			//---- zpracovani jedne zpravy
+			//---- spracovanie jednej správy
 			$i = 0;
 			$channel = ord($msg[$i++]);
 			$msgTime = (ord($msg[$i]) << 16) | (ord($msg[$i + 1]) << 8) | ord($msg[$i + 2]);
@@ -170,71 +172,93 @@ class MsgProcessor
 			}
 		}
 	}
-
+/******************** --------------------------------- PV - begin --------------------------------- ****************/
 	/**
 	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
-	 * @var array $msgTotal = [<SHA256 z payloadu>, <dátum a čas odoslania>, <dĺžka dát> ,<data>]
+	 * @var array $msgTotal = [<dátum a čas odoslania>, <meno zariadenia>, <dĺžka dát> ,<data>]
 	 * Formát dát:
 	 * 	<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>... - ak je viac posielaných hodnôt, tak sú oddelené ";"
 	 */
-	public function process_v0(Model\SessionDevice $sessionDevice, string $msgTotal, string $remoteIp, Logger $logger)
+	public function process_pv(string $msgTotal, string $remoteIp, Logger $logger)
 	{
-		//$logData = bin2hex($msgTotal);
-		//D/ $logger->write( Logger::INFO, "msg {$logData}");
+		$device = $this->pv_device->getDeviceBy(['name'=>$msgTotal[1]]);
 
-
-		// payload send timestamp
-		//$sendTime = (ord($msgTotal[0]) << 16) | (ord($msgTotal[1]) << 8) | ord($msgTotal[2]);
-		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[1]}");
-		$this->datasource->setUptime($sessionDevice->deviceId, $msgTotal[1]);
-
+		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[0]}");
+		$this->datasource->setUptime( $device->id /*$sessionDevice->deviceId*/, $msgTotal[0]);
 		
 		$dataFromSensors = explode(";", $msgTotal[3]); //Rozložím data na pole stringov ["<označenie senzora>:<hodnota>", "<označenie senzora>:<hodnota>", ...]
 		
-		foreach ($dataFromSensors as $ds) {																	// Spracujem deta z jednotlivých senzorov
+		foreach ($dataFromSensors as $key => $ds) {																	// Spracujem data z jednotlivých senzorov
 			list($sensor_name, $value) = explode(":", $ds); 									// Rozložíme "<označenie senzora>:<hodnota>"
-			$channel = $this->pv_senors->findOneBy(['name' => $sensor_name]); 	// Nájdenie príslušného senzora
+			$channel = $this->pv_senors->findOneBy(['name' => $sensor_name]); // Nájdenie príslušného senzora
 
 			if ($channel == null) {
 				//D $logger->write( Logger::INFO,  "channel definition" );
-				$this->processChannelDefinition($sessionDevice, $msg, $remoteIp, $i, $logger);
+				//$this->processChannelDefinition($sessionDevice, $msg, $remoteIp, $i, $logger);
+				throw new \Exception("Channel not found...", 1);
 			} else {
 				//D $logger->write( Logger::INFO,  "data" );
-				$this->processData($sessionDevice, $msg, $remoteIp, $i, $channel->id, $timeDiff, $logger);
+				$this->processDataPV($device /*$sessionDevice*/, $value, $remoteIp, $key, $channel->id, $timeDiff, $logger);
 			}
 		}
-		/*
-		// telemetry payload header
-		$j = 3;
+	}
 
-		while (true) {
+	/**
+	 * Spracovanie jednej dátovej správy zo zariadenia
+	 */
+	public function processDataPV(Model\PV_Devices $device, string $value, ?string $remoteIp, int $i, int $channel, $timeDiff, Logger $logger)
+	{
+		//$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
+		$sensor = $this->pv_senors->getSensorByChannel($device->id, $channel);
+		if ($sensor == NULL) {
+			throw new \Exception("Ch {$channel} not found for dev {$device->id}."); // TODO device->id or device->name ?
+		}
 
+		//$data = substr($msg, $i);
 
-			//---- iterace dalsi zpravy v datovem bloku
-			$msgLen = @ord($msgTotal[$j]);
-			//D/ $logger->write( Logger::INFO, "  pos={$j}, len={$msgLen}");
-			if ($msgLen == 0) {
-				break;
+		if ($sensor['id_device_classes'] != 3) { // TODO zmena na $sensor->id_device_classes ?
+			// senzor DEVCLASS_CONTINUOUS_MINMAXAVG a DEVCLASS_CONTINUOUS
+			$value_out = filter_var($value, FILTER_VALIDATE_FLOAT); // Zmeň data na float
+			$logger->write(Logger::INFO,  "data: ch:{$channel} s:{$sensor['id']} '{$value}' C-> {$value_out} @ ");
+			$dataSession = '';
+			$impCount = 0;
+		} 
+		// ***** Zatiaľ *****
+		/*else {
+			// senzor DEVCLASS_IMPULSE_SUM
+			// musíme počítať deltu v rámci aktuálnej session
+			$fields = explode(';', $data, 2);
+			if (count($fields) != 2) {
+				throw new \Exception("Can't parse '{$data}' for dev {$sessionDevice->deviceId}.");
 			}
-			$msg = substr($msgTotal, $j + 1, $msgLen);
-			$j += 1 + $msgLen;
-
-			//---- zpracovani jedne zpravy
-			$i = 0;
-			$channel = ord($msg[$i++]);
-			$msgTime = (ord($msg[$i]) << 16) | (ord($msg[$i + 1]) << 8) | ord($msg[$i + 2]);
-			$i += 3;
-
-			$timeDiff = $sendTime - $msgTime;
-			//D/ $logger->write( Logger::INFO,  "msg ch:{$channel} time:-{$timeDiff}" );
-
-			if ($channel == 0) {
-				//D $logger->write( Logger::INFO,  "channel definition" );
-				$this->processChannelDefinition($sessionDevice, $msg, $remoteIp, $i, $logger);
+			$impCount = intval($fields[0]);
+			$prevVal = 'X';
+			if (
+				$sensor['data_session'] != NULL && strcmp($sensor['data_session'], $fields[1]) == 0
+			) {
+				// ide o data v rámci aktuálnej session; teda meriame rozdiel od posledného získaného
+				if ($sensor['imp_count'] > $impCount) {
+					// nejaké divné, že by sa náhodovu vygenerovalo rovnaké číslo session?
+					$value_out = $impCount;
+					$prevVal = "!{$sensor['imp_count']}!";
+				} else {
+					$value_out = $impCount - $sensor['imp_count'];
+					$prevVal = $sensor['imp_count'];
+				}
 			} else {
-				//D $logger->write( Logger::INFO,  "data" );
-				$this->processData($sessionDevice, $msg, $remoteIp, $i, $channel, $timeDiff, $logger);
+				// nova session = začíname od nuly
+				$value_out = $impCount;
 			}
+			$dataSession = $fields[1];
+			$logger->write(Logger::INFO,  "data: ch:{$channel} s:{$sensor['id']} '{$data}' I({$prevVal})-> {$value_out} @ -{$timeDiff} s");
 		}*/
+
+		$sVal = $value_out;
+		if ($sensor->preprocess_data == 1) {
+			// prepočítavať data!
+			$value_out *= $sensor->preprocess_factor;
+		}
+		// TODO UPRAV!!!
+		$this->datasource->saveData($sessionDevice, $sensor, $timeDiff, $sVal, $remoteIp, $value_out, $impCount, $dataSession);
 	}
 }
