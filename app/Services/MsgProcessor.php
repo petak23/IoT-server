@@ -175,21 +175,20 @@ class MsgProcessor
 /******************** --------------------------------- PV - begin --------------------------------- ****************/
 	/**
 	 * Spracuje jeden request; ten ale môže obsahovať viacej správ.
-	 * @var array $msgTotal = [<dátum a čas odoslania>, <meno zariadenia>, <dĺžka dát> ,<data>]
+	 * @var array $msgTotal = [<dátum a čas odoslania>, <dĺžka dát>, <data>]
 	 * Formát dát:
 	 * 	<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>... - ak je viac posielaných hodnôt, tak sú oddelené ";"
 	 */
-	public function process_pv(string $msgTotal, string $remoteIp, Logger $logger)
+	public function process_pv(Model\SessionDevice $sessionDevice, string $msgTotal, string $remoteIp, Logger $logger)
 	{
-		$device = $this->pv_device->getDeviceBy(['name'=>$msgTotal[1]]);
 
 		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[0]}");
-		$this->datasource->setUptime( $device->id /*$sessionDevice->deviceId*/, $msgTotal[0]);
+		$this->datasource->setUptime( $sessionDevice->deviceId, $msgTotal[0]);
 		
-		$dataFromSensors = explode(";", $msgTotal[3]); //Rozložím data na pole stringov ["<označenie senzora>:<hodnota>", "<označenie senzora>:<hodnota>", ...]
+		$dataFromSensors = explode(";", $msgTotal[2]); //Rozložím data na pole stringov ["<označenie senzora>:<hodnota>", "<označenie senzora>:<hodnota>", ...]
 		
-		foreach ($dataFromSensors as $key => $ds) {																	// Spracujem data z jednotlivých senzorov
-			list($sensor_name, $value) = explode(":", $ds); 									// Rozložíme "<označenie senzora>:<hodnota>"
+		foreach ($dataFromSensors as $key => $ds) {															// Spracujem data z jednotlivých senzorov
+			list($sensor_name, $value) = explode(":", $ds); 		// Rozložíme "<označenie senzora>:<hodnota>"
 			$channel = $this->pv_senors->findOneBy(['name' => $sensor_name]); // Nájdenie príslušného senzora
 
 			if ($channel == null) {
@@ -198,7 +197,7 @@ class MsgProcessor
 				throw new \Exception("Channel not found...", 1);
 			} else {
 				//D $logger->write( Logger::INFO,  "data" );
-				$this->processDataPV($device /*$sessionDevice*/, $value, $remoteIp, $key, $channel->id, $timeDiff, $logger);
+				$this->processDataPV($sessionDevice, $value, $remoteIp, $key, $channel->id, $msgTotal[0], $logger);
 			}
 		}
 	}
@@ -206,20 +205,19 @@ class MsgProcessor
 	/**
 	 * Spracovanie jednej dátovej správy zo zariadenia
 	 */
-	public function processDataPV(Model\PV_Devices $device, string $value, ?string $remoteIp, int $i, int $channel, $timeDiff, Logger $logger)
+	public function processDataPV(Model\SessionDevice $sessionDevice, string $value, ?string $remoteIp, int $i, int $channel, $messageTime, Logger $logger)
 	{
-		//$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
-		$sensor = $this->pv_senors->getSensorByChannel($device->id, $channel);
+		$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
 		if ($sensor == NULL) {
-			throw new \Exception("Ch {$channel} not found for dev {$device->id}."); // TODO device->id or device->name ?
+			throw new \Exception("Ch {$channel} not found for dev {$sessionDevice->deviceId}.");
 		}
 
 		//$data = substr($msg, $i);
 
-		if ($sensor['id_device_classes'] != 3) { // TODO zmena na $sensor->id_device_classes ?
+		if ($sensor->id_device_classes != 3) { 
 			// senzor DEVCLASS_CONTINUOUS_MINMAXAVG a DEVCLASS_CONTINUOUS
 			$value_out = filter_var($value, FILTER_VALIDATE_FLOAT); // Zmeň data na float
-			$logger->write(Logger::INFO,  "data: ch:{$channel} s:{$sensor['id']} '{$value}' C-> {$value_out} @ ");
+			$logger->write(Logger::INFO,  "data: ch:{$channel} s:{$sensor->id} '{$value}' C-> {$value_out} @ ");
 			$dataSession = '';
 			$impCount = 0;
 		} 
@@ -259,6 +257,6 @@ class MsgProcessor
 			$value_out *= $sensor->preprocess_factor;
 		}
 		// TODO UPRAV!!!
-		$this->datasource->saveData($sessionDevice, $sensor, $timeDiff, $sVal, $remoteIp, $value_out, $impCount, $dataSession);
+		$this->datasource->saveData($sessionDevice, $sensor, $messageTime, $sVal, $remoteIp, $value_out, $impCount, $dataSession);
 	}
 }

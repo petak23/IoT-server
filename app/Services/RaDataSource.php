@@ -10,6 +10,7 @@ use Nette\Utils\DateTime;
 
 use App\Exceptions\NoSessionException;
 use App\Model;
+use App\ApiModule;
 
 class RaDataSource
 {
@@ -20,6 +21,10 @@ class RaDataSource
 	public $pv_sessions;
 	/** @var Model\PV_Devices @inject */
 	public $pv_devices;
+	/** @var Model\PV_Sensors @inject */
+	public $pv_sensors;
+	/** @var ApiModule\Model\Measures @inject */
+	public $pv_measures;
 
 	/** @var Nette\Database\Context */
 	private $database;
@@ -294,14 +299,15 @@ class RaDataSource
 	/**
 	 * Vlozeni zaznamu ze senzoru do 'measures'
 	 */
-	public function saveData($sessionDevice, $sensor, $timeDiff, $numVal, $remoteIp, $value_out, $impCount, $dataSession)
+	public function saveData($sessionDevice, $sensor, $messageTime, $numVal, $remoteIp, $value_out, $impCount, $dataSession)
 	{
-		$msgTime = new DateTime;
-		$msgTime->setTimestamp(time() - $timeDiff);
+		//$msgTime = new DateTime;
+		//$msgTime->setTimestamp(time() - $timeDiff);
 
-		$this->database->query('INSERT INTO measures ', [
+		//$this->database->query('INSERT INTO measures ', [
+		$this->pv_measures->save(0, [
 			'sensor_id' => $sensor->id,
-			'data_time' => $msgTime,
+			'data_time' => $messageTime,
 			'server_time' => new DateTime,
 			's_value' => $numVal,
 			'session_id' => $sessionDevice->sessionId,
@@ -310,7 +316,7 @@ class RaDataSource
 		]);
 
 		$values = [];
-		$values['last_data_time'] = $msgTime;
+		$values['last_data_time'] = $messageTime;
 		if ($sensor['device_class'] != 3) {
 			$values['last_out_value'] = $value_out;
 		}
@@ -318,7 +324,12 @@ class RaDataSource
 			$values['imp_count'] = $impCount;
 			$values['data_session'] = $dataSession;
 		}
-		$this->database->query('UPDATE sensors SET', $values, 'WHERE id = ? AND ((last_data_time IS NULL) OR (last_data_time < ?))', $sensor->id, $msgTime);
+		$this->pv_sensors->findAll()->where('id', $sensor->id)
+		->where('(last_data_time IS NULL) OR (last_data_time < ?)', $messageTime)
+		->update($values);
+
+		//$this->database
+		//->query('UPDATE sensors SET', $values, 'WHERE id = ? AND ((last_data_time IS NULL) OR (last_data_time < ?))', $sensor->id, $messageTime);
 	}
 
 

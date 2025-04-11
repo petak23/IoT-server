@@ -35,4 +35,6 @@ class Measures extends Table
 	{
 		return $m = $this->findBy(['sensor_id' => $id_sensor])->order("data_time DESC")->limit(1)->fetch()->toArray();
 	}
+
+	
 }
