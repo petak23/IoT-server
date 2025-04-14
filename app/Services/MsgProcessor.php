@@ -73,7 +73,6 @@ class MsgProcessor
 	 */
 	public function processData(Model\SessionDevice $sessionDevice, $msg, ?string $remoteIp, int $i, int $channel, $timeDiff, Logger $logger)
 	{
-		//$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
 		$sensor = $this->pv_senors->getSensorByChannel($sessionDevice->deviceId, $channel);
 		if ($sensor == NULL) {
 			throw new \Exception("Ch {$channel} not found for dev {$sessionDevice->deviceId}.");
@@ -138,14 +137,14 @@ class MsgProcessor
 		// payload send timestamp
 		$sendTime = (ord($msgTotal[0]) << 16) | (ord($msgTotal[1]) << 8) | ord($msgTotal[2]);
 		$logger->write(Logger::DEBUG, "uptime:{$sendTime}");
-		$this->datasource->setUptime($sessionDevice->deviceId, $sendTime);
+		$this->pv_devices->setUptime($sessionDevice->deviceId, $sendTime);
 
 		// telemetry payload header
 		$j = 3;
 
 		while (true) {
 
-			//---- iterace dalsi správy v dátovom bloku
+			//---- iterace ďalšej správy v dátovom bloku
 			$msgLen = @ord($msgTotal[$j]);
 			//D/ $logger->write( Logger::INFO, "  pos={$j}, len={$msgLen}");
 			if ($msgLen == 0) {
@@ -179,11 +178,11 @@ class MsgProcessor
 	 * Formát dát:
 	 * 	<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>... - ak je viac posielaných hodnôt, tak sú oddelené ";"
 	 */
-	public function process_pv(Model\SessionDevice $sessionDevice, string $msgTotal, string $remoteIp, Logger $logger)
+	public function process_pv(Model\SessionDevice $sessionDevice, array $msgTotal, string $remoteIp, Logger $logger)
 	{
 
 		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[0]}");
-		$this->datasource->setUptime( $sessionDevice->deviceId, $msgTotal[0]);
+		$this->pv_devices->setUptime( $sessionDevice->deviceId, $msgTotal[0]);
 		
 		$dataFromSensors = explode(";", $msgTotal[2]); //Rozložím data na pole stringov ["<označenie senzora>:<hodnota>", "<označenie senzora>:<hodnota>", ...]
 		
@@ -205,9 +204,9 @@ class MsgProcessor
 	/**
 	 * Spracovanie jednej dátovej správy zo zariadenia
 	 */
-	public function processDataPV(Model\SessionDevice $sessionDevice, string $value, ?string $remoteIp, int $i, int $channel, $messageTime, Logger $logger)
+	public function processDataPV(Model\SessionDevice $sessionDevice, string $value, string $remoteIp, int $i, int $channel, string $messageTime, Logger $logger)
 	{
-		$sensor = $this->datasource->getSensorByChannel($sessionDevice->deviceId, $channel);
+		$sensor = $this->pv_senors->getSensorByChannel($sessionDevice->deviceId, $channel);
 		if ($sensor == NULL) {
 			throw new \Exception("Ch {$channel} not found for dev {$sessionDevice->deviceId}.");
 		}

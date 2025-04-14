@@ -12,13 +12,13 @@ use Nette\Utils\DateTime;
 /**
  * Model, ktory sa stara o tabulku devices
  * 
- * Posledna zmena 15.07.2022
+ * Posledna zmena 14.04.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2022 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.4
+ * @version    1.0.5
  */
 class PV_Devices
 {
@@ -96,9 +96,24 @@ class PV_Devices
     return $this->devices->where($by)->limit(1)->fetch();
   }
 
-	public function deleteDevice($id)
+	public function setUptime(int $deviceId, int $uptime): void
 	{
-		Logger::log('webapp', Logger::DEBUG,  "Mazu session device {$id}");
+		$this->devices->get($deviceId)->update(['uptime' => $uptime]);
+	}
+
+	public function badLogin(int $deviceId): void
+	{
+		$this->devices->get($deviceId)->update(['last_bad_login' => new DateTime ]);
+	}
+
+	public function deleteConfigRequest(int $deviceId): void
+	{
+		$this->devices->get($deviceId)->update(['config_data' => NULL]);
+	}
+
+	public function deleteDevice(int $id): void
+	{
+		Logger::log('webapp', Logger::DEBUG,  "Mažem session device {$id}");
 
 		// nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
 		$this->devices->get($id)->update(['passphrase' => 'x']);
@@ -133,13 +148,7 @@ class PV_Devices
 					', $id);*/
 		}
 
-
-
 		$this->devices->get($id)->delete();
-		/*$this->database->query('
-						DELETE from devices
-						WHERE id = ?
-				', $id);*/
 
 		Logger::log('webapp', Logger::DEBUG,  "Delete OK.");
 	}

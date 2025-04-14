@@ -36,18 +36,7 @@ class RaDataSource
 	}
 
 
-	/**
-	 * Load information about DEVICE
-	 */
-	public function getDeviceInfoByLogin($login)
-	{
-		return $this->database->fetch('SELECT * FROM devices WHERE name = ?', $login);
-	}
 
-	public function getDeviceInfoById($id)
-	{
-		return $this->database->fetch('SELECT * FROM devices WHERE id = ?', $id);
-	}
 
 
 	public function createLoginaSession($deviceId, $hash, $key, $remoteIp)
@@ -138,29 +127,6 @@ class RaDataSource
 		return $id;
 	}
 
-
-	public function badLogin($deviceId)
-	{
-		$this->database->query('UPDATE devices SET', [
-			'last_bad_login' => new DateTime
-		], 'WHERE id = ?', $deviceId);
-	}
-
-	public function setUptime($deviceId, $uptime)
-	{
-		$this->pv_devices->find($deviceId)->update(['uptime' => $uptime]);
-
-		/*$this->database->query('UPDATE devices SET', [
-			'uptime' => $uptime
-		], 'WHERE id = ?', $deviceId);*/
-	}
-
-	public function deleteConfigRequest($deviceId)
-	{
-		$this->database->query('UPDATE devices SET config_data = NULL WHERE id = ?', $deviceId);
-	}
-
-
 	/**
 	 * Check login session validity. 
 	 * Throws NoSessionException when session is not valid.
@@ -191,48 +157,8 @@ class RaDataSource
 		return $rc;
 	}
 
-
-
 	/**
-	 * Check session validity. 
-	 * Throws NoSessionException when session is not valid.
-	 * Returns SessionDevice.
-	 * @TODO - presun do modelu pv_session 
-	 */
-	public function checkSession(int $sessionId, string $sessionHash): Model\SessionDevice
-	{
-		//$session = $this->database->fetch('SELECT hash, device_id, started, session_key FROM sessions WHERE id = ?', $sessionId);
-		$session = $this->pv_sessions->getSessionById($sessionId);
-		if ($session == NULL) {
-			throw new NoSessionException("session {$sessionId} not found");
-		}
-
-		if (strcmp($session->hash, $sessionHash) != 0) {
-			throw new NoSessionException("bad hash");
-		}
-
-		$now = new DateTime;
-		// zivotnost session 1 den
-		if ($now->diff($session->started)->days > 0) {
-			throw new NoSessionException("session expired");
-		}
-
-		$rc = new Model\SessionDevice();
-		$rc->sessionId = $sessionId;
-		$rc->sessionKey = $session->session_key;
-		$rc->deviceId = $session->device_id;
-
-		//TODO: potrebujeme jmeno device? 
-		// $device = $this->database->fetch('SELECT id, name FROM devices WHERE id = ?', $session->device_id );
-		// $rc->deviceName = $device->name;
-
-		return $rc;
-	}
-
-
-
-	/**
-	 * Zalozeni nebo aktualizace senzoru
+	 * Založenie alebo aktualizácia senzoru
 	 */
 	public function processChannelDefinition($sessionDevice, $channel, $devClass, $valueType, $msgRate, $name, $factor)
 	{
@@ -243,7 +169,7 @@ class RaDataSource
 		);
 
 		if ($sensor == NULL) {
-			// neexistuje, zalozit
+			// neexistuje, založenie
 
 			if ($factor === NULL) {
 				$process = 0;
@@ -264,47 +190,27 @@ class RaDataSource
 		} else {
 			// existuje
 			if ($sensor->channel_id != $channel) {
-				// existuje, ale ma spatny channel_id -> nastavit
+				// existuje, ale ma zlý channel_id -> nastaviť
 				$this->database->query('UPDATE sensors SET ', [
 					'channel_id' => $channel
 				], 'WHERE id = ?', $sensor->id);
 			}
 		}
 
-		// a nastavit NULL na channel_id na ostatnich zaznamech stejneho zarizeni se stejnym channel_id
+		// a nastaviť NULL na channel_id na ostatných záznamoch rovnakého zariadenia s rovnakým channel_id
 		$this->database->query('UPDATE sensors SET ', [
 			'channel_id' => null
 		], ' WHERE device_id = ? AND channel_id = ? AND name <> ?', $sessionDevice->deviceId, $channel, $name);
 	}
 
-
 	/**
-	 * Vrati sensor pro dany kanal.
-	 * id, preprocess_data, preprocess_factor, id_device_classes, data_session, imp_count
+	 * Vloženie záznamu zo senzoru do 'measures'
 	 */
-	public function getSensorByChannel(int $deviceId, int $channel): Table\ActiveRow|null
-	{
-		return $this->database->fetch('
-			SELECT id, preprocess_data, preprocess_factor, id_device_classes, imp_count, data_session
-			FROM sensors 
-			WHERE device_id = ? AND channel_id = ?
-		', $deviceId, $channel);
-	}
-
-
-
-
-
-
-	/**
-	 * Vlozeni zaznamu ze senzoru do 'measures'
-	 */
-	public function saveData($sessionDevice, $sensor, $messageTime, $numVal, $remoteIp, $value_out, $impCount, $dataSession)
+	public function saveData(Model\SessionDevice $sessionDevice, Table\ActiveRow $sensor, string $messageTime, float $numVal, string $remoteIp, float $value_out, int $impCount, string $dataSession)
 	{
 		//$msgTime = new DateTime;
 		//$msgTime->setTimestamp(time() - $timeDiff);
 
-		//$this->database->query('INSERT INTO measures ', [
 		$this->pv_measures->save(0, [
 			'sensor_id' => $sensor->id,
 			'data_time' => $messageTime,
@@ -324,12 +230,9 @@ class RaDataSource
 			$values['imp_count'] = $impCount;
 			$values['data_session'] = $dataSession;
 		}
-		$this->pv_sensors->findAll()->where('id', $sensor->id)
+		$this->pv_sensors->find($sensor->id)
 		->where('(last_data_time IS NULL) OR (last_data_time < ?)', $messageTime)
 		->update($values);
-
-		//$this->database
-		//->query('UPDATE sensors SET', $values, 'WHERE id = ? AND ((last_data_time IS NULL) OR (last_data_time < ?))', $sensor->id, $messageTime);
 	}
 
 
@@ -386,5 +289,38 @@ class RaDataSource
 		$this->database->query('UPDATE updates SET', [
 			'downloaded' => new \DateTime(),
 		], 'WHERE id = ?', $updateId);
+	}
+
+
+/** ********************* @DEPRECATED ********************************* */
+
+	/**
+	 * Load information about DEVICE
+	 * @deprecated don't use
+	 */
+	public function getDeviceInfoByLogin(string $login): Table\ActiveRow
+	{
+		return $this->pv_devices->findOneBy(['name'=>$login]);
+		//return $this->database->fetch('SELECT * FROM devices WHERE name = ?', $login);
+	}
+	/** @deprecated don't use */
+	public function getDeviceInfoById(int $id): Table\ActiveRow
+	{
+		return $this->pv_devices->find($id);
+		//return $this->database->fetch('SELECT * FROM devices WHERE id = ?', $id);
+	}
+	/** @deprecated don't use */
+	public function badLogin($deviceId)
+	{
+		$this->pv_devices->badLogin($deviceId);
+		//$this->database->query('UPDATE devices SET', [
+		//	'last_bad_login' => new DateTime
+		//], 'WHERE id = ?', $deviceId);
+	}
+	/** @deprecated don't use */
+	public function deleteConfigRequest($deviceId)
+	{
+		$this->pv_devices->deleteConfigRequest($deviceId);
+		//$this->database->query('UPDATE devices SET config_data = NULL WHERE id = ?', $deviceId);
 	}
 }
