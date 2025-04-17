@@ -9,6 +9,7 @@ services:
 	- App\Model\PV_Devices
 	- App\Model\PV_Lang
 	- App\Model\PV_Main_menu
+	- App\Model\PV_Prelogin
 	- App\Model\PV_Sensors
 	- App\Model\PV_Sessions
 	- App\Model\PV_Units

@@ -26,11 +26,11 @@ class RaDataSource
 	/** @var ApiModule\Model\Measures @inject */
 	public $pv_measures;
 
-	/** @var Nette\Database\Context */
+	/** @var Nette\Database\Explorer */
 	private $database;
 
 	public function __construct(
-		Nette\Database\Context $database
+		Nette\Database\Explorer $database
 	) {
 		$this->database = $database;
 	}
@@ -230,9 +230,10 @@ class RaDataSource
 			$values['imp_count'] = $impCount;
 			$values['data_session'] = $dataSession;
 		}
-		$this->pv_sensors->find($sensor->id)
-		->where('(last_data_time IS NULL) OR (last_data_time < ?)', $messageTime)
-		->update($values);
+		//$this->pv_sensors->find($sensor->id)
+		//->where('(last_data_time IS NULL) OR (last_data_time < ?)', $messageTime)
+		//->update($values);
+		$this->pv_sensors->findBy(['id' => $sensor->id, '(last_data_time IS NULL) OR (last_data_time < ?)' => $messageTime])->update($values);
 	}
 
 

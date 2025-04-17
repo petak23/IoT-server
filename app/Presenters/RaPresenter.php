@@ -29,9 +29,10 @@ final class RaPresenter extends BasePresenter
 	// -- DB
 	/** @var Model\PV_Sessions @inject */
 	public $pv_sessions;
-	
 	/** @var Model\PV_Devices @inject */
 	public $pv_devices;
+	/** @var Model\PV_Prelogin @inject */
+	public $pv_prelogin;
 
 	/** @var \App\Services\RaDataSource */
 	private $datasource;
@@ -167,10 +168,11 @@ final class RaPresenter extends BasePresenter
 
 			// zalozit session
 			$hash = Random::generate(8, '0-9A-Za-z');
-			$sessionCode = $this->datasource->createLoginaSession( $device->id, 
-															$hash, 
-															$sessionKeyHex,
-															$remoteIp );
+			//$sessionCode = $this->datasource->createLoginaSession( $device->id, 
+			//												$hash, 
+			//												$sessionKeyHex,
+			//												$remoteIp );
+			$sessionCode = $this->pv_prelogin->createLoginaSession( $device->id, $hash, $sessionKeyHex,	$remoteIp );
 			$sessionId = "{$sessionCode}:{$hash}";
 
 			$aesIV = openssl_random_pseudo_bytes ( 16, $cstrong );
