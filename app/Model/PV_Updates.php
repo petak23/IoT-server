@@ -9,13 +9,13 @@ use Nette\Database\Table\Selection;
 /**
  * Model, ktory sa stara o tabulku updates
  * 
- * Posledna zmena 15.07.2022
+ * Posledna zmena 24.04.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2022 - 2022 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2022 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.1
+ * @version    1.0.2
  */
 class PV_Updates extends Table
 {
@@ -23,9 +23,10 @@ class PV_Updates extends Table
   /** @var string */
   protected $tableName = 'updates';
 
-  public function getOtaUpdates(int $id): Selection
+  public function getOtaUpdates(int $id): Selection|null
   {
-    return $this->findBy(["device_id" => $id])->order("id ASC");
+    $_t = $this->findBy(["device_id" => $id])->order("id ASC");
+    return $_t->count() ? $_t : null;
   }
 
   public function otaDeleteUpdate(int $deviceId, int $updateId): void
@@ -34,7 +35,7 @@ class PV_Updates extends Table
   }
 
   /**
-   * @return id záznamu alebo -1, pokiaľ pre dané zariadenie a verziu už existuje
+   * @return int záznamu alebo -1, pokiaľ pre dané zariadenie a verziu už existuje
    */
   public function otaUpdateCreate(int $id, int $fromVersion, string $fileHash): int
   {

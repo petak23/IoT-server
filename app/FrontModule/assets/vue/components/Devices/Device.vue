@@ -1,44 +1,46 @@
-<script>
-import { onMounted, ref, watch } from 'vue'
+<script setup>
+import { onMounted, ref, watch, computed } from 'vue'
 import MainService from '../../services/MainService'
 import dayjs from 'dayjs'; //https://day.js.org/docs/en/display/format
 
-export default {
-	props: {
-		id_device: { type: Number, default: 0 }
-	},
-	setup (props) {
+const props = defineProps({
+	id_device: { type: Number, default: 0 }
+})
 
-		const item = ref({name: "..."})
+const item = ref({name: "..."})
 
-		onMounted(()=> {
-			getDevice();
+onMounted(()=> {
+	getDevice();
+})
+
+watch(() => props.id_device, () => {
+	getDevice();
+});
+
+const rssiComputed = computed(() => {
+	let out = ""
+	if (item.value.rssi > -50) out = "- skvělá kvalita signálu."
+	else if (item.value.rssi > -60 ) out = "- dobrá kvalita signálu, mělo by fungovat i posílání souborů a logů."
+	else if (item.value.rssi > -70 ) out = '<i class="text-warning fas fa-exclamation-triangle"></i> Omezená kvalita signálu - data projdou, ale u souborů a logů očekávejte problémy.'
+	else out = '<i class="text-danger fas fa-exclamation-triangle"></i> Špatná kvalita signálu - očekávejte problémy.'
+	return out
+})
+
+const format_date = (value) => {
+	const date = dayjs(value);
+	// Then specify how you want your dates to be formatted
+	return date.format('D.M.YYYY HH:mm:ss');
+}
+
+const getDevice = () => {
+	MainService.getDevice(props.id_device)
+		.then(response => {
+			//console.log(response.data)
+			item.value = response.data
 		})
-
-		watch(() => props.id_device, (first, second) => {
-			getDevice();
+		.catch((error) => {
+			console.error(error);
 		});
-
-		
-		const format_date = (value) => {
-			const date = dayjs(value);
-			// Then specify how you want your dates to be formatted
-			return date.format('D.M.YYYY HH:mm:ss');
-		}
-
-		const getDevice = () => {
-			MainService.getDevice(props.id_device)
-				.then(response => {
-					//console.log(response.data)
-					item.value = response.data
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		}
-	
-		return { props, item, format_date }
-	}
 }
 </script>
 
@@ -77,7 +79,7 @@ export default {
 	<div class="row px-2 bg-light">
 		<div class="col-12 col-md-2">Prvné prihlásenie:</div>
 		<div class="col-12 col-md-10">
-			<i v-if="item.first_login == null">
+			<i v-if="item.first_login == null" class="text-danger">
 				Zariadenie sa ešte neprihlásilo cez rozhranie RatatoskrIoT, preto nebude vypísané v monitoringu.
 			</i>
 			<span v-else>{{ item.first_login }}</span>
@@ -97,46 +99,35 @@ export default {
 
 	<div class="row px-2  bg-light">
 		<div class="col-12 col-md-2">Posledná komunikácia:</div>
-		<div class="col-12 col-md-10"><b>{$lastComm|date:'Y-m-d H:i:s'}</b></div>
+		<div class="col-12 col-md-10"><b>{{ item.lastComm }}</b></div>
 	</div>
 
-	{if $device['uptime'] }
-	<div class="row px-2 ">
+	<div class="row px-2" v-if="item.uptime">
 			<div class="col-12 col-md-2">Uptime:</div>
-			<div class="col-12 col-md-10"><b>{$uptime}</b> (při poslední komunikaci)</div>
+			<div class="col-12 col-md-10"><b>{{ item.uptime }}</b> (při poslední komunikaci)</div>
 	</div>
-	{/if}
 
-	{if $device['rssi'] }
-	<div class="row px-2  bg-light">
+	<div class="row px-2  bg-light" v-if="item.rssi">
 			<div class="col-12 col-md-2">Síla WiFi signálu:</div>
-			<div class="col-12 col-md-10"><b>{$device['rssi']} dBm</b> (při posledním přihlášení)
-					{if $device['rssi'] > -50 }
-							- skvělá kvalita signálu.
-					{elseif $device['rssi'] > -60 }
-							- dobrá kvalita signálu, mělo by fungovat i posílání souborů a logů.
-					{elseif $device['rssi'] > -70 }
-							<i class="text-warning fas fa-exclamation-triangle"></i> Omezená kvalita signálu - data projdou, ale u souborů a logů očekávejte problémy.
-					{else}
-							<i class="text-danger fas fa-exclamation-triangle"></i> Špatná kvalita signálu - očekávejte problémy.
-					{/if}
+			<div class="col-12 col-md-10">
+				<b>{{ item.rssi }} dBm</b> (při posledním přihlášení)
+				<span v-html="rssiComputed"></span>
 			</div>
 	</div>
-	{/if}
 
 	<div class="row px-2  ">
 			<div class="col-12 col-md-2">Bezp. token pro JSON data:</div>
-			<div class="col-12 col-md-10">{$device['json_token']}</div>
+			<div class="col-12 col-md-10">{{ item.json_token }}</div>
 	</div>
 
 	<div class="row px-2 bg-light">
 			<div class="col-12 col-md-2">Bezp. token pro galerii:</div>
-			<div class="col-12 col-md-10">{$device['blob_token']}</div>
+			<div class="col-12 col-md-10">{{ item.blob_token }}</div>
 	</div>
 
 	<div class="row px-2">
 			<div class="col-12 col-md-2">Kontrolovat v monitoringu:</div>
-			<div class="col-12 col-md-10">{if ($device['monitoring']==1)}ano{else}ne{/if}</div>
+			<div class="col-12 col-md-10">{{ item.monitoring ==1 ? 'ano' : 'ne' }}</div>
 	</div>
 
 	<div class="row px-2 pt-3">
@@ -147,21 +138,19 @@ export default {
 			</div>
 	</div>
 
-	{foreach $updates as $update}
-			{first}
-					<div class="px-2 pb-0 pt-4">
-							<h3>OTA aktualizace aplikace</h3>
-					</div>
-					<div class="row pl-4 pr-1 py-0"><div class="col-12">
-							<div class="row text-secondary">
-									<div class="col   col-md-1">ID</div>
-									<div class="col-6 col-md-3">Z verze</div>
-									<div class="col-6 col-md-3">Nahráno</div>
-									<div class="col-6 col-md-3">Staženo</div>
-									<div class="col   col-md-1">&nbsp;</div>
-							</div>
-			{/first}
-			<div class="row {if $iterator->odd}bg-light{/if}">
+	<div class="px-2 pb-0 pt-4">
+			<h3>OTA aktualizace aplikace</h3>
+	</div>
+	<div class="row pl-4 pr-1 py-0" v-if="item.updates">
+		<div class="col-12">
+			<div class="row text-secondary">
+					<div class="col   col-md-1">ID</div>
+					<div class="col-6 col-md-3">Z verze</div>
+					<div class="col-6 col-md-3">Nahráno</div>
+					<div class="col-6 col-md-3">Staženo</div>
+					<div class="col   col-md-1">&nbsp;</div>
+			</div>
+			<div v-for="(upd, index) in item.updates" :key="upd.id" class="row" :class="index % 2 ? 'bg-light': ''">
 					<div class="col   col-md-1">{$update['id']}</div>
 					<div class="col-6 col-md-3">{$update['fromVersion']}</div>
 					<div class="col-6 col-md-3">{$update['inserted']}</div>

@@ -24,7 +24,7 @@ use Tracy\Debugger;
 class CommPresenter extends BasePresenter
 {
 	/** @var Services\MsgProcessor @inject */
-	private $msgProcessor;
+	public $msgProcessor;
 	
 	// -- DB
 	/** @var Model\PV_Sessions @inject */

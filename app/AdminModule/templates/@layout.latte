@@ -11,7 +11,11 @@
 		
 		<link rel="shortcut icon" href="{$basePath}/favicon.ico" type="image/x-icon">
 	</head>
-	<body class="sb-nav-fixed">
+	<body class="sb-nav-fixed" 
+		id="app"
+		data-base-path="{$basePath}"
+		data-base-url="{$baseUrl}"
+	>
 		<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 			<button class="btn btn-link btn-sm ml-2 mr-2" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
 			<a class="navbar-brand" n:href=":Admin:Inventory:user">{$appName} - {$user->id}</a>

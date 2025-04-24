@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\ApiModule\Model;
 
 //use App\Model;
+use App\Model\PV_Updates;
 use App\Services\Logger;
 use Nette;
 use Nette\Database;
@@ -14,13 +15,13 @@ use Nette\Utils\DateTime;
 /**
  * Model, ktory sa stara o tabulku devices
  * 
- * Posledna zmena 26.03.2025
+ * Posledna zmena 24.04.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.7
+ * @version    1.0.8
  */
 class Devices
 {
@@ -34,6 +35,8 @@ class Devices
 	private $measures;
 	/** @var Database\Table\Selection */
 	private $sumdata;
+	/** @var Database\Table\Selection */
+	private $updates;
 
 	/** @var Database\Table\Selection */
 	private $sensors;
@@ -43,11 +46,13 @@ class Devices
 	public function __construct(
 		Nette\Database\Explorer $database,
 		Sensors $pv_sensors,
-		Sessions $sessions
+		Sessions $sessions,
+		PV_Updates $pv_updates
 	) {
 		$this->devices = $database->table("devices");
 		$this->measures = $database->table("measures");
 		$this->sumdata = $database->table("sumdata");
+		$this->updates = $pv_updates;
 		$this->sessions = $sessions;
 		$this->pv_sensors = $pv_sensors;
 	}
@@ -93,11 +98,11 @@ class Devices
 		bool $return_as_array = false
 	): VDevice|array {
 
-		if (($_t = $this->devices->get($deviceId)) == null) {
+		if (($_t = $this->devices->get($deviceId)) == null) {	// Načítanie zariadenia z DB
 			return ['error' => "Device not found", 'error_n' => 1, 'device_id' => $deviceId];
 		}
 
-		$d = new VDevice($this->devices->get($deviceId));
+		$d = new VDevice($_t); // Vytvor zariadenie
 		if ($with_sensors) {
 			// Pridám zariadenie a k nemu načítam senzory
 			$sensors = $this->pv_sensors->getDeviceSensors($deviceId, $d->attrs->monitoring);
@@ -106,13 +111,42 @@ class Devices
 					$d->addSensor($s, $return_as_array);
 				}
 			}
+			$lastLoginTs = (DateTime::from($d->attrs->last_login))->getTimestamp();
+			$lastTime = $lastLoginTs;
+			foreach ($d->sensors as $sensor) {
+				if ($sensor['last_data_time']) {
+					$utime = (DateTime::from($sensor['last_data_time']))->getTimestamp();
+					if (!$lastTime || ($utime > $lastTime)) {
+						$lastTime = $utime;
+					}
+				}
+			}
 		}
+
 		if ($return_as_array) {
 			$_d = $d->attrs->toArray();
 			$_d['problem_mark'] = $d->problem_mark;
 			$_d['sensors'] = $d->sensors;
-			$_d['first_login'] = $d->attrs->first_login->format('d.m.Y H:i:s');
-			$_d['last_login'] = $d->attrs->last_login->format('d.m.Y H:i:s');
+			$_d['first_login'] = $d->attrs->first_login != null ? $d->attrs->first_login->format('d.m.Y H:i:s') : null;
+			$_d['last_login'] = $d->attrs->last_login != null ? $d->attrs->last_login->format('d.m.Y H:i:s') : null;
+			$_d['lastComm'] = DateTime::from($lastTime)->format('d.m.Y H:i:s');
+			if ($d->attrs->uptime) {
+				$_d['uptime'] = $this->secondsToTime($d->attrs->uptime);
+			}
+			$_d['updates'] = $this->updates->getOtaUpdates($deviceId);
+
+			$_d['problem_mark'] = false;
+			if ($d->attrs->last_bad_login != NULL) {
+				if ($d->attrs->last_login != NULL) {
+					$lastErrLoginTs = (DateTime::from($d->attrs->last_bad_login))->getTimestamp();
+					if ($lastErrLoginTs >  $lastLoginTs) {
+						$_d['problem_mark'] = true;
+					}
+				} else {
+					$_d['problem_mark'] = true;
+				}
+			}
+
 			$d = $_d;
 		}
 		return $d;
@@ -120,49 +154,33 @@ class Devices
 
 	public function deleteDevice($id)
 	{
-		Logger::log('webapp', Logger::DEBUG,  "Mazu session device {$id}");
+		Logger::log('webapp', Logger::DEBUG,  "Delete session device {$id}");
 
-		// nejprve zmenit heslo a smazat session, aby se uz nemohlo prihlasit
+		// Najprv zmeniť heslo a zmazať session, aby se už nemohlo prihlásiť
 		$this->devices->get($id)->update(['passphrase' => 'x']);
 		$this->sessions->deleteSession($id);
 
 		$sens = $this->pv_sensors->getDeviceSensors($id);
 
-		// smazat data
+		// Zmazať data
 		if ($sens->count()) {
 			Logger::log('webapp', Logger::DEBUG,  "Delete measures device {$id}");
 			$this->measures->where("sensor_id", $sens)->delete();
-			/*$this->database->query('
-							DELETE from measures  
-							WHERE sensor_id in (select id from sensors where device_id = ?)
-					', $id);*/
 
 			Logger::log('webapp', Logger::DEBUG,  "Delete sumdata device {$id}");
 
 			$this->sumdata->where("sensor_id in ?", $sens)->delete();
-			/*$this->database->query('
-							DELETE from sumdata
-							WHERE sensor_id in (select id from sensors where device_id = ?)
-					', $id);*/
 
 			Logger::log('webapp', Logger::DEBUG,  "Delete device {$id}");
 
-			// smazat senzory a zarizeni
+			// Zmazať senzory zariadenia
 			$sens->delete();
-			/*$this->database->query('
-							DELETE from sensors
-							WHERE device_id = ?
-					', $id);*/
 		}
 
 
 
 		$this->devices->get($id)->delete();
-		/*$this->database->query('
-						DELETE from devices
-						WHERE id = ?
-				', $id);*/
-
+		
 		Logger::log('webapp', Logger::DEBUG,  "Delete OK.");
 	}
 }
@@ -228,7 +246,7 @@ class VDevice
 {
 	use Nette\SmartObject;
 
-	/** @var Nette\Database\Table\ActiveRow Kompletné data o zariadení */
+	/** @var Nette\Database\Table\ActiveRow|array Kompletné data o zariadení */
 	public $attrs;
 
 	/** @var bool Príznak problému */

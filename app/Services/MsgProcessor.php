@@ -256,7 +256,7 @@ class MsgProcessor
 			// prepočítavať data!
 			$value_out *= $sensor->preprocess_factor;
 		}
-		// TODO UPRAV!!!
+		
 		$this->datasource->saveData($sessionDevice, $sensor, $messageTime, $sVal, $remoteIp, $value_out, $impCount, $dataSession);
 	}
 }
