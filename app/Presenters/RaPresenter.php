@@ -26,6 +26,14 @@ final class RaPresenter extends BasePresenter
 
 	const NAME = 'ra-conn';
 	
+	// -- DB
+	/** @var Model\PV_Sessions @inject */
+	public $pv_sessions;
+	/** @var Model\PV_Devices @inject */
+	public $pv_devices;
+	/** @var Model\PV_Prelogin @inject */
+	public $pv_prelogin;
+
 	/** @var \App\Services\RaDataSource */
 	private $datasource;
 	
@@ -98,7 +106,8 @@ final class RaPresenter extends BasePresenter
 				throw new \Exception("Empty login.");
 			} 
 		
-			$device = $this->datasource->getDeviceInfoByLogin( $login );
+			//$device = $this->datasource->getDeviceInfoByLogin( $login );
+			$device = $this->pv_devices->findOneBy(['name'=>$login]); // Load information about DEVICE
 			if( $device == NULL ) {
 				throw new \Exception("Login '{$login}' not found.");
 			}
@@ -113,7 +122,7 @@ final class RaPresenter extends BasePresenter
 			// payload rozdelit na IV a cryptext
 			$payload = explode ( ":" , $inToken, 10 );
 			if( count($payload)<2 ) {
-				$this->datasource->badLogin( $device->id );
+				$this->pv_devices->badLogin( $device->id );
 				throw new \Exception("Bad request (2).");                
 			}
 			$aesIvHex = Strings::trim($payload[0]);
@@ -126,7 +135,7 @@ final class RaPresenter extends BasePresenter
 			
 			$ecdh_mcu_public = openssl_decrypt($aesData, 'AES-256-CBC', $aesKey, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $aesIV );
 			if( $ecdh_mcu_public == FALSE ) {
-				$this->datasource->badLogin( $device->id );
+				$this->pv_devices->badLogin( $device->id );
 				$logger->write( Logger::ERROR,  "nelze rozbalit" );
 				throw new \Exception("Bad crypto block (1).");
 			}
@@ -159,10 +168,11 @@ final class RaPresenter extends BasePresenter
 
 			// zalozit session
 			$hash = Random::generate(8, '0-9A-Za-z');
-			$sessionCode = $this->datasource->createLoginaSession( $device->id, 
-															$hash, 
-															$sessionKeyHex,
-															$remoteIp );
+			//$sessionCode = $this->datasource->createLoginaSession( $device->id, 
+			//												$hash, 
+			//												$sessionKeyHex,
+			//												$remoteIp );
+			$sessionCode = $this->pv_prelogin->createLoginaSession( $device->id, $hash, $sessionKeyHex,	$remoteIp );
 			$sessionId = "{$sessionCode}:{$hash}";
 
 			$aesIV = openssl_random_pseudo_bytes ( 16, $cstrong );
@@ -188,7 +198,7 @@ final class RaPresenter extends BasePresenter
 				$errMsg = "Bad_password";
 
 				if( $device ) {
-					$this->datasource->badLogin( $device['id'] );
+					$this->pv_devices->badLogin( $device['id'] );
 				}
 			}
 
@@ -273,7 +283,8 @@ final class RaPresenter extends BasePresenter
 			$appId = $this->getAppId( $appName );
 			$logger->write( Logger::INFO, "uptime={$uptime} rssi={$rssi} cfg={$configVer} [{$appName}]" );
 
-			$device = $this->datasource->getDeviceInfoById( $sessionDevice->deviceId );
+			//$device = $this->datasource->getDeviceInfoById( $sessionDevice->deviceId );
+			$device = $this->pv_devices->find( $sessionDevice->deviceId ); // Get device info by id
 			if( $device == NULL ) {
 				throw new \Exception("Device '{$sessionDevice->deviceId}' not found.");
 			}
@@ -295,7 +306,7 @@ final class RaPresenter extends BasePresenter
 					// zarizeni ma spravnou verzi - pokud je vyplnen text k odeslani, je mozno ho smazat
 					if( $device['config_data'] ) {
 						$logger->write( Logger::INFO, "cfg je OK {$configVer}, mazu cekajici pozadavek" );
-						$this->datasource->deleteConfigRequest( $device->id );
+						$this->pv_device->deleteConfigRequest( $device->id );
 					}
 				}
 			} 
@@ -376,7 +387,7 @@ final class RaPresenter extends BasePresenter
 		
 		$decrypted = openssl_decrypt($aesData, 'AES-256-CBC', hex2bin($sessionKey), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $aesIV );
 		if( $decrypted == FALSE ) {
-			$logger->write( Logger::ERROR,  "nelze rozbalit" );
+			$logger->write( Logger::ERROR,  "nedá sa rozbaliť" );
 			throw new \Exception("Bad crypto block (1).");
 		}
 
@@ -388,7 +399,7 @@ final class RaPresenter extends BasePresenter
 		$hash = hash( "crc32b", $msgTotal, FALSE );
 		
 		if( strcmp( $hash, $crcReceived ) != 0 ) {
-			$logger->write( Logger::ERROR,  "Nesouhlasi CRC. Prijato: {$crcReceived} Spocteno: {$hash}" );
+			$logger->write( Logger::ERROR,  "Nesúhlasí CRC. Prijaté: {$crcReceived} Vypočítané: {$hash}" );
 			throw new \Exception("Bad CRC.");
 		}
 
@@ -466,7 +477,7 @@ final class RaPresenter extends BasePresenter
 			if( count($sessionData)<2 ) {
 				throw new \Exception("Bad request (3).");                
 			}
-			$sessionDevice = $this->datasource->checkSession( $sessionData[0], $sessionData[1] );
+			$sessionDevice = $this->pv_sessions->checkSession( $sessionData[0], $sessionData[1] );
 			//D $logger->write( Logger::INFO,  $sessionDevice );
 			$logger->setContext("LS;D:{$sessionDevice->deviceId}");
 
@@ -564,7 +575,7 @@ final class RaPresenter extends BasePresenter
 				throw new \Exception("Bad request (3).");                
 			}
 			$logger->write( Logger::INFO, "S:{$sessionData[0]}"); 
-			$sessionDevice = $this->datasource->checkSession( $sessionData[0], $sessionData[1] );
+			$sessionDevice = $this->pv_sessions->checkSession( $sessionData[0], $sessionData[1] );
 			$logger->setContext("D;D:{$sessionDevice->deviceId}");
 
 			//D $logger->write( Logger::INFO,  $sessionDevice );
@@ -647,7 +658,7 @@ final class RaPresenter extends BasePresenter
 				throw new \Exception("Bad request (3).");                
 			}
 			$logger->write( Logger::INFO, "S:{$sessionData[0]}"); 
-			$sessionDevice = $this->datasource->checkSession( $sessionData[0], $sessionData[1] );
+			$sessionDevice = $this->pv_sessions->checkSession( $sessionData[0], $sessionData[1] );
 			$logger->setContext("B;D:{$sessionDevice->deviceId}");
 
 			//D $logger->write( Logger::INFO,  $sessionDevice );

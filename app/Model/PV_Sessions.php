@@ -35,9 +35,7 @@ class PV_Sessions extends Table
 
   /**
 	 * Check session validity. 
-	 * Throws NoSessionException when session is not valid.
-	 * Returns SessionDevice.
-	 * @TODO - presun do modelu pv_session 
+	 * Throws NoSessionException when session is not valid. 
 	 */
 	public function checkSession(int $sessionId, string $sessionHash): SessionDevice
 	{
