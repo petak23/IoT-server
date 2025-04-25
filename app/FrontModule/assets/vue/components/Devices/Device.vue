@@ -1,47 +1,28 @@
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
-import MainService from '../../services/MainService'
-import dayjs from 'dayjs'; //https://day.js.org/docs/en/display/format
 
 const props = defineProps({
-	id_device: { type: Number, default: 0 }
+	device: { type: Object, default: null }
 })
 
 const item = ref({name: "..."})
 
 onMounted(()=> {
-	getDevice();
+	if (props.device != null) item.value = props.device
 })
 
-watch(() => props.id_device, () => {
-	getDevice();
+watch(() => props.device, () => {
+	item.value = props.device
 });
 
 const rssiComputed = computed(() => {
 	let out = ""
-	if (item.value.rssi > -50) out = "- skvělá kvalita signálu."
-	else if (item.value.rssi > -60 ) out = "- dobrá kvalita signálu, mělo by fungovat i posílání souborů a logů."
-	else if (item.value.rssi > -70 ) out = '<i class="text-warning fas fa-exclamation-triangle"></i> Omezená kvalita signálu - data projdou, ale u souborů a logů očekávejte problémy.'
-	else out = '<i class="text-danger fas fa-exclamation-triangle"></i> Špatná kvalita signálu - očekávejte problémy.'
+	if (item.value.rssi > -50) out = "- výborná kvalita signálu."
+	else if (item.value.rssi > -60 ) out = "- dobrá kvalita signálu, malo by fungovať aj posielanie súborov a logov."
+	else if (item.value.rssi > -70 ) out = '<i class="text-warning fas fa-exclamation-triangle"></i> Omedzená kvalita signálu - data prejdú, ale pri súboroch a logoch očakávajte problémy.'
+	else out = '<i class="text-danger fas fa-exclamation-triangle"></i> Zlá kvalita signálu - očakávajte problémy.'
 	return out
 })
-
-const format_date = (value) => {
-	const date = dayjs(value);
-	// Then specify how you want your dates to be formatted
-	return date.format('D.M.YYYY HH:mm:ss');
-}
-
-const getDevice = () => {
-	MainService.getDevice(props.id_device)
-		.then(response => {
-			//console.log(response.data)
-			item.value = response.data
-		})
-		.catch((error) => {
-			console.error(error);
-		});
-}
 </script>
 
 <template>
@@ -56,8 +37,8 @@ const getDevice = () => {
 		</div>
 	</div>
 	<div class="row px-2  pt-3">
-		<div class="col-12">
-			<a n:href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">
+		<div class="col-12"><!-- TODO -->
+			<a href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">
 				Zobraziť konfiguráciu
 			</a>
 		</div>
@@ -104,170 +85,154 @@ const getDevice = () => {
 
 	<div class="row px-2" v-if="item.uptime">
 			<div class="col-12 col-md-2">Uptime:</div>
-			<div class="col-12 col-md-10"><b>{{ item.uptime }}</b> (při poslední komunikaci)</div>
+			<div class="col-12 col-md-10"><b>{{ item.uptime }}</b> (pri poslednej komunikácii)</div>
 	</div>
 
 	<div class="row px-2  bg-light" v-if="item.rssi">
-			<div class="col-12 col-md-2">Síla WiFi signálu:</div>
+			<div class="col-12 col-md-2">Sila WiFi signálu:</div>
 			<div class="col-12 col-md-10">
-				<b>{{ item.rssi }} dBm</b> (při posledním přihlášení)
+				<b>{{ item.rssi }} dBm</b> (pri poslednom prihlásení)
 				<span v-html="rssiComputed"></span>
 			</div>
 	</div>
 
 	<div class="row px-2  ">
-			<div class="col-12 col-md-2">Bezp. token pro JSON data:</div>
+			<div class="col-12 col-md-2">Bezp. token pre JSON data:</div>
 			<div class="col-12 col-md-10">{{ item.json_token }}</div>
 	</div>
 
 	<div class="row px-2 bg-light">
-			<div class="col-12 col-md-2">Bezp. token pro galerii:</div>
+			<div class="col-12 col-md-2">Bezp. token pre galériu:</div>
 			<div class="col-12 col-md-10">{{ item.blob_token }}</div>
 	</div>
 
 	<div class="row px-2">
-			<div class="col-12 col-md-2">Kontrolovat v monitoringu:</div>
-			<div class="col-12 col-md-10">{{ item.monitoring ==1 ? 'ano' : 'ne' }}</div>
+			<div class="col-12 col-md-2">Kontrolovať v monitoringu:</div>
+			<div class="col-12 col-md-10">{{ item.monitoring ==1 ? 'áno' : 'ne' }}</div>
 	</div>
 
 	<div class="row px-2 pt-3">
-			<div class="col-12">
-					<a n:href="Device:edit $device['id']" class="btn btn-outline-primary btn-sm" role="button">Upravit zařízení</a>
-					<a n:href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslat změnu konfigurace</a>
-					<a n:href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslat OTA aktualizaci aplikace</a>
+			<div class="col-12"><!-- TODO -->
+					<a href="Device:edit $device['id']" class="btn btn-outline-primary btn-sm" role="button">Upraviť zariadenie</a>
+					<a href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať zmenu konfigurácie</a>
+					<a href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať OTA aktualizáciu aplikácie</a>
 			</div>
 	</div>
 
 	<div class="px-2 pb-0 pt-4">
-			<h3>OTA aktualizace aplikace</h3>
+			<h3>OTA aktualizácia aplikácie</h3>
 	</div>
 	<div class="row pl-4 pr-1 py-0" v-if="item.updates">
 		<div class="col-12">
 			<div class="row text-secondary">
 					<div class="col   col-md-1">ID</div>
-					<div class="col-6 col-md-3">Z verze</div>
-					<div class="col-6 col-md-3">Nahráno</div>
-					<div class="col-6 col-md-3">Staženo</div>
+					<div class="col-6 col-md-3">Z verzie</div>
+					<div class="col-6 col-md-3">Nahrané</div>
+					<div class="col-6 col-md-3">Stiahnuté</div>
 					<div class="col   col-md-1">&nbsp;</div>
 			</div>
 			<div v-for="(upd, index) in item.updates" :key="upd.id" class="row" :class="index % 2 ? 'bg-light': ''">
 					<div class="col   col-md-1">{$update['id']}</div>
 					<div class="col-6 col-md-3">{$update['fromVersion']}</div>
 					<div class="col-6 col-md-3">{$update['inserted']}</div>
-					<div class="col-6 col-md-3">{$update['downloaded']}</div>
-					<div class="col   col-md-1"><a n:href="Device:deleteupdate $device['id'], $update['id']">Smazat</a></div>
+					<div class="col-6 col-md-3">{$update['downloaded']}</div><!-- TODO -->
+					<div class="col   col-md-1"><a href="Device:deleteupdate $device['id'], $update['id']">Zmazať</a></div>
 			</div>
-			{last}
-					</div></div>
-			{/last}
-	{/foreach}
-
-	{if $device['config_data']}
-			<div class="px-2 pb-0 pt-4">
-					<h3>Změna konfigurace</h3>
-					<i class="far fa-share-square text-danger"></i>&nbsp;Pro zařízení čeká změna konfigurace:
-					<div class="px-4 py-0">
-							<i><pre>{$device['config_data']}</pre></i>
-					</div>
-			</div>
-	{/if}
-
-	{foreach $sensors as $sensor}
-			{first}
-					<div class="px-2 pb-0 pt-4">
-							<h3>Senzory</h3>
-					</div>
-					<div class="row pl-4 pr-1 py-0"><div class="col-12">
-							<div class="row text-secondary">
-									<div class="col-6 col-md-2">Senzor</div>
-									<div class="col-6 col-md-2">
-											Stav
-											<a href="#" data-toggle="tooltip" data-placement="top" title="Pro impulzní senzory denní suma (může mít cca minutu zpoždění). Pro ostatní poslední zaslaná hodnota (ihned)."
-											><i class="fas fa-question-circle"></i></a>
-									</div>
-									<div class="col-12 col-md-4">Popis</div>
-							</div>
-			{/first}
-
-			<div class="row {if $iterator->odd}bg-light{/if}">
-					<div class="col-6 col-md-2"><b><a n:href="Sensor:show $sensor['id']" >{$sensor['name']}</a>
-							{if ($sensor['warningIcon']>0)} 
-									<a href="#" data-toggle="tooltip" data-placement="top" title="Senzor nedodává data. Poslední data: {$sensor['last_data_time']}."
-									><i class="{if ($sensor['warningIcon']==1)}text-danger{else}text-warning{/if} fas fa-exclamation-triangle"></i></a>
-							{/if}
-					</b></div>
-					<div class="col-6 col-md-2">
-							{if ($sensor['last_out_value']!==NULL)}
-									{$sensor['last_out_value']} {$sensor['unit']}
-
-									{if ($sensor['warn_max_fired'])} 
-											<a href="#" data-toggle="tooltip" data-placement="top" title="Od {$sensor['warn_max_fired']} je hodnota nad limitem."
-											><i class="text-danger fas fa-arrow-circle-up"></i></a>
-									{/if}
-									{if ($sensor['warn_min_fired'])} 
-											<a href="#" data-toggle="tooltip" data-placement="top" title="Od {$sensor['warn_min_fired']} je hodnota pod limitem."
-											><i class="text-danger fas fa-arrow-circle-down"></i></a>
-									{/if}
-							{else}  
-									- [{$sensor['unit']}]
-							{/if}
-						
-					</div>
-					<div class="col-12 col-md-4">
-							{if $sensor['warn_max']} 
-									<a href="#" data-toggle="tooltip" data-placement="top" title="Senzor má nastaveno posílání varování při překročení horního limitu."
-											><i class="fas fa-sort-amount-up"></i></a>
-							{/if}
-							{if $sensor['warn_min']} 
-									<a href="#" data-toggle="tooltip" data-placement="top" title="Senzor má nastaveno posílání varování při překročení spodního limitu."
-											><i class="fas fa-sort-amount-down"></i></a>
-							{/if}
-							<i>{$sensor['desc']}</i>
-					</div>
-					<div class="col-12 col-md-4">
-							<a href="../../chart/sensorstat/show/{$sensor['id']}/?current=1">Statistika</a>
-									· 
-							<a href="../../chart/sensor/show/{$sensor['id']}/?current=1">Graf</a>
-							· 
-							<a n:href="Sensor:show $sensor['id']" >Info</a>
-							· 
-							<a n:href="Sensor:edit $sensor['id']" >Edit</a>
-					</div>
-			</div>
-
-			{last}
-					</div></div>
-			{/last}
-	{/foreach}
-
-	{if ($device['json_token'])}
-	<div class="px-2 pb-2 pt-4">
-			<h3>Data zařízení</h3>
-			Data ze senzorů zařízení ve formě JSON jsou dostupná zde: 
-			<br><small><a href="{$jsonUrl}">{$jsonUrl}</a></small>
-			<br>Pokud je zařízení meteostanice se senzory teploty a srážek, lze získat data pro display meteostanice zde:
-			<br><small><a href="{$jsonUrl2}">{$jsonUrl2}</a></small>
-			<br><small>Každý, kdo zná tato URL, si může data zobrazit. Přístup k JSON souboru již dále <b>není chráněn heslen</b>.</small>
+		</div>
 	</div>
-	{/if}
-
-	{if ($device['blob_token'])}
-	<div class="px-2 pb-2 pt-4">
-			<h3>Galerie obrázků</h3>
-			Galerie obrázků (pokud je zařízení generuje) je dostupná zde: 
-			<br><small><a href="{$blobUrl}">{$blobUrl}</a></small>
-			<br><small>Každý, kdo zná toto URL, si může data zobrazit. Přístup k obrázkům již dále <b>není chráněn heslen</b>.</small>
+	<div class="row pl-4 pr-1 py-0" v-else>
+		<div class="col-12">Aktualizácie ešte neexistujú.</div>
 	</div>
-	{/if}
 
-	{if ($soubory>0) }
-	<div class="row px-2 pt-3">
-			<div class="col-12">
-					<h3>Soubory</h3>
-					U zařízení je uloženo <a n:href="Device:blobs $device['id']"><b>{$soubory}</b> souborů</a>.
+	<div class="px-2 pb-0 pt-4" v-if="item.config_data">
+		<h3>Zmena konfigurácie</h3>
+		<i class="far fa-share-square text-danger"></i>&nbsp;Pre zariadenie čaká zmena konfigurácie:
+		<div class="px-4 py-0">
+			<i><pre>{{ item.config_data }}</pre></i>
+		</div>
+	</div>
+
+	<div class="px-2 pb-0 pt-4">
+		<h3>Senzory</h3>
+	</div>
+	<div class="row pl-4 pr-1 py-0" v-if="item.sensors">
+		<div class="col-12">
+			<div class="row text-secondary">
+				<div class="col-6 col-md-2">Senzor</div>
+				<div class="col-6 col-md-2">
+					Stav
+					<a 
+						href="#" data-toggle="tooltip" data-placement="top" 
+						title="Pre impulzné senzory denná suma (môže mať cca. minútu meškanie). Pre ostatné posledná zaslaná hodnota (ihneď)."
+					>
+						<i class="fas fa-question-circle"></i>
+					</a>
+				</div>
+				<div class="col-12 col-md-4">Popis</div>
 			</div>
+
+			<div v-for="(sensor, index) in item.sensors" :key="sensor.id" class="row" :class="index % 2 ? 'bg-light': ''">
+				<div class="col-6 col-md-2">
+					<b><!-- TODO -->
+						<a href="Sensor:show sensor.id" >{{ sensor.name }}</a> 
+						<a v-if="sensor.warningIcon > 0"
+							data-toggle="tooltip" data-placement="top" :title="'Senzor nedodává data. Posledné data: ' + sensor.last_data_time + '.'"
+						>
+							<i :class="sensor.warningIcon ==1 ? 'text-danger' : 'text-warning'" class="fas fa-exclamation-triangle"></i>
+						</a>
+					</b>
+				</div>
+
+				<div class="col-6 col-md-2" v-if="sensor.last_out_value!==NULL">
+					{{ sensor.last_out_value }} {{ sensor.unit }}
+
+					<a v-if="sensor.warn_max_fired" data-toggle="tooltip" data-placement="top" :title="'Od ' + sensor.warn_max_fired + 'je hodnota nad limitom.'"
+					><i class="text-danger fas fa-arrow-circle-up"></i></a>
+					
+					<a v-if="sensor.warn_min_fired" data-toggle="tooltip" data-placement="top" :title="'Od ' + sensor.warn_min_fired + 'je hodnota pod limitom.'"
+					><i class="text-danger fas fa-arrow-circle-down"></i></a>
+				</div>
+				<div class="col-6 col-md-2" v-else>- [{{ sensor.unit }}]</div>
+
+				<div class="col-12 col-md-4">
+					<a v-if="sensor.warn_max" data-toggle="tooltip" data-placement="top" title="Senzor má nastavené posielanie varovaní pri prekročení horného limitu."
+					><i class="fas fa-sort-amount-up"></i></a>
+					<a v-if="sensor.warn_min" data-toggle="tooltip" data-placement="top" title="Senzor má nastavené posielanie varovaní pri prekročení dolného limitu."
+					><i class="fas fa-sort-amount-down"></i></a>
+					<i>{{ sensor.desc }}</i>
+				</div>
+				<div class="col-12 col-md-4"><!-- TODO -->
+					<a href="../../chart/sensorstat/show/{sensor.id}/?current=1">Štatistika</a>· 
+					<a href="../../chart/sensor/show/{sensor.id}/?current=1">Graf</a>· 
+					<a href="Sensor:show sensor.id" >Info</a>· 
+					<a href="Sensor:edit sensor.id" >Edit</a>
+				</div>
+			</div>
+		</div>
 	</div>
-	{/if}
+
+	<div class="px-2 pb-2 pt-4" v-if="item.json_token">
+		<h3>Data zariadenia</h3>
+		Data zo senzorov zariadenia vo forme JSON sú dostupné tu: 
+		<br><small><a :href="item.jsonUrl">{{ item.jsonUrl }}</a></small>
+		<br>Pokiaľ je zariadenie meteostanice so senzormi teploty a zrážok, je možné získať data pre display meteostanice tu:
+		<br><small><a :href="item.jsonUrl2">{{ item.jsonUrl2 }}</a></small>
+		<br><small>Každý, kdo pozná tieto URL, si môže data zobraziť. Prístup k JSON súboru už <b>nie je chránený heslom</b>.</small>
+	</div>
+
+	<div class="px-2 pb-2 pt-4" v-if="item.blob_token">
+		<h3>Galéria obrázkov</h3>
+		Galéria obrázkov (pokiaľ ju zariadenie generuje) je dostupná tu: 
+		<br><small><a :href="item.blobUrl">{{ item.blobUrl }}</a></small>
+		<br><small>Každý, kdo pozná túto URL, si môže obrázky zobraziť. Prístup k obrázkom už <b>nie je chránený heslom</b>.</small>
+	</div>
+
+	<div class="row px-2 pt-3" v-if="item.subory">
+		<div class="col-12">
+			<h3>Súbory</h3><!-- TODO -->
+			V zariadení je uložené <a href="Device:blobs item.id"><b>{{ item.subory }}</b> súborov</a>.
+		</div>
+	</div>
 </template>
 
 

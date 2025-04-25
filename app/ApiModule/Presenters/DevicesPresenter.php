@@ -5,16 +5,16 @@ namespace App\ApiModule\Presenters;
 use App\ApiModule\Model;
 
 /**
- * Prezenter pre pristup k api užívateľov.
- * Posledna zmena(last change): 29.09.2023
+ * Presenter pre pristup k api užívateľov.
+ * Posledna zmena(last change): 25.04.2025
  *
  * Modul: API
  *
  * @author Ing. Peter VOJTECH ml. <petak23@gmail.com>
- * @copyright  Copyright (c) 2012 - 2023 Ing. Peter VOJTECH ml.
+ * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version 1.0.1
+ * @version 1.0.2
  */
 class DevicesPresenter extends BasePresenter
 {
@@ -32,7 +32,29 @@ class DevicesPresenter extends BasePresenter
 
 	public function actionDevice(int $id = 0): void
 	{
-		$this->sendJson($this->devices->getDevice($id, true, true));
+		if ($id > 0) {
+			$device = $this->devices->getDevice($id, true, true);
+			if (isset($device['error_n'])) { // Zariadenie sa nenašlo
+				$out = [
+					'status' => 404,
+					'message' => $device['error']
+				];
+			} else {
+				$out = array_merge($device, [
+					'jsonUrl'		=> $this->link('//:Json:data', ['token' => $device['json_token'], 'id' => $device['id']]),
+					'jsonUrl2'	=> $this->link('//:Json:meteo', ['token' => $device['json_token'], 'id' => $device['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']),
+					'blobUrl'		=> $this->link('//:Gallery:show', ['token' => $device['blob_token'], 'id' => $device['id']]),
+					'status'		=> 200
+				]);
+			}
+		} else {
+			$out = [
+				'status' => 404,
+				'message' => "Invalid device Id..."
+			];
+		}
+
+		$this->sendJson($out);
 	}
 
 	/** Vráti zoznam senzorov pre dané zariadenie */
