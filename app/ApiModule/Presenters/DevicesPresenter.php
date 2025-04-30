@@ -44,7 +44,8 @@ class DevicesPresenter extends BasePresenter
 					'jsonUrl'		=> $this->link('//:Json:data', ['token' => $device['json_token'], 'id' => $device['id']]),
 					'jsonUrl2'	=> $this->link('//:Json:meteo', ['token' => $device['json_token'], 'id' => $device['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']),
 					'blobUrl'		=> $this->link('//:Gallery:show', ['token' => $device['blob_token'], 'id' => $device['id']]),
-					'status'		=> 200
+					'status'		=> 200,
+					'url'				=> $this->link('//:Homepage') // . 'ra', ??? TODO over
 				]);
 			}
 		} else {

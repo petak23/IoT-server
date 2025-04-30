@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
+import { BAccordion, BAccordionItem } from 'bootstrap-vue-next'
 
 const props = defineProps({
 	device: { type: Object, default: null }
 })
 
-const item = ref({name: "..."})
+const item = ref(null)
 
 onMounted(()=> {
 	if (props.device != null) item.value = props.device
@@ -36,11 +37,30 @@ const rssiComputed = computed(() => {
 			<i>Po stisku tlačítka sa zobrazí konfigurácia, ktorú je potrebné nastaviť do zariadenia v konfiguračnom portály zariadenia.</i>
 		</div>
 	</div>
-	<div class="row px-2  pt-3">
-		<div class="col-12"><!-- TODO -->
-			<a href="Device:config $device['id']" class="btn btn-outline-primary btn-sm" role="button">
-				Zobraziť konfiguráciu
-			</a>
+	<div class="row px-2 pt-3">
+		<div class="col-12"><!-- TODO over -->
+			<BAccordion lazy>
+				<BAccordionItem title="Zobraziť konfiguráciu">
+					<div class="row px-2">
+						<div class="col-12">
+							<h3>Konfigurácia zariadenia</h3>
+							<i>Túto konfiguráciu nastavte v zariadení.</i>
+						</div>
+					</div>
+					<div class="row px-2 bg-light">
+						<div class="col-12 col-md-2">RA URL:</div>
+						<div class="col-12 col-md-10"><b>{{ item.url }}</b></div>
+					</div>
+					<div class="row px-2">
+						<div class="col-12 col-md-2">RA device name:</div>
+						<div class="col-12 col-md-10"><b>{{ item.name }}</b></div>
+					</div>
+					<div class="row px-2 bg-light">
+						<div class="col-12 col-md-2">RA passphrase:</div>
+						<div class="col-12 col-md-10"><b>{{ item.passphrase }}</b></div>
+					</div>
+				</BAccordionItem>
+			</BAccordion>
 		</div>
 	</div>
 

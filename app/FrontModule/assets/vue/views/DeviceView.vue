@@ -45,7 +45,6 @@ onMounted(()=> {
 <template>
 	<device 
 		v-if="device != null"
-		:id_device="props.id"
 		:device="device"
 	/>
 	<div v-else class="row px-2 py-3">
