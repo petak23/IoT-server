@@ -48,10 +48,12 @@ onMounted(()=> {
 						:key="sen.id"
 						class="list-group-item text-bg-dark"
 					>
-						{{ sen.last_out_value.toFixed(2) }} {{ sen.value_unit }}
+						( {{ format_date(sen.last_data_time) }} ) {{ sen.last_out_value.toFixed(2) }} {{ sen.value_unit }}
 					</li>
 				</ul>
-				<div class="d-flex justify-content-end border-top border-secondary pt-2">
+			</div>
+			<div class="card-footer">
+				<div class="d-flex justify-content-end pt-2">
 					<RouterLink :to="'device/' + item.id" class="btn btn-outline-info">
 						Viac info <i class="fa-solid fa-angles-right"></i>
 					</RouterLink>

@@ -132,7 +132,7 @@ const rssiComputed = computed(() => {
 	</div>
 
 	<div class="row px-2 pt-3">
-			<div class="col-12"><!-- TODO -->
+			<div class="col-12"><!-- TODO odkazy -->
 					<a href="Device:edit $device['id']" class="btn btn-outline-primary btn-sm" role="button">Upraviť zariadenie</a>
 					<a href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať zmenu konfigurácie</a>
 					<a href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať OTA aktualizáciu aplikácie</a>
@@ -155,7 +155,7 @@ const rssiComputed = computed(() => {
 					<div class="col   col-md-1">{$update['id']}</div>
 					<div class="col-6 col-md-3">{$update['fromVersion']}</div>
 					<div class="col-6 col-md-3">{$update['inserted']}</div>
-					<div class="col-6 col-md-3">{$update['downloaded']}</div><!-- TODO -->
+					<div class="col-6 col-md-3">{$update['downloaded']}</div><!-- TODO odkazy -->
 					<div class="col   col-md-1"><a href="Device:deleteupdate $device['id'], $update['id']">Zmazať</a></div>
 			</div>
 		</div>
@@ -193,7 +193,7 @@ const rssiComputed = computed(() => {
 
 			<div v-for="(sensor, index) in item.sensors" :key="sensor.id" class="row" :class="index % 2 ? 'bg-light': ''">
 				<div class="col-6 col-md-2">
-					<b><!-- TODO -->
+					<b><!-- TODO odkazy -->
 						<a href="Sensor:show sensor.id" >{{ sensor.name }}</a> 
 						<a v-if="sensor.warningIcon > 0"
 							data-toggle="tooltip" data-placement="top" :title="'Senzor nedodává data. Posledné data: ' + sensor.last_data_time + '.'"
@@ -221,7 +221,7 @@ const rssiComputed = computed(() => {
 					><i class="fas fa-sort-amount-down"></i></a>
 					<i>{{ sensor.desc }}</i>
 				</div>
-				<div class="col-12 col-md-4"><!-- TODO -->
+				<div class="col-12 col-md-4"><!-- TODO odkazy -->
 					<a href="../../chart/sensorstat/show/{sensor.id}/?current=1">Štatistika</a>· 
 					<a href="../../chart/sensor/show/{sensor.id}/?current=1">Graf</a>· 
 					<a href="Sensor:show sensor.id" >Info</a>· 
@@ -249,7 +249,7 @@ const rssiComputed = computed(() => {
 
 	<div class="row px-2 pt-3" v-if="item.subory">
 		<div class="col-12">
-			<h3>Súbory</h3><!-- TODO -->
+			<h3>Súbory</h3><!-- TODO odkazy -->
 			V zariadení je uložené <a href="Device:blobs item.id"><b>{{ item.subory }}</b> súborov</a>.
 		</div>
 	</div>

@@ -28,6 +28,9 @@ export default {
 	getMyUserData() {
 		return apiClient.get('user')
 	},
+	postDeviceEdit(data) {
+		return apiClient.post('', data)
+	}
 	/*getEvents(perPage, page) {
 		return apiClient.get('/events?_limit=' + perPage + '&_page=' + page)
 	},*/

@@ -1,15 +1,6 @@
 <script setup>
 import { useMainStore } from '../store/main'
 const store = useMainStore()
-
-//import dayjs from 'dayjs'; //https://day.js.org/docs/en/display/format
-
-// TODO over potrebu...
-/*const format_date = (value) => {
-	const date = dayjs(value)
-	// Then specify how you want your dates to be formatted
-	return date.format('D.M.YYYY HH:mm:ss');
-}*/
 </script>
 
 <template>
@@ -67,12 +58,12 @@ const store = useMainStore()
 
 	<div class="px-2 pb-2 pt-4" v-if="store.user.monitoring_token">
 		<h3>Monitoring</h3>
-		Dáta monitoringu sú dostupné tu: 
+		Data monitoringu sú dostupné tu: 
 		<!-- TODO link-->
 		<b><a :href="store.user.monitoringUrl"> {{ store.user.monitoringUrl }}</a></b>
 		<br />
 		<small>
-			Každý, kdo pozná túto URL, si môže data zobraziť. Prístup už ďalej <b>nieje chránený heslon</b>.
+			Každý, kdo pozná túto URL, si môže data zobraziť. Prístup už ďalej <b>nieje chránený heslom</b>.
 		</small>
 	</div>
 
@@ -80,12 +71,12 @@ const store = useMainStore()
 	<div class="row px-2 pt-4 pb-2">
 		<div class="col-12">
 			<h3>Retencia dát</h3>
-			Uložené dáta staršie než určený čas budú zmazané.
+			Uložené data staršie než určený čas budú zmazané.
 		</div>
 	</div>
 
 	<div class="row px-2 bg-light">
-		<div class="col-12 col-md-3">Detailné dáta (zdrojové hodnoty):</div>
+		<div class="col-12 col-md-3">Detailné data (zdrojové hodnoty):</div>
 		<div class="col-12 col-md-9">
 			<b v-if="store.user.measures_retention != 0">{{ store.user.measures_retention }} dní</b>
 			<span v-else>neobmedzené</span>
@@ -93,7 +84,7 @@ const store = useMainStore()
 	</div>
 
 	<div class="row px-2">
-		<div class="col-12 col-md-3">Sumárné dáta (hodinové priemery, maximá, minimá):</div>
+		<div class="col-12 col-md-3">Sumárne data (hodinové priemery, maximá, minimá):</div>
 		<div class="col-12 col-md-9">
 			<b v-if="store.user.sumdata_retention != 0">{{ store.user.sumdata_retention }} dní</b>
 			<span v-else>neobmedzené</span>

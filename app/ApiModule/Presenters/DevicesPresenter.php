@@ -3,6 +3,8 @@
 namespace App\ApiModule\Presenters;
 
 use App\ApiModule\Model;
+use App\Services;
+use App\Services\Logger;
 
 /**
  * Presenter pre pristup k api užívateľov.
@@ -24,6 +26,17 @@ class DevicesPresenter extends BasePresenter
 	public $devices;
 	/** @var Model\Measures @inject */
 	public $measures;
+	/** @var \App\Model\PV_Devices @inject */
+	public $pv_devices;
+
+	private $config;
+
+	public function __construct(array $parameters, Services\ApiConfig $config)
+	{
+		// Nastavenie z config-u
+		$this->nastavenie = $parameters;
+		$this->config = $config;
+	}
 
 	public function actionDefault(): void
 	{
@@ -73,5 +86,36 @@ class DevicesPresenter extends BasePresenter
 	public function actionMeasureslast(int $id): void
 	{
 		$this->sendJson($this->measures->getLastMeasure($id));
+	}
+
+	public function actionEdit(int $id) : void {
+		
+		$_post = json_decode(file_get_contents("php://input"), true);
+		//dumpe($_post);
+		$values['name'] = $this->user->getIdentity()->prefix.":".$_post['name'];
+		$values['user_id'] = $this->user->id;
+		$values['passphrase'] = $this->config->encrypt( $_post['passphrase'], $_post['name'] );
+
+		if( $id ) {
+				// editace
+				$device = $this->pv_devices->getDevice( $id );
+				if (!$device) {
+					$out = ["status" => 404, "message" => "Zariadenie sa nenašlo"];
+				} else if( $this->user->id != $device->user_id ) {
+					Logger::log( 'audit', Logger::ERROR , 
+						sprintf("Užívateľ #%s (%s) zkúsil editovať zariadenie patriace užívateľovi #%s", $this->user->id, $this->user->getIdentity()->email, $device->user_id));
+					$this->user->logout(true);
+					//$form->addError($this->texts->translate('device_form_not_aut'), "danger");
+					$out = ["status" => 500, "message" => "K tomuto zariadeniu nemáte oprtávnený prístup!"];
+				} else {
+					$device->update( $values );
+					$out = ["status" => 200, "message" => "Údaje zariadenia aktualizované."];
+				}
+		} else {
+				// zalozeni
+				$this->pv_devices->createDevice( $values );
+				$out = ["status" => 200, "message" => "Zariadenie bolo vytvorené."];
+		}
+		$this->sendJson($out);
 	}
 }

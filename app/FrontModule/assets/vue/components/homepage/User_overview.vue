@@ -1,16 +1,8 @@
-<script>
-//import { onMounted, ref } from 'vue'
-//import MainService from '../../services/MainService'
+<script setup>
 import { useMainStore } from '../../store/main'
-import { RouterLink } from 'vue-router'
+const store = useMainStore()
 
-export default {
-	setup () {
-		const store = useMainStore()
-	
-		return { store }
-	}
-}
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -31,8 +23,9 @@ export default {
 					<b>{{ store.user.last_error_time }}</b><br />
 					<small>z IP adresy <b>{{ store.user.last_error_ip }}</b></small>
 				</p>
-	
-				<div class="d-flex justify-content-end border-top border-secondary pt-2">
+			</div>
+			<div class="card-footer">
+				<div class="d-flex justify-content-end pt-2">
 					<RouterLink to="/user" class="btn btn-outline-info">
 						Viac info <i class="fa-solid fa-angles-right"></i>
 					</RouterLink>

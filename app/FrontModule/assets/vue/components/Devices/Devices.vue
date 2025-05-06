@@ -74,7 +74,7 @@ export default {
 			<div class="col-12 col-md-4"><i>{{ item.desc }}</i></div>
 			<div class="col-6 col-md-2">{{ format_date(item.first_login) }}</div>
 			<div class="col-6 col-md-2">{{ format_date(item.last_login) }}</div>
-			<div class="col-12 col-md-1 text-white d-flex justify-content-end">
+			<div class="col-12 col-md-1 text-white d-flex justify-content-end"><!-- TODO odkaz -->
 				<a :href="'device/edit/' + item.id" class="text-warning" title="Edit">
 					<i class="fa-solid fa-pencil"></i>
 				</a>

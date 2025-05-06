@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\ApiModule\Model;
 
-//use App\Model;
-use App\Model\PV_Updates;
+use App\Model;
 use App\Services\Logger;
 use Nette;
 use Nette\Database;
@@ -46,11 +45,11 @@ class Devices
 	private $pv_sensors;
 
 	public function __construct(
-		Nette\Database\Explorer $database,
+		Database\Explorer $database,
 		Sensors $pv_sensors,
 		Sessions $sessions,
-		PV_Updates $pv_updates,
-		PV_Blobs $pv_blobs
+		Model\PV_Updates $pv_updates,
+		Model\PV_Blobs $pv_blobs
 	) {
 		$this->devices = $database->table("devices");
 		$this->measures = $database->table("measures");
