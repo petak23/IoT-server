@@ -5,10 +5,11 @@ namespace App\ApiModule\Presenters;
 use App\ApiModule\Model;
 use App\Services;
 use App\Services\Logger;
+use Nette\Utils\Strings;
 
 /**
  * Presenter pre pristup k api užívateľov.
- * Posledna zmena(last change): 25.04.2025
+ * Posledna zmena(last change): 09.05.2025
  *
  * Modul: API
  *
@@ -16,7 +17,7 @@ use App\Services\Logger;
  * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version 1.0.2
+ * @version 1.0.3
  */
 class DevicesPresenter extends BasePresenter
 {
@@ -30,12 +31,14 @@ class DevicesPresenter extends BasePresenter
 	public $pv_devices;
 
 	private $config;
+	private $config2;
 
-	public function __construct(array $parameters, Services\ApiConfig $config)
+	public function __construct(array $parameters, Services\ApiConfig $config, Services\Config $config2)
 	{
 		// Nastavenie z config-u
 		$this->nastavenie = $parameters;
 		$this->config = $config;
+		$this->config2 = $config2;
 	}
 
 	public function actionDefault(): void
@@ -53,12 +56,18 @@ class DevicesPresenter extends BasePresenter
 					'message' => $device['error']
 				];
 			} else {
+				$arr = Strings::split($device['name'], '~:~');
+				$name_no_prefix = $arr[1];
+				$dec_pass = $this->config2->decrypt($device['passphrase'], $device['name']);
+				//dumpe($dec_pass);
 				$out = array_merge($device, [
 					'jsonUrl'		=> $this->link('//:Json:data', ['token' => $device['json_token'], 'id' => $device['id']]),
-					'jsonUrl2'	=> $this->link('//:Json:meteo', ['token' => $device['json_token'], 'id' => $device['id'], 'temp' => 'JMENO_TEMP_SENZORU', 'rain' => 'JMENO_RAIN_SENZORU']),
+					'jsonUrl2'	=> $this->link('//:Json:meteo', ['token' => $device['json_token'], 'id' => $device['id'], 'temp' => 'MENO_TEMP_SENZORU', 'rain' => 'MENO_RAIN_SENZORU']),
 					'blobUrl'		=> $this->link('//:Gallery:show', ['token' => $device['blob_token'], 'id' => $device['id']]),
 					'status'		=> 200,
-					'url'				=> $this->link('//:Homepage') // . 'ra', ??? TODO over
+					'url'				=> $this->link('//:Ra:'),
+					'name_no_prefix' => $name_no_prefix,
+					'passphrase' => $this->config2->decrypt($device['passphrase'], $device['name'])
 				]);
 			}
 		} else {

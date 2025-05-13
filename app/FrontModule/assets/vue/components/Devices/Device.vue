@@ -3,17 +3,21 @@ import { onMounted, ref, watch, computed } from 'vue'
 import { BAccordion, BAccordionItem } from 'bootstrap-vue-next'
 
 const props = defineProps({
-	device: { type: Object, default: null }
+	device_item: { 
+		type: Object, default: null 
+	}
 })
 
-const item = ref(null)
+const item = ref({id: 0, name: 'none'})
 
 onMounted(()=> {
-	if (props.device != null) item.value = props.device
+	console.log(props)
+	if (props.device_item != null) item.value = props.device_item
+	console.log(item.value)
 })
 
-watch(() => props.device, () => {
-	item.value = props.device
+watch(() => props.device_item, () => {
+	item.value = props.device_item
 });
 
 const rssiComputed = computed(() => {
@@ -27,6 +31,7 @@ const rssiComputed = computed(() => {
 </script>
 
 <template>
+	
 	<div class="col-12 h1">
 		<h1>Zariadenie ({{ item.id }}) - {{ item.name }}</h1>
 	</div>
@@ -38,7 +43,7 @@ const rssiComputed = computed(() => {
 		</div>
 	</div>
 	<div class="row px-2 pt-3">
-		<div class="col-12"><!-- TODO over -->
+		<div class="col-12">
 			<BAccordion lazy>
 				<BAccordionItem title="Zobraziť konfiguráciu">
 					<div class="row px-2">
@@ -133,9 +138,9 @@ const rssiComputed = computed(() => {
 
 	<div class="row px-2 pt-3">
 			<div class="col-12"><!-- TODO odkazy -->
-					<a href="Device:edit $device['id']" class="btn btn-outline-primary btn-sm" role="button">Upraviť zariadenie</a>
-					<a href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať zmenu konfigurácie</a>
-					<a href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať OTA aktualizáciu aplikácie</a>
+				<RouterLink :to="'edit/'+item.id" class="btn btn-outline-primary btn-sm" role="button">Upraviť zariadenie</RouterLink>
+				<a href="Device:sendconfig $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať zmenu konfigurácie</a>
+				<a href="Device:update $device['id']" class="btn btn-outline-primary btn-sm" role="button">Poslať OTA aktualizáciu aplikácie</a>
 			</div>
 	</div>
 

@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, computed, ref } from 'vue'
+import { BForm, BFormGroup, BFormInput, BFormInvalidFeedback, BFormCheckbox, BFormTextarea, BButton } from 'bootstrap-vue-next'
 import MainService from '../../services/MainService'
 
 const props = defineProps({
@@ -15,10 +16,11 @@ function generateToken(length = 40) {
 }
 
 const form = reactive({
-	name: props.defaultValues.name || '',
-	password: props.defaultValues.password || '',
-	description: props.defaultValues.description || '',
+	name: props.defaultValues.name_no_prefix || '',
+	passphrase: props.defaultValues.passphrase || '',
+	desc: props.defaultValues.desc || '',
 	json_token: props.defaultValues.json_token || generateToken(),
+	blob_token: props.defaultValues.blob_token || generateToken(),
 	monitoring: props.defaultValues.monitoring || false
 })
 
@@ -61,8 +63,10 @@ async function handleSubmit() {
 
 <template>
 	<b-form @submit.prevent="handleSubmit">
-		<!-- Meno -->
-		<b-form-group label="Meno" label-for="name" description="Len znaky 0-9, A-Z, a-z">
+		<h6 class="border-top pt-1 mt-3"><strong>Základné údaje:</strong></h6>
+		<b-form-group label="Identifikátor(meno):" label-for="name" 
+			description="Toto meno doplnené prefixom bude používané pre prihlasovanie zariadenia. (Len znaky 0-9, A-Z, a-z)"
+		>
 			<b-form-input
 				id="name"
 				v-model="form.name"
@@ -76,46 +80,53 @@ async function handleSubmit() {
 				Meno môže obsahovať len znaky 0-9, A-Z, a-z.
 			</b-form-invalid-feedback>
 		</b-form-group>
-
-		<!-- Heslo -->
-		<b-form-group label="Heslo" label-for="password">
+		<b-form-group label="Komunikačné heslo:" label-for="passphrase">
 			<b-form-input
-				id="password"
-				v-model="form.password"
-				type="password"
+				id="passphrase"
+				v-model="form.passphrase"
+				type="text"
 				required
 				placeholder="Zadajte heslo"
 			/>
 		</b-form-group>
-
-		<!-- Popis -->
-		<b-form-group label="Popis" label-for="description">
+		<b-form-group label="Popis:" label-for="description">
 			<b-form-textarea
 				id="description"
-				v-model="form.description"
+				v-model="form.desc"
 				placeholder="Zadajte popis"
 				rows="3"
 			/>
 		</b-form-group>
 
-		<!-- JSON Token -->
-		<b-form-group label="JSON Token" label-for="jsonToken">
+		<h6 class="border-top pt-1 mt-3"><strong>Prístup k datám bez prihlásenia:</strong></h6>
+		<b-form-group label="Bezpečnostný token pre data:" label-for="jsonToken"
+			description="Ak je vyplnený, kdokoľvek so znalosťou správnej adresy sa môže pozrieť na JSON s dátami. Má zmysel len v prípade, že má zariadenie nejaké senzory."
+		>
 			<b-form-input
 				id="jsonToken"
 				v-model="form.json_token"
-				readonly
-				plaintext
+				type="text"
+			/>
+		</b-form-group>
+		<b-form-group label="Bezpečnostný token pre galériu:" label-for="blobToken"
+			description="Ak je vyplnený, kdokoľvek so znalosťou správnej adresy sa môže pozrieť na galériu obrázkov. Má zmysel len vtedy, ak zariadenie nahráva obrázky."
+		>
+			<b-form-input
+				id="blobToken"
+				v-model="form.blob_token"
+				type="text"
 			/>
 		</b-form-group>
 
-		<!-- Monitoring -->
-		<b-form-group>
+		<h6 class="border-top pt-1 mt-3"><strong>Monitoring:</strong></h6>
+		<b-form-group
+			description="Pokiaľ zo senzorou zariadenia nebudú chodiť dáta tak často, ako majú, bude poslaná notifikácia."
+		>
 			<b-form-checkbox v-model="form.monitoring" name="monitoring">
-				Monitoring
+				Zaradiť do funkcie monitoringu
 			</b-form-checkbox>
 		</b-form-group>
 
-		<!-- Odozva -->
 		<div
 			v-if="responseMessage"
 			class="alert mt-2"
@@ -124,7 +135,6 @@ async function handleSubmit() {
 			{{ responseMessage }}
 		</div>
 
-		<!-- Tlačidlo -->
 		<b-button type="submit" variant="primary" :disabled="loading">
 			{{ loading ? 'Odosielam...' : 'Odoslať' }}
 		</b-button>

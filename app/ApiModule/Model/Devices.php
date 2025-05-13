@@ -130,8 +130,8 @@ class Devices
 			$_d = $d->attrs->toArray();
 			$_d['problem_mark'] = $d->problem_mark;
 			$_d['sensors'] = $d->sensors;
-			$_d['first_login'] = $d->attrs->first_login != null ? $d->attrs->first_login->format('d.m.Y H:i:s') : null;
-			$_d['last_login'] = $d->attrs->last_login != null ? $d->attrs->last_login->format('d.m.Y H:i:s') : null;
+			$_d['first_login'] = $_d['first_login'] != null ? $_d['first_login']->format('d.m.Y H:i:s') : null;
+			$_d['last_login'] = $_d['last_login'] != null ? $_d['last_login']->format('d.m.Y H:i:s') : null;
 			$_d['lastComm'] = DateTime::from($lastTime)->format('d.m.Y H:i:s');
 			if ($d->attrs->uptime) {
 				$_d['uptime'] = $this->secondsToTime($d->attrs->uptime);
@@ -186,6 +186,45 @@ class Devices
 		$this->devices->get($id)->delete();
 		
 		Logger::log('webapp', Logger::DEBUG,  "Delete OK.");
+	}
+
+	private function secondsToTime($inputSeconds)
+	{
+		$secondsInAMinute = 60;
+		$secondsInAnHour = 3600;
+		$secondsInADay = 86400;
+
+		// Extract days
+		$days = floor($inputSeconds / $secondsInADay);
+
+		// Extract hours
+		$hourSeconds = $inputSeconds % $secondsInADay;
+		$hours = floor($hourSeconds / $secondsInAnHour);
+
+		// Extract minutes
+		$minuteSeconds = $hourSeconds % $secondsInAnHour;
+		$minutes = floor($minuteSeconds / $secondsInAMinute);
+
+		// Extract the remaining seconds
+		$remainingSeconds = $minuteSeconds % $secondsInAMinute;
+		$seconds = ceil($remainingSeconds);
+
+		// Format and return
+		$timeParts = [];
+		$sections = [
+			'd' => (int)$days,
+			'hod' => (int)$hours,
+			'min' => (int)$minutes,
+			'sec' => (int)$seconds,
+		];
+
+		foreach ($sections as $name => $value) {
+			if ($value > 0) {
+				$timeParts[] = $value . ' ' . $name;
+			}
+		}
+
+		return implode(', ', $timeParts);
 	}
 }
 // ------------------------------------  End class Devices
@@ -268,7 +307,10 @@ class VDevice
 	{
 		if ($return_as_array) {
 			$out = array_merge(
-				['value_unit' => $sensorAttrs->value_types->unit],
+				[
+					'value_unit' => $sensorAttrs->value_types->unit,
+					'dc_desc'	=> $sensorAttrs->device_classes->desc,
+				],
 				$sensorAttrs->toArray()
 			);
 		}

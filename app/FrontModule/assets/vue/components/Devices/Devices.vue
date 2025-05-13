@@ -1,44 +1,39 @@
-<script>
+<script setup>
 import { onMounted, ref } from 'vue'
 import MainService from '../../services/MainService'
 import dayjs from 'dayjs'; //https://day.js.org/docs/en/display/format
+import Device_popover from './Device_popover.vue';
 
-export default {
-	setup () {
+const items = ref(null)
 
-		const items = ref(null)
-
-		onMounted(()=> {
-			getDevices();
-		})
+onMounted(()=> {
+	getDevices();
+})
 
 		
-		const format_date = (value) => {
-			const date = dayjs(value);
-			// Then specify how you want your dates to be formatted
-			return date.format('D.M.YYYY HH:mm:ss');
-		}
+const format_date = (value) => {
+	if (value == null) return "---"
+	const date = dayjs(value);
+	// Then specify how you want your dates to be formatted
+	return date.format('D.M.YYYY HH:mm:ss')
+}
 
-		const getDevices = () => {
-			MainService.getDevices()
-				.then(response => {
-					//console.log(response.data)
-					items.value = response.data
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		}
-	
-		return { items, format_date }
-	}
+const getDevices = () => {
+	MainService.getDevices()
+		.then(response => {
+			//console.log(response.data)
+			items.value = response.data
+		})
+		.catch((error) => {
+			console.log(error);
+		});
 }
 </script>
 
-<template>
-	<div v-if="items != null" v-for="item in items" :key="item.id" class="device">
+<template v-if="items != null">
+	<div v-for="item in items" :key="item.id" class="device">
 		<div class="row px-2 text-secondary device-head" >
-			<div class="col-4 col-md-3">Zariadenie <br />[{{ item.id }}]</div>
+			<div class="col-4 col-md-3">Zariadenie</div>
 			<div class="col-12 col-md-4">Popis</div>
 			<div class="col-6 col-md-2">Prvé prihlásenie</div>
 			<div class="col-6 col-md-2">Posledné prihlásenie</div>
@@ -47,29 +42,15 @@ export default {
 
 		<div class="row my-0 px-2 bg-primary text-white">
 			<div class="col-4 col-md-3 ">
-				<b>
-					<RouterLink :to="'device/' + item.id" class="text-white">
-						{{ item.name }}
-					</RouterLink>
-				</b>
-				<a 
-					v-if="item.problem_mark"
-					href="#"
-					data-toggle="tooltip"
-					data-placement="top"
-					:title="'Zariadenie má problém s prihlásením. Posledné neúspešné prihlásenie: ' + item.last_bad_login + '.'"
-				>
-					<i class="text-warning fas fa-exclamation-triangle"></i>
-				</a>
-				<a 
-					v-if="item.config_data != null"
-					href="#" 
-					data-toggle="tooltip" 
-					data-placement="top" 
-					title="Pre zariadenie čaká zmena konfigurácie" 
-				>
-					<i class="text-warning fas fa-share-square"></i>
-				</a>
+				<RouterLink :to="'device/' + item.id" class="text-white me-2"><b>{{ item.name }}</b></RouterLink>
+				<Device_popover v-if="item.problem_mark"
+					fa_icon="exclamation-triangle text-warning"
+					:text="'Zariadenie má problém s prihlásením. Posledné neúspešné prihlásenie: ' + format_date(item.last_bad_login) + '.'"
+				/>
+				<Device_popover v-if="item.config_data != null"
+					fa_icon="share-square text-warning"
+					text="Pre zariadenie čaká zmena konfigurácie."
+				/>
 			</div>
 			<div class="col-12 col-md-4"><i>{{ item.desc }}</i></div>
 			<div class="col-6 col-md-2">{{ format_date(item.first_login) }}</div>
@@ -97,43 +78,35 @@ export default {
 					class="row"
 					:class="index % 2 ? 'bg-light' : 'sensor-odd'"
 				>
-					<div class="col-6 col-md-2"><b>
-						<a :href="'sensor/show/' + sensor.id" >
-							<small>({{ k }})</small>{{sensor.name}}</a>
-						<a 
-							v-if="sensor.warningIcon > 0"
-							href="#" data-toggle="tooltip" data-placement="top"
-							:title="'Senzor nedodáva data. Posledné data: ' + format_date(sensor.last_data_time) + '.'"
-							>
-							<i 
-								class="fas fa-exclamation-triangle"
-								:class="sensor.warningIcon == 1 ? 'text-danger' : 'text-warning'"
-							></i>
+					<div class="col-6 col-md-2">
+						<a :href="'sensor/show/' + sensor.id" ><!-- TODO link -->
+							<small>({{ k }})</small><b>{{sensor.name}}</b>
 						</a>
-					</b></div>
+						<Device_popover v-if="sensor.warningIcon > 0"
+							:fa_icon="'exclamation-triangle ' + sensor.warningIcon == 1 ? 'text-danger' : 'text-warning'"
+							:text="'Senzor nedodáva data. Posledné data: ' + format_date(sensor.last_data_time) + '.'"
+						/>
+					</div>
 					<div class="col-5 col-md-2" v-if="sensor.last_out_value !== null">
-						{{ sensor.last_out_value }} {{ sensor.unit }}
-						<a 
-							v-if="sensor.warn_max_fired"
-							href="#" data-toggle="tooltip" data-placement="top" 
-							:title="'Od ' + sensor.warn_max_fired +' je hodnota nad limitom.'"
-						>
-							<i class="text-danger fas fa-arrow-circle-up"></i>
-						</a>
-						<a 
-							v-if="sensor.warn_min_fired"
-							href="#" data-toggle="tooltip" data-placement="top" 
-							:title="'Od ' + sensor.warn_min_fired + ' je hodnota pod limitem.'"
-						>
-							<i class="text-danger fas fa-arrow-circle-down"></i>
-						</a>
+						{{ sensor.last_out_value }} {{ sensor.value_unit }}
+						<Device_popover v-if="sensor.warn_max_fired"
+							fa_icon="arrow-circle-up text-danger"
+							:text="'Od ' + sensor.warn_max_fired +' je hodnota nad limitom.'"
+						/>
+						<Device_popover v-if="sensor.warn_min_fired"
+							fa_icon="arrow-circle-down text-danger"
+							:text="'Od ' + sensor.warn_min_fired +' je hodnota pod limitom.'"
+						/>
 					</div>
 					<div class="col-5 col-md-2" v-else>
-							- [{{ sensor.unit }}]
+							--- [{{ sensor.value_unit }}]
 					</div>
 					<div class="col-1">
-						<a href="#" data-toggle="tooltip" data-placement="top" 
-							:title="sensor.dc_desc">#{{ sensor.device_class }}</a>
+						<Device_popover
+							:click_me="true"
+							:text_to_target="'#' + sensor.id_device_classes"
+							:text="sensor.dc_desc"
+						/>
 					</div>
 					<div class="col-6 col-md-1">
 						<span v-if="sensor.preprocess_data == 1">
@@ -142,23 +115,17 @@ export default {
 					</div>
 					<div class="col-6 col-md-2">{{ sensor.msg_rate }}, {{ sensor.display_nodata_interval }}</div>
 					<div class="col-12 col-md-2">
-						<a 
-							v-if="sensor.warn_max"
-							href="#" data-toggle="tooltip" data-placement="top" 
-							title="Senzor má nastavené posielanie varovaní pri prekročení horného limitu."
-						>
-							<i class="fas fa-sort-amount-up"></i>
-						</a>
-						<a
-							v-if="sensor.warn_min"
-							href="#" data-toggle="tooltip" data-placement="top"
-							title="Senzor má nastavené posielanie varovaní pri prekročení spodného limitu."
-						>
-							<i class="fas fa-sort-amount-down"></i>
-						</a>
+						<Device_popover v-if="sensor.warn_max"
+							fa_icon="sort-amount-up"
+							text="Senzor má nastavené posielanie varovaní pri prekročení horného limitu."
+						/>
+						<Device_popover v-if="sensor.warn_min"
+							fa_icon="sort-amount-down"
+							text="Senzor má nastavené posielanie varovaní pri prekročení spodného limitu."
+						/>
 						<i>{{ sensor.desc }}</i>
 					</div>
-					<div class="col-6 col-md-2">
+					<div class="col-6 col-md-2"><!-- TODO links -->
 						<a href="../chart/sensorstat/show/{$sensor['id']}/?current=1"
 							class="text-warning pe-2"
 							title="Štatistika"

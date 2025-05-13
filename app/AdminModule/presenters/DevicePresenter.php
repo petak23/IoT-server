@@ -76,7 +76,7 @@ final class DevicePresenter extends BasePresenter
 		}
 		if ($checkAcces) $this->checkAcces($device->user_id);
 
-		return ($to_array) ? $device->toArray() : $device;
+		return $to_array ? $device->toArray() : $device;
 	}
 
 	private function setSubmenu(int $id, string $name, int $blobCount)

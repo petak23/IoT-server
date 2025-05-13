@@ -29,6 +29,14 @@ const routes = [
 		component: DeviceView
 	},
 	{
+		path: '/device/edit/:id',
+		name: 'Zariadenie - editácia',
+		props: true,
+		component: DeviceView,
+		props: { edit: true }
+	},
+
+	{
 		path: '/units',
 		name: 'Jednotky',
 		component: UnitsView

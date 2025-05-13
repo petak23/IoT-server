@@ -38,6 +38,7 @@ use Nette\Application\Routers\RouteList;
 			//->addRoute('api/users[/<action>[/<id>]]', 'Users:default')
 			->addRoute('api[/<presenter>[/<action>[/<id>]]]', 'Homepage:default');
 		$router->withModule('Front')
+			->addRoute('front/device[/<path>[/<id>]]', 'Homepage:default')
 			->addRoute('front[/<path>[/<id>]]', 'Homepage:default');
 
 		$router->withModule('Admin')
