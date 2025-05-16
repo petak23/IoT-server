@@ -55,10 +55,10 @@ const getDevices = () => {
 			<div class="col-12 col-md-4"><i>{{ item.desc }}</i></div>
 			<div class="col-6 col-md-2">{{ format_date(item.first_login) }}</div>
 			<div class="col-6 col-md-2">{{ format_date(item.last_login) }}</div>
-			<div class="col-12 col-md-1 text-white d-flex justify-content-end"><!-- TODO odkaz -->
-				<a :href="'device/edit/' + item.id" class="text-warning" title="Edit">
+			<div class="col-12 col-md-1 text-white d-flex justify-content-end">
+				<RouterLink :to="'edit/'+item.id" class="text-warning" role="button" title="Editácia zariadenia">
 					<i class="fa-solid fa-pencil"></i>
-				</a>
+				</RouterLink>
 			</div>
 		</div>
 		<!-- End device / Start sensors-->
@@ -138,7 +138,8 @@ const getDevices = () => {
 						>
 							<i class="fa-solid fa-chart-line"></i>
 						</a> 
-						<a :href="'sensor/edit/' + sensor.id" class="text-warning" title="Edit">
+						<a href="'sensor/edit/' + sensor.id" 
+							class="text-warning" title="Edit">
 							<i class="fa-solid fa-pencil"></i>
 						</a>
 					</div>
