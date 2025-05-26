@@ -44,7 +44,7 @@ class RaDataSource
 		$this->database->query('INSERT INTO prelogin', [
 			'hash' => $hash,
 			'device_id' => $deviceId,
-			'started' => new \Nette\Utils\DateTime,
+			'started' => new DateTime,
 			'session_key' => $key,
 			'remote_ip' => $remoteIp
 		]);
@@ -64,7 +64,7 @@ class RaDataSource
 	{
 		$this->database->query('DELETE FROM sessions WHERE device_id = ?', $deviceId);
 
-		$now = new \Nette\Utils\DateTime;
+		$now = new DateTime;
 
 		$this->database->query('INSERT INTO sessions', [
 			'hash' => $hash,
@@ -102,7 +102,7 @@ class RaDataSource
 		$this->database->query('DELETE FROM prelogin WHERE id = ?', $preloginSessionId);
 		$this->database->query('DELETE FROM sessions WHERE device_id = ?', $deviceId);
 
-		$now = new \Nette\Utils\DateTime;
+		$now = new DateTime;
 
 		$this->database->query('INSERT INTO sessions', [
 			'hash' => $hash,
