@@ -71,7 +71,7 @@ class CommPresenter extends BasePresenter
 			} 
 			
 			$sessionData = explode( ":", $session, 2 );
-			if( count($sessionData)<2 ) {
+			if( count($sessionData) != 2 ) { // Musí to byť presne 2 <session_id> a <session_hash>
 				throw new \Exception("Bad request. Not valid session data.");                
 			}
 			$logger->write( Logger::INFO, "S:{$sessionData[0]}"); 
@@ -87,7 +87,7 @@ class CommPresenter extends BasePresenter
 			$msg_parts[2] - dĺžka dát
 			$msg_parts[3] - data
 			*/
-			// TODO - kontrola správy na sha256 + vloženie hash hesla z údajov
+			// TODO - vloženie hash hesla z údajov
 			$control_hash = hash('sha256', $msg_parts[1] . $msg_parts[2] . $msg_parts[3] ."taJne687*+WX_-heslo");
 			if( $control_hash !== $msg_parts[0]  ) {
 				throw new \Exception("Not valid sha256 of message!");
