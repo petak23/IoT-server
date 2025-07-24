@@ -36,7 +36,7 @@ class CommPresenter extends BasePresenter
 	 * Formát session:
 	 * 			<session_id>:<session_hash>
 	 * Formát dát: (označenie senzora je jedinečná hodnota)
-	 * 			<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>... - ak je viac posielaných hodnôt, tak sú oddelené ";"  
+	 * 			<označenie senzora>:<hodnota>;<označenie senzora>:<hodnota>;... - ak je viac posielaných hodnôt, tak sú oddelené ";"  
 	 * Result:
 	 *      200 - OK
 	 *      400 - other error
@@ -53,11 +53,15 @@ class CommPresenter extends BasePresenter
 			$remoteIp = $httpRequest->getRemoteAddress(); 
 			$logger->setContext("D");
 
-			$postSize = strlen( $httpRequest->getRawBody() );
+			$postMessage = $httpRequest->getRawBody(); // Ulož príchodziu správu zisti jej veľkosť a zaloguj
+			$postSize = strlen( $postMessage );
 			$logger->write( Logger::INFO, "data+ {$postSize}b {$remoteIp}");
-			$logger->write( Logger::INFO, "[" . $httpRequest->getRawBody() ."]" );
+			$logger->write( Logger::INFO, "[" . $postMessage ."]" );
 
-			$msg_parts = explode ( ";" , $httpRequest->getRawBody(), 4 );
+			$msg_parts = explode( ";", $postMessage, 5 );	// Rozdeľ vstupnú správu podľa ";" na 5 častí a skontroluj
+			if( count($msg_parts) < 5 ) {
+				throw new \Exception("Bad request (1). Message is too short!");                
+			}
 			/*
 			$msg_parts[0] - session
 			$msg_parts[1] - SHA256 z payloadu
@@ -65,7 +69,7 @@ class CommPresenter extends BasePresenter
 			$msg_parts[3] - dĺžka dát
 			$msg_parts[4] - data
 			*/
-			$session = Strings::trim($msg_parts[0]);
+			$session = Strings::trim($msg_parts[0]); 
 			if( Strings::length( $session ) == 0  ) {
 				throw new \Exception("Empty session ID.");
 			} 
@@ -75,11 +79,9 @@ class CommPresenter extends BasePresenter
 				throw new \Exception("Bad request. Not valid session data.");                
 			}
 			$logger->write( Logger::INFO, "S:{$sessionData[0]}"); 
-			$sessionDevice = $this->pv_sessions->checkSession( $sessionData[0], $sessionData[1] );
+			$sessionDevice = $this->pv_sessions->checkSession( $sessionData[0], $sessionData[1] ); // Over session id voči session hash
 			$logger->setContext("D;D:{$sessionDevice->deviceId}");
-			if( count($msg_parts) < 5 ) {
-				throw new \Exception("Bad request (1). Message is too short!");                
-			}
+			
 			array_shift($msg_parts); // Vypustí prvý prvok poľa teda <session>
 			/*
 			$msg_parts[0] - SHA256 z payloadu
@@ -87,7 +89,7 @@ class CommPresenter extends BasePresenter
 			$msg_parts[2] - dĺžka dát
 			$msg_parts[3] - data
 			*/
-			// TODO - vloženie hash hesla z údajov
+			// TODO vloženie hash hesla z údajov
 			$control_hash = hash('sha256', $msg_parts[1] . $msg_parts[2] . $msg_parts[3] ."taJne687*+WX_-heslo");
 			if( $control_hash !== $msg_parts[0]  ) {
 				throw new \Exception("Not valid sha256 of message!");
@@ -98,8 +100,12 @@ class CommPresenter extends BasePresenter
 			}
 			
 			array_shift($msg_parts); // Vypustí prvý prvok poľa teda <SHA256 z payloadu>
-
-			// Formát msg_parts: array [<dátum a čas odoslania>, <dĺžka dát>, <data>]
+			/*
+			Aktuálny formát:
+			$msg_parts[0] - dátum a čas odoslania 
+			$msg_parts[1] - dĺžka dát
+			$msg_parts[2] - data
+			*/
 			$this->msgProcessor->process_pv( $sessionDevice, $msg_parts, $remoteIp, $logger );  
 
 			$logger->write( Logger::INFO, "OK");
@@ -108,7 +114,7 @@ class CommPresenter extends BasePresenter
 				
 		} catch (\Exception $e) {
 		
-			//TODO: zapísať chybu do tabuľky chýb
+			//TODO zapísať chybu do tabuľky chýb
 	
 			$logger->write( Logger::ERROR,  "ERR: " . get_class($e) . ": " . $e->getMessage() );
 			
