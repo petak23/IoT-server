@@ -12,13 +12,13 @@ use Nette\Utils\DateTime;
 /**
  * Model, ktory sa stara o tabulku devices
  * 
- * Posledna zmena 14.04.2025
+ * Posledna zmena 24.07.2025
  * 
  * @author     Ing. Peter VOJTECH ml. <petak23@gmail.com>
  * @copyright  Copyright (c) 2012 - 2025 Ing. Peter VOJTECH ml.
  * @license
  * @link       http://petak23.echo-msz.eu
- * @version    1.0.5
+ * @version    1.0.6
  */
 class PV_Devices
 {
@@ -96,9 +96,10 @@ class PV_Devices
     return $this->devices->where($by)->limit(1)->fetch();
   }
 
+	/** Zapíš dobu prevádzky alebo dobu bezporuchovosti vo formáte čísla sekúnd */
 	public function setUptime(int $deviceId, int $uptime): void
 	{
-		$this->devices->get($deviceId)->update(['uptime' => $uptime]);
+		if ($deviceId > 0 && $uptime > 0) $this->devices->get($deviceId)->update(['uptime' => $uptime]);
 	}
 
 	public function badLogin(int $deviceId): void

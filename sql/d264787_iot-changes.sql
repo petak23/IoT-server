@@ -22,3 +22,22 @@ INSERT INTO `main_menu` (`id`, `name`, `link`) VALUES
 (6,	'Editácia ACL',	'Admin:UserAcl:');
 
 -- 2023-07-27 11:30:32
+
+-- 2025-07-24 09:12:00
+
+ALTER TABLE `devices`
+CHANGE `id` `id` smallint(6) NOT NULL COMMENT '[A] Index' AUTO_INCREMENT FIRST,
+CHANGE `passphrase` `passphrase` varchar(100) COLLATE 'utf32_bin' NOT NULL COMMENT 'Hash hesla' AFTER `id`,
+CHANGE `name` `name` varchar(100) COLLATE 'utf32_bin' NOT NULL COMMENT 'Meno' AFTER `passphrase`,
+CHANGE `desc` `desc` varchar(255) COLLATE 'utf32_bin' NULL COMMENT 'Popis' AFTER `name`,
+CHANGE `first_login` `first_login` datetime NULL COMMENT 'Prvé prihlásenie' AFTER `desc`,
+CHANGE `last_login` `last_login` datetime NULL COMMENT 'Posledné prihlásenie' AFTER `first_login`,
+CHANGE `last_bad_login` `last_bad_login` datetime NULL COMMENT 'Posledné chybné prihlásenie' AFTER `last_login`,
+CHANGE `json_token` `json_token` varchar(255) COLLATE 'utf32_bin' NULL AFTER `user_id`,
+CHANGE `blob_token` `blob_token` varchar(255) COLLATE 'utf32_bin' NULL AFTER `json_token`,
+CHANGE `app_name` `app_name` varchar(256) COLLATE 'utf32_bin' NULL AFTER `monitoring`,
+CHANGE `config_data` `config_data` text COLLATE 'utf32_bin' NULL AFTER `config_ver`,
+CHANGE `user_id` `user_id` smallint(6) NOT NULL COMMENT 'Id užívateľa' AFTER `last_bad_login`,
+CHANGE `uptime` `uptime` int(11) NULL COMMENT 'Dobu prevádzky alebo bezporuchovosti v sekundách' AFTER `app_name`;
+COLLATE 'utf32_bin';
+

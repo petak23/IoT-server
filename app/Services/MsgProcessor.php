@@ -182,11 +182,11 @@ class MsgProcessor
 	{
 
 		$logger->write(Logger::DEBUG, "uptime:{$msgTotal[0]}");
-		$this->pv_devices->setUptime( $sessionDevice->deviceId, $msgTotal[0]);
+		$this->pv_devices->setUptime( $sessionDevice->deviceId, $msgTotal[0]); // Aktualizuj dobu prevádzky alebo bezporuchovosti vo formáte čísla - sekúnd
 		
 		$dataFromSensors = explode(";", $msgTotal[2]); //Rozložím data na pole stringov ["<označenie senzora>:<hodnota>", "<označenie senzora>:<hodnota>", ...]
 		
-		foreach ($dataFromSensors as $key => $ds) {															// Spracujem data z jednotlivých senzorov
+		foreach ($dataFromSensors as $key => $ds) {						// Spracujem data z jednotlivých senzorov
 			list($sensor_name, $value) = explode(":", $ds); 		// Rozložíme "<označenie senzora>:<hodnota>"
 			$channel = $this->pv_senors->findOneBy(['name' => $sensor_name]); // Nájdenie príslušného senzora
 
