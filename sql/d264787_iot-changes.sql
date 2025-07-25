@@ -38,6 +38,6 @@ CHANGE `blob_token` `blob_token` varchar(255) COLLATE 'utf32_bin' NULL AFTER `js
 CHANGE `app_name` `app_name` varchar(256) COLLATE 'utf32_bin' NULL AFTER `monitoring`,
 CHANGE `config_data` `config_data` text COLLATE 'utf32_bin' NULL AFTER `config_ver`,
 CHANGE `user_id` `user_id` smallint(6) NOT NULL COMMENT 'Id užívateľa' AFTER `last_bad_login`,
-CHANGE `uptime` `uptime` int(11) NULL COMMENT 'Dobu prevádzky alebo bezporuchovosti v sekundách' AFTER `app_name`;
+CHANGE `uptime` `uptime` int(11) NULL COMMENT 'Dobu prevádzky alebo bezporuchovosti v sekundách' AFTER `app_name`,
 COLLATE 'utf32_bin';
 
